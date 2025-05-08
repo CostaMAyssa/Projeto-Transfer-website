@@ -33,8 +33,8 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
           <img 
             src={vehicle.image} 
             alt={vehicle.name} 
-            className="w-full max-w-sm object-contain h-48 scale-130 transform"
-            style={{ transform: "scale(1.3)" }} // 30% zoom
+            className="w-full max-w-sm object-contain h-48"
+            style={{ transform: "scale(1.1)" }} // Reduced to 10% zoom from 30%
           />
         </div>
         
@@ -48,12 +48,12 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
           <div className="flex flex-col mb-4 space-y-2">
             <div className="flex items-center">
               <Users size={18} className="mr-1" />
-              <span className="text-sm">Passengers: {vehicle.capacity}</span>
+              <span className="text-sm font-medium">Passengers: {vehicle.capacity}</span>
             </div>
             <div className="flex items-start">
               <Briefcase size={18} className="mr-1 mt-0.5" />
               <div className="text-sm">
-                <span>Luggage: </span>
+                <span className="font-medium">Luggage: </span>
                 <span className="text-gray-600 text-xs">{getLuggageText(vehicle.id)}</span>
               </div>
             </div>
@@ -77,7 +77,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
             <div className="flex items-center justify-between pt-4 border-t">
               <Button 
                 variant="link" 
-                className="text-brand hover:text-brand-700 p-0"
+                className="text-brand hover:text-brand-700 p-0 font-medium"
               >
                 Show more information
               </Button>
@@ -85,7 +85,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
               <Button 
                 onClick={() => selectVehicle(vehicle)} 
                 variant={isSelected ? "outline" : "default"}
-                className={isSelected ? "border-brand text-brand hover:text-brand-700" : "bg-black hover:bg-gray-800 text-white"}
+                className={isSelected ? "border-brand text-brand hover:text-brand-700 font-medium" : "bg-black hover:bg-gray-800 text-white font-medium"}
               >
                 {isSelected ? "Selected" : "Select"} <ChevronRight size={16} className="ml-1" />
               </Button>
