@@ -40,11 +40,9 @@ const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicator
                   onClick={() => canClick && onStepClick(index)}
                   disabled={!canClick}
                   className={`flex items-center justify-center h-14 w-14 rounded-full mb-2 transition-colors ${
-                    isActive
+                    isActive || isCompleted
                       ? 'bg-black text-white'
-                      : isCompleted
-                      ? 'bg-black text-white'
-                      : 'bg-gray-100 text-gray-400'
+                      : 'bg-gray-100 text-gray-400 border border-gray-300'
                   } ${canClick ? 'cursor-pointer' : 'cursor-default'}`}
                 >
                   {step.icon}
