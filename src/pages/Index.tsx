@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
@@ -196,7 +197,7 @@ const Index = () => {
               <CarouselContent className="-ml-4 md:ml-0">
                 {serviceSlides.map((slide) => (
                   <CarouselItem key={slide.id} className="pl-4 md:pl-0 md:basis-1/2 lg:basis-1/4 px-3">
-                    <div className="relative h-80 group rounded-lg overflow-hidden">
+                    <div className="relative h-96 group rounded-lg overflow-hidden">
                       <img 
                         src={slide.image} 
                         alt={slide.title}
