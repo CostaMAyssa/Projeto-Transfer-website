@@ -1,7 +1,6 @@
-
 import { useBooking } from "@/contexts/BookingContext";
 import { format } from "date-fns";
-import { Calendar, Clock, Map } from "lucide-react";
+import { Calendar, Clock, Map, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface RideSummaryProps {

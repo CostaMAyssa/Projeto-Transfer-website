@@ -20,9 +20,9 @@ const ExtrasSelection = () => {
           <div className="space-y-6">
             {/* Flight/Train Number */}
             <div className="mb-6">
+              <label className="block text-sm font-medium mb-1">Flight/train number</label>
               <Input
                 placeholder="Example : LH83822"
-                label="Flight/train number"
                 className="w-full p-3"
               />
             </div>
