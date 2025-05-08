@@ -41,7 +41,7 @@ const BookingLayout = () => {
       <div className="bg-gray-50 min-h-screen">
         <div className="max-w-7xl mx-auto py-8 px-4">
           {currentStep < 4 && (
-            <div className="px-4 md:px-12 lg:px-24">
+            <div className="px-4 md:px-8 lg:px-16 mb-6">
               <BookingStepIndicator 
                 currentStep={currentStep} 
                 onStepClick={handleStepClick}
@@ -54,6 +54,6 @@ const BookingLayout = () => {
       </div>
     </>
   );
-};
+}
 
 export default BookingLayout;
