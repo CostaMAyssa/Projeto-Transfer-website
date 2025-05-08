@@ -2,6 +2,9 @@
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
+import { Play, Shield, FileText, Car, ArrowRight, ArrowLeft } from "lucide-react";
+import { vehicles } from "@/data/mockData";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   return (
@@ -9,16 +12,35 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section with Background */}
-      <div className="relative h-[500px] bg-gradient-to-r from-gray-900 to-gray-800 text-white">
+      <div className="relative h-[700px]">
+        {/* Background Image */}
+        <div className="absolute inset-0 bg-cover bg-center" style={{ 
+          backgroundImage: "url('/lovable-uploads/ef881b59-74e6-418a-b499-2644701effa8.png')", 
+          backgroundSize: 'cover',
+          backgroundPosition: 'center'
+        }}>
+          {/* Overlay */}
+          <div className="absolute inset-0 bg-black/60"></div>
+        </div>
+        
         {/* Hero Content */}
-        <div className="container mx-auto px-4 h-full flex flex-col justify-center items-center text-center">
-          <h1 className="text-4xl md:text-5xl font-normal mb-6">Premium Airport & Executive Transfers</h1>
-          <p className="text-xl max-w-2xl mb-8 font-light">
-            Reliable, comfortable, and professional chauffeur services for all your transportation needs
-          </p>
-          <Button className="bg-brand hover:bg-brand-600 text-white px-8 py-6 text-lg">
-            Learn More
-          </Button>
+        <div className="container mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+          <div className="max-w-3xl text-white">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
+              The Nation's #1 Largest Personal Driver Service
+            </h1>
+            <p className="text-xl mb-8 font-light max-w-2xl">
+              Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism for all your travel needs.
+            </p>
+            <div className="flex space-x-4">
+              <Button className="bg-brand hover:bg-brand-600 text-white px-8 py-6 text-lg">
+                Book Now
+              </Button>
+              <Button variant="outline" className="border-white text-white hover:bg-white/20 px-8 py-6 text-lg">
+                <Play size={20} className="mr-2" /> Watch Video
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -27,39 +49,79 @@ const Index = () => {
         <BookingWidget />
       </div>
 
-      {/* Features Section */}
+      {/* Fleet Section */}
       <section className="py-20 container mx-auto px-4">
-        <h2 className="text-3xl font-normal text-center mb-12">Why Choose Our Services</h2>
+        <div className="flex justify-between items-center mb-12">
+          <h2 className="text-3xl font-normal">Our Fleet</h2>
+          <Link to="/fleet" className="flex items-center text-brand hover:text-brand-700">
+            More Fleet <ArrowRight size={16} className="ml-2" />
+          </Link>
+        </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="text-center p-6">
-            <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {vehicles.map((vehicle) => (
+            <div key={vehicle.id} className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+              <div className="p-4 bg-gray-50 flex items-center justify-center h-60">
+                <img 
+                  src={vehicle.image} 
+                  alt={vehicle.name} 
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <div className="p-6">
+                <h3 className="text-xl font-normal mb-2">{vehicle.category}</h3>
+                <p className="text-gray-600 text-sm mb-4">{vehicle.models}</p>
+                <div className="flex justify-between items-center">
+                  <div className="flex space-x-4">
+                    <div className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mr-1 text-gray-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      <span className="text-sm text-gray-500">Passengers: {vehicle.capacity}</span>
+                    </div>
+                    <div className="flex items-center">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mr-1 text-gray-500">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                      <span className="text-sm text-gray-500">Luggage: {vehicle.luggage}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <h3 className="text-xl font-normal mb-2">Punctuality Guaranteed</h3>
-            <p className="text-gray-600">We understand the importance of timely pickups, especially for airport transfers.</p>
-          </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-normal text-center mb-12">Why Choose Our Services</h2>
           
-          <div className="text-center p-6">
-            <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-              </svg>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
+                <Shield size={24} />
+              </div>
+              <h3 className="text-xl font-normal mb-2">Safety First</h3>
+              <p className="text-gray-600">Both you and your belongings will travel with professional drivers. Always with the highest quality standards.</p>
             </div>
-            <h3 className="text-xl font-normal mb-2">Safety First</h3>
-            <p className="text-gray-600">All our vehicles are regularly serviced and our chauffeurs are professionally trained.</p>
-          </div>
-          
-          <div className="text-center p-6">
-            <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-8 h-8">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-              </svg>
+            
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
+                <FileText size={24} />
+              </div>
+              <h3 className="text-xl font-normal mb-2">Prices With No Surprises</h3>
+              <p className="text-gray-600">Both you and your belongings will travel with professional drivers. Always with the highest quality standards.</p>
             </div>
-            <h3 className="text-xl font-normal mb-2">Transparent Pricing</h3>
-            <p className="text-gray-600">No hidden fees. The price you see is the price you pay, including all taxes and fees.</p>
+            
+            <div className="text-center p-6">
+              <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
+                <Car size={24} />
+              </div>
+              <h3 className="text-xl font-normal mb-2">Private Travel Solutions</h3>
+              <p className="text-gray-600">Both you and your belongings will travel with professional drivers. Always with the highest quality standards.</p>
+            </div>
           </div>
         </div>
       </section>
