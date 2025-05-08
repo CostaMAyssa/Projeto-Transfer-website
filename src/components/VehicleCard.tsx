@@ -9,8 +9,14 @@ interface VehicleCardProps {
 }
 
 const VehicleCard = ({ vehicle }: VehicleCardProps) => {
-  const { selectVehicle, bookingData } = useBooking();
+  const { selectVehicle, bookingData, nextStep } = useBooking();
   const isSelected = bookingData.vehicle?.id === vehicle.id;
+
+  const handleVehicleSelect = () => {
+    selectVehicle(vehicle);
+    // Immediately advance to next step when selecting a vehicle
+    nextStep();
+  };
 
   const getLuggageText = (vehicleId: string) => {
     switch(vehicleId) {
@@ -83,7 +89,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
               </Button>
               
               <Button 
-                onClick={() => selectVehicle(vehicle)} 
+                onClick={isSelected ? undefined : handleVehicleSelect} 
                 variant={isSelected ? "outline" : "default"}
                 className={isSelected ? "border-brand text-brand hover:text-brand-700 font-medium" : "bg-black hover:bg-gray-800 text-white font-medium"}
               >

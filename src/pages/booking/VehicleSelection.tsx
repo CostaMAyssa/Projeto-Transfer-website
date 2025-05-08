@@ -3,18 +3,9 @@ import { useBooking } from "@/contexts/BookingContext";
 import VehicleCard from "@/components/VehicleCard";
 import RideSummary from "@/components/RideSummary";
 import { vehicles } from "@/data/mockData";
-import { Button } from "@/components/ui/button";
 
 const VehicleSelection = () => {
-  const { nextStep, bookingData } = useBooking();
-
-  const handleContinue = () => {
-    if (bookingData.vehicle) {
-      nextStep();
-    } else {
-      alert("Please select a vehicle to continue");
-    }
-  };
+  const { bookingData } = useBooking();
 
   return (
     <div>
@@ -31,17 +22,6 @@ const VehicleSelection = () => {
           <RideSummary />
         </div>
       </div>
-
-      {bookingData.vehicle && (
-        <div className="mt-6">
-          <Button 
-            onClick={handleContinue} 
-            className="bg-brand hover:bg-brand-600 text-white px-8 py-6 text-lg w-full md:w-auto font-normal"
-          >
-            Continue
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
