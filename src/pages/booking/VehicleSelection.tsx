@@ -37,6 +37,7 @@ const VehicleSelection = () => {
           <Button 
             onClick={handleContinue} 
             className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto"
+            style={{ backgroundColor: '#111111' }}
           >
             Continue
           </Button>

@@ -40,13 +40,13 @@ const ExtrasSelection = () => {
                 <div>
                   <h4 className="font-normal flex items-center">
                     {extra.name}
-                    <span className="ml-2 px-2 py-1 bg-brand text-white rounded-md text-sm">
+                    <span className="ml-2 px-2 py-1 bg-[#ED1B24] text-white rounded-md text-sm">
                       ${extra.price}
                     </span>
                   </h4>
                   <p className="text-sm text-gray-600 mt-1">{extra.description}</p>
                 </div>
-                <Button variant="outline" className="border-brand text-brand hover:bg-brand-50">
+                <Button variant="outline" className="border-[#ED1B24] text-[#ED1B24] hover:bg-red-50">
                   Select <ChevronRight size={16} className="ml-1" />
                 </Button>
               </div>
@@ -65,7 +65,7 @@ const ExtrasSelection = () => {
             <div className="mt-6">
               <Button 
                 onClick={nextStep} 
-                className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto"
+                className="bg-[#111111] hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto"
               >
                 Continue <ChevronRight size={18} className="ml-1" />
               </Button>

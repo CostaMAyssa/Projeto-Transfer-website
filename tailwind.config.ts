@@ -64,18 +64,21 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				brand: {
-					DEFAULT: '#EA553E',
-					50: '#FDF0EE',
-					100: '#FBE0DC',
-					200: '#F6C1B9',
-					300: '#F1A295',
-					400: '#ED8472',
-					500: '#EA553E',
-					600: '#D43621',
-					700: '#A6291A',
-					800: '#781D13',
-					900: '#49120B'
-				}
+					DEFAULT: '#ED1B24', // Updated from #EA553E to #ED1B24
+					50: '#FEEBEC', // Adjusted for the new red
+					100: '#FCD6D8', // Adjusted for the new red
+					200: '#F9ADB1', // Adjusted for the new red
+					300: '#F6848A', // Adjusted for the new red
+					400: '#F35B62', // Adjusted for the new red
+					500: '#ED1B24', // New primary red
+					600: '#C60F17', // Darker red
+					700: '#940B12', // Even darker red
+					800: '#63080C', // Very dark red
+					900: '#310406' // Extremely dark red
+				},
+				black: '#111111', // New custom black
+				gray: '#4BB7DA', // New custom gray/blue
+				white: '#FFFFFF', // White
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
