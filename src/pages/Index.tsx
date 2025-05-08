@@ -5,7 +5,48 @@ import Navbar from "@/components/Navbar";
 import { Play, Shield, FileText, Car, ArrowRight, ArrowLeft } from "lucide-react";
 import { vehicles } from "@/data/mockData";
 import { Link } from "react-router-dom";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import { useEffect, useState } from "react";
+
+const serviceSlides = [
+  {
+    id: 1,
+    title: "Sprinter Class",
+    image: "/lovable-uploads/398a580a-246d-46ba-89e3-80f1491551d4.png"
+  },
+  {
+    id: 2,
+    title: "Wedding Class",
+    image: "/lovable-uploads/d7859a6e-d290-4f3f-a494-2dd91f50c9cd.png"
+  },
+  {
+    id: 3,
+    title: "Travel Transfer",
+    image: "/lovable-uploads/55cd9c56-3e07-4df9-a7c3-88577f60ff05.png"
+  },
+  {
+    id: 4,
+    title: "Intercity Rides",
+    image: "/lovable-uploads/2fc23855-16a2-4858-9fa6-3c8cd43a7d9e.png"
+  }
+];
+
 const Index = () => {
+  const [api, setApi] = useState<any>();
+
+  // Auto-play functionality for carousel
+  useEffect(() => {
+    if (!api) return;
+
+    // Set up interval to automatically advance slides
+    const interval = setInterval(() => {
+      api.scrollNext();
+    }, 5000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(interval);
+  }, [api]);
+
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
@@ -45,7 +86,7 @@ const Index = () => {
         <BookingWidget />
       </div>
 
-      {/* Benefits Section - NEW SECTION */}
+      {/* Benefits Section */}
       <section className="py-20 bg-white">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -126,49 +167,44 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Features Section */}
-      <section className="py-20 bg-gray-50">
+      {/* Services Section with Carousel */}
+      <section className="py-20 bg-gray-50 overflow-hidden relative">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-normal text-center mb-12">Why Choose Our Services</h2>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield size={24} />
-              </div>
-              <h3 className="text-xl font-normal mb-2">Safety First</h3>
-              <p className="text-gray-600">Both you and your belongings will travel with professional drivers. Always with the highest quality standards.</p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
-                <FileText size={24} />
-              </div>
-              <h3 className="text-xl font-normal mb-2">Prices With No Surprises</h3>
-              <p className="text-gray-600">Both you and your belongings will travel with professional drivers. Always with the highest quality standards.</p>
-            </div>
-            
-            <div className="text-center p-6">
-              <div className="w-16 h-16 bg-brand-100 text-brand rounded-full flex items-center justify-center mx-auto mb-4">
-                <Car size={24} />
-              </div>
-              <h3 className="text-xl font-normal mb-2">Private Travel Solutions</h3>
-              <p className="text-gray-600">Both you and your belongings will travel with professional drivers. Always with the highest quality standards.</p>
-            </div>
+          <div className="flex justify-between items-center mb-10">
+            <h2 className="text-3xl font-normal">Our Services</h2>
+            <Link to="/services" className="flex items-center text-brand hover:text-brand-700">
+              More Services <ArrowRight size={16} className="ml-2" />
+            </Link>
           </div>
-        </div>
-      </section>
-
-      {/* Call to Action */}
-      <section className="bg-gray-100 py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-normal mb-4">Ready to Book Your Transfer?</h2>
-          <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto font-light">
-            Experience premium chauffeur services tailored to your needs. Book now and travel in comfort and style.
-          </p>
-          <Button className="bg-brand hover:bg-brand-600 text-white px-8 py-6 text-lg">
-            Book Your Transfer
-          </Button>
+          
+          <div className="relative">
+            <Carousel setApi={setApi} className="w-full" opts={{
+              align: "start",
+              loop: true,
+            }}>
+              <CarouselContent className="-ml-4 md:ml-0">
+                {serviceSlides.map((slide) => (
+                  <CarouselItem key={slide.id} className="pl-4 md:pl-0 md:basis-1/2 lg:basis-1/4">
+                    <div className="relative h-80 group rounded-lg overflow-hidden">
+                      <img 
+                        src={slide.image} 
+                        alt={slide.title}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
+                        <h3 className="text-xl text-white font-normal">{slide.title}</h3>
+                      </div>
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              
+              <div className="mt-8 flex items-center justify-start gap-2">
+                <CarouselPrevious className="position-static relative left-0 right-auto translate-y-0 hover:bg-brand hover:text-white" />
+                <CarouselNext className="position-static relative right-0 left-auto translate-y-0 hover:bg-brand hover:text-white" />
+              </div>
+            </Carousel>
+          </div>
         </div>
       </section>
 
