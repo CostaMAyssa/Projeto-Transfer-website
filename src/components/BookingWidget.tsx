@@ -213,6 +213,11 @@ const BookingWidget = () => {
                     <SelectItem value="3">3 Passengers</SelectItem>
                     <SelectItem value="4">4 Passengers</SelectItem>
                     <SelectItem value="5">5 Passengers</SelectItem>
+                    <SelectItem value="6">6 Passengers</SelectItem>
+                    <SelectItem value="7">7 Passengers</SelectItem>
+                    <SelectItem value="8">8 Passengers</SelectItem>
+                    <SelectItem value="9">9 Passengers</SelectItem>
+                    <SelectItem value="10">10 Passengers</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -236,6 +241,12 @@ const BookingWidget = () => {
                       <SelectItem value="2">2</SelectItem>
                       <SelectItem value="3">3</SelectItem>
                       <SelectItem value="4">4</SelectItem>
+                      <SelectItem value="5">5</SelectItem>
+                      <SelectItem value="6">6</SelectItem>
+                      <SelectItem value="7">7</SelectItem>
+                      <SelectItem value="8">8</SelectItem>
+                      <SelectItem value="9">9</SelectItem>
+                      <SelectItem value="10">10</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -258,6 +269,12 @@ const BookingWidget = () => {
                       <SelectItem value="2">2</SelectItem>
                       <SelectItem value="3">3</SelectItem>
                       <SelectItem value="4">4</SelectItem>
+                      <SelectItem value="5">5</SelectItem>
+                      <SelectItem value="6">6</SelectItem>
+                      <SelectItem value="7">7</SelectItem>
+                      <SelectItem value="8">8</SelectItem>
+                      <SelectItem value="9">9</SelectItem>
+                      <SelectItem value="10">10</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

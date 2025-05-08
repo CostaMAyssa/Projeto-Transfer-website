@@ -98,6 +98,11 @@ const PassengerDetails = () => {
                   <SelectItem value="3">3 Passengers</SelectItem>
                   <SelectItem value="4">4 Passengers</SelectItem>
                   <SelectItem value="5">5 Passengers</SelectItem>
+                  <SelectItem value="6">6 Passengers</SelectItem>
+                  <SelectItem value="7">7 Passengers</SelectItem>
+                  <SelectItem value="8">8 Passengers</SelectItem>
+                  <SelectItem value="9">9 Passengers</SelectItem>
+                  <SelectItem value="10">10 Passengers</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -110,6 +115,13 @@ const PassengerDetails = () => {
                   <SelectItem value="1">1 Luggage</SelectItem>
                   <SelectItem value="2">2 Luggage</SelectItem>
                   <SelectItem value="3">3 Luggage</SelectItem>
+                  <SelectItem value="4">4 Luggage</SelectItem>
+                  <SelectItem value="5">5 Luggage</SelectItem>
+                  <SelectItem value="6">6 Luggage</SelectItem>
+                  <SelectItem value="7">7 Luggage</SelectItem>
+                  <SelectItem value="8">8 Luggage</SelectItem>
+                  <SelectItem value="9">9 Luggage</SelectItem>
+                  <SelectItem value="10">10 Luggage</SelectItem>
                 </SelectContent>
               </Select>
             </div>
