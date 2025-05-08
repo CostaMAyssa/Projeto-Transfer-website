@@ -10,13 +10,13 @@ const Navbar = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-[#111111]">
       <div className="container mx-auto px-4">
-        <nav className="flex items-center justify-between h-20">
+        <nav className="flex items-center justify-between h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center">
             <img 
               src="/lovable-uploads/2fc23855-16a2-4858-9fa6-3c8cd43a7d9e.png" 
               alt="AZ Transfer Logo" 
-              className="h-10" 
+              className="h-9" 
             />
           </Link>
 
