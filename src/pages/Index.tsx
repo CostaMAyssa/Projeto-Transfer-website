@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
-import { Play, Shield, FileText, Car, ArrowRight, ArrowLeft } from "lucide-react";
+import { Play, ArrowRight } from "lucide-react";
 import { vehicles } from "@/data/mockData";
 import { Link } from "react-router-dom";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -92,8 +92,12 @@ const Index = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {/* Safety First */}
             <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mb-6">
-                <Shield size={30} className="text-brand" />
+              <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mb-6">
+                <img 
+                  src="/lovable-uploads/317b73c6-d260-46bf-a54a-8f509814815a.png" 
+                  alt="Safety First" 
+                  className="w-8 h-8 object-contain"
+                />
               </div>
               <h3 className="text-2xl font-normal mb-4">Safety First</h3>
               <p className="text-gray-600 font-light">
@@ -103,8 +107,12 @@ const Index = () => {
             
             {/* Prices With No Surprises */}
             <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mb-6">
-                <FileText size={30} className="text-brand" />
+              <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mb-6">
+                <img 
+                  src="/lovable-uploads/acddb1ee-40ba-410e-a859-767186f56f96.png" 
+                  alt="Prices With No Surprises" 
+                  className="w-8 h-8 object-contain"
+                />
               </div>
               <h3 className="text-2xl font-normal mb-4">Prices With No Surprises</h3>
               <p className="text-gray-600 font-light">
@@ -114,8 +122,12 @@ const Index = () => {
             
             {/* Private Travel Solutions */}
             <div className="flex flex-col items-center text-center">
-              <div className="w-20 h-20 bg-brand-50 rounded-full flex items-center justify-center mb-6">
-                <Car size={30} className="text-brand" />
+              <div className="w-16 h-16 bg-brand-50 rounded-full flex items-center justify-center mb-6">
+                <img 
+                  src="/lovable-uploads/9dffe454-d17e-4393-b086-9b697da7c149.png" 
+                  alt="Private Travel Solutions" 
+                  className="w-8 h-8 object-contain"
+                />
               </div>
               <h3 className="text-2xl font-normal mb-4">Private Travel Solutions</h3>
               <p className="text-gray-600 font-light">
@@ -245,3 +257,4 @@ const Index = () => {
     </div>;
 };
 export default Index;
+
