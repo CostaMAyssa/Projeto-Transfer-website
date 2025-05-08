@@ -1,0 +1,300 @@
+
+import { useState } from "react";
+import { useBooking } from "@/contexts/BookingContext";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Calendar as CalendarIcon, Clock, MapPin, Search, Users, Briefcase, ChevronRight } from "lucide-react";
+import { BookingType } from "@/types/booking";
+import { format } from "date-fns";
+
+import { cn } from "@/lib/utils";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+
+const BookingWidget = () => {
+  const navigate = useNavigate();
+  const { bookingData, setBookingType, setPickupLocation, setDropoffLocation, setPickupDate, setPickupTime, setPassengers, setLuggage } = useBooking();
+  const [bookingType, setWidgetBookingType] = useState<BookingType>("one-way");
+  const [pickupAddress, setPickupAddress] = useState("");
+  const [dropoffAddress, setDropoffAddress] = useState("");
+  const [date, setDate] = useState<Date>(new Date());
+  const [time, setTime] = useState("12:00");
+  const [passengers, setPassengerCount] = useState(1);
+  const [smallLuggage, setSmallLuggage] = useState(0);
+  const [largeLuggage, setLargeLuggage] = useState(0);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Update booking data in context
+    setBookingType(bookingType);
+    setPickupLocation({ address: pickupAddress });
+    setDropoffLocation({ address: dropoffAddress });
+    setPickupDate(date);
+    setPickupTime(time);
+    setPassengers(passengers);
+    setLuggage(smallLuggage, largeLuggage);
+    
+    // Navigate to booking page
+    navigate("/booking");
+  };
+
+  return (
+    <div className="bg-white rounded-xl shadow-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10">
+      <Tabs defaultValue="one-way" className="mb-6">
+        <TabsList className="grid grid-cols-4 mb-8">
+          <TabsTrigger 
+            value="one-way" 
+            onClick={() => setWidgetBookingType("one-way")}
+            className="data-[state=active]:bg-brand data-[state=active]:text-white"
+          >
+            One-way
+          </TabsTrigger>
+          <TabsTrigger 
+            value="round-trip" 
+            onClick={() => setWidgetBookingType("round-trip")}
+            className="data-[state=active]:bg-brand data-[state=active]:text-white"
+          >
+            Round-trip
+          </TabsTrigger>
+          <TabsTrigger 
+            value="hourly" 
+            onClick={() => setWidgetBookingType("hourly")}
+            className="data-[state=active]:bg-brand data-[state=active]:text-white"
+          >
+            Hourly
+          </TabsTrigger>
+          <TabsTrigger 
+            value="city-tour" 
+            onClick={() => setWidgetBookingType("city-tour")}
+            className="data-[state=active]:bg-brand data-[state=active]:text-white"
+          >
+            City Tour
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="one-way" className="mt-0">
+          <form onSubmit={handleSubmit}>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {/* Pick-up Location */}
+              <div className="space-y-2">
+                <div className="flex items-center mb-1">
+                  <MapPin size={16} className="text-brand mr-1" />
+                  <span className="text-sm font-medium">Pick-up Location</span>
+                </div>
+                <Input 
+                  placeholder="Enter pick-up location" 
+                  value={pickupAddress}
+                  onChange={(e) => setPickupAddress(e.target.value)}
+                  required
+                />
+              </div>
+              
+              {/* Drop-off Location */}
+              <div className="space-y-2">
+                <div className="flex items-center mb-1">
+                  <MapPin size={16} className="text-brand mr-1" />
+                  <span className="text-sm font-medium">Drop-off Location</span>
+                </div>
+                <Input 
+                  placeholder="Enter drop-off location" 
+                  value={dropoffAddress}
+                  onChange={(e) => setDropoffAddress(e.target.value)}
+                  required
+                />
+              </div>
+              
+              {/* Date Picker */}
+              <div className="space-y-2">
+                <div className="flex items-center mb-1">
+                  <CalendarIcon size={16} className="text-brand mr-1" />
+                  <span className="text-sm font-medium">Pick-up Date</span>
+                </div>
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant={"outline"}
+                      className={cn(
+                        "w-full justify-start text-left font-normal",
+                        !date && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={(date) => date && setDate(date)}
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>
+              </div>
+              
+              {/* Time Picker */}
+              <div className="space-y-2">
+                <div className="flex items-center mb-1">
+                  <Clock size={16} className="text-brand mr-1" />
+                  <span className="text-sm font-medium">Pick-up Time</span>
+                </div>
+                <Select value={time} onValueChange={setTime}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select time" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="00:00">12:00 AM</SelectItem>
+                    <SelectItem value="01:00">01:00 AM</SelectItem>
+                    <SelectItem value="02:00">02:00 AM</SelectItem>
+                    <SelectItem value="03:00">03:00 AM</SelectItem>
+                    <SelectItem value="04:00">04:00 AM</SelectItem>
+                    <SelectItem value="05:00">05:00 AM</SelectItem>
+                    <SelectItem value="06:00">06:00 AM</SelectItem>
+                    <SelectItem value="07:00">07:00 AM</SelectItem>
+                    <SelectItem value="08:00">08:00 AM</SelectItem>
+                    <SelectItem value="09:00">09:00 AM</SelectItem>
+                    <SelectItem value="10:00">10:00 AM</SelectItem>
+                    <SelectItem value="11:00">11:00 AM</SelectItem>
+                    <SelectItem value="12:00">12:00 PM</SelectItem>
+                    <SelectItem value="13:00">01:00 PM</SelectItem>
+                    <SelectItem value="14:00">02:00 PM</SelectItem>
+                    <SelectItem value="15:00">03:00 PM</SelectItem>
+                    <SelectItem value="16:00">04:00 PM</SelectItem>
+                    <SelectItem value="17:00">05:00 PM</SelectItem>
+                    <SelectItem value="18:00">06:00 PM</SelectItem>
+                    <SelectItem value="19:00">07:00 PM</SelectItem>
+                    <SelectItem value="20:00">08:00 PM</SelectItem>
+                    <SelectItem value="21:00">09:00 PM</SelectItem>
+                    <SelectItem value="22:00">10:00 PM</SelectItem>
+                    <SelectItem value="23:00">11:00 PM</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            
+            {/* Second Row - Passengers, Luggage, Search Button */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="space-y-2">
+                <div className="flex items-center mb-1">
+                  <Users size={16} className="text-brand mr-1" />
+                  <span className="text-sm font-medium">Passengers</span>
+                </div>
+                <Select 
+                  value={passengers.toString()} 
+                  onValueChange={(value) => setPassengerCount(parseInt(value))}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select passengers" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 Passenger</SelectItem>
+                    <SelectItem value="2">2 Passengers</SelectItem>
+                    <SelectItem value="3">3 Passengers</SelectItem>
+                    <SelectItem value="4">4 Passengers</SelectItem>
+                    <SelectItem value="5">5 Passengers</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-2">
+                  <div className="flex items-center mb-1">
+                    <Briefcase size={16} className="text-brand mr-1" />
+                    <span className="text-sm font-medium">10kg Luggage</span>
+                  </div>
+                  <Select 
+                    value={smallLuggage.toString()} 
+                    onValueChange={(value) => setSmallLuggage(parseInt(value))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Small luggage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">0</SelectItem>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
+                      <SelectItem value="4">4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-center mb-1">
+                    <Briefcase size={16} className="text-brand mr-1" />
+                    <span className="text-sm font-medium">23kg Luggage</span>
+                  </div>
+                  <Select 
+                    value={largeLuggage.toString()} 
+                    onValueChange={(value) => setLargeLuggage(parseInt(value))}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Large luggage" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">0</SelectItem>
+                      <SelectItem value="1">1</SelectItem>
+                      <SelectItem value="2">2</SelectItem>
+                      <SelectItem value="3">3</SelectItem>
+                      <SelectItem value="4">4</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="bg-brand hover:bg-brand-600 text-white"
+                size="lg"
+              >
+                <Search size={18} className="mr-2" />
+                Find My Transfer
+              </Button>
+            </div>
+          </form>
+        </TabsContent>
+
+        <TabsContent value="round-trip">
+          <div className="text-center p-4">
+            <p>Round-trip booking form will be available soon.</p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="hourly">
+          <div className="text-center p-4">
+            <p>Hourly booking form will be available soon.</p>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="city-tour">
+          <div className="text-center p-4">
+            <p>City tour booking form will be available soon.</p>
+          </div>
+        </TabsContent>
+      </Tabs>
+    </div>
+  );
+};
+
+export default BookingWidget;
