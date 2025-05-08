@@ -28,12 +28,13 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
   return (
     <div className="border rounded-lg overflow-hidden mb-6 bg-white">
       <div className="grid grid-cols-1 lg:grid-cols-3">
-        {/* Image */}
-        <div className="p-4 flex items-center justify-center bg-gray-50">
+        {/* Image with zoom effect */}
+        <div className="p-4 flex items-center justify-center bg-gray-50 overflow-hidden">
           <img 
             src={vehicle.image} 
             alt={vehicle.name} 
-            className="w-full max-w-sm object-contain h-48"
+            className="w-full max-w-sm object-contain h-48 scale-130 transform"
+            style={{ transform: "scale(1.3)" }} // 30% zoom
           />
         </div>
         

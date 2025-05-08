@@ -61,11 +61,12 @@ const Index = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {vehicles.map((vehicle) => (
             <div key={vehicle.id} className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
-              <div className="p-4 bg-gray-50 flex items-center justify-center h-60">
+              <div className="p-4 bg-gray-50 flex items-center justify-center h-60 overflow-hidden">
                 <img 
                   src={vehicle.image} 
                   alt={vehicle.name} 
                   className="w-full h-full object-contain"
+                  style={{ transform: "scale(1.3)" }} // 30% zoom
                 />
               </div>
               <div className="p-6">
