@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
@@ -7,26 +6,31 @@ import { vehicles } from "@/data/mockData";
 import { Link } from "react-router-dom";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useEffect, useState } from "react";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 const serviceSlides = [
   {
     id: 1,
     title: "Sprinter Class",
+    description: "Mercedes-Benz Sprinter, Ford Transit or similar",
     image: "/lovable-uploads/3b4fd734-dc52-4a22-a8e3-b668b7629315.png"
   },
   {
     id: 2,
     title: "Wedding Class",
+    description: "Rolls Royce Phantom, Bentley Flying Spur or similar",
     image: "/lovable-uploads/baf6dc09-5b63-470c-90a1-0231305e3b67.png"
   },
   {
     id: 3,
     title: "Travel Transfer",
+    description: "Luxury SUVs, Executive Sedans or similar",
     image: "/lovable-uploads/af0f41d4-ae3b-415a-8813-f14552ab516c.png"
   },
   {
     id: 4,
     title: "Intercity Rides",
+    description: "Mercedes-Benz E-Class, BMW 5 Series, Cadillac XTS or similar",
     image: "/lovable-uploads/4173129f-aea8-4579-aa0c-46930d2d3004.png"
   }
 ];
@@ -203,8 +207,14 @@ const Index = () => {
                         alt={slide.title}
                         className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-6">
-                        <h3 className="text-xl text-white font-normal">{slide.title}</h3>
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/30 flex flex-col justify-end p-6 opacity-100 group-hover:opacity-100 transition-opacity duration-300">
+                        <h3 className="text-2xl text-white font-normal mb-2">{slide.title}</h3>
+                        <p className="text-white/80 font-light mb-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
+                          {slide.description}
+                        </p>
+                        <div className="w-12 h-12 rounded-full flex items-center justify-center border border-white/50 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-in-out delay-100">
+                          <ArrowRight size={18} className="text-white" />
+                        </div>
                       </div>
                     </div>
                   </CarouselItem>
