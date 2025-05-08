@@ -9,34 +9,27 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useEffect, useState } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import FAQ from "@/components/FAQ";
-
-const serviceSlides = [
-  {
-    id: 1,
-    title: "Sprinter Class",
-    description: "Mercedes-Benz Sprinter, Ford Transit or similar",
-    image: "/lovable-uploads/3b4fd734-dc52-4a22-a8e3-b668b7629315.png"
-  },
-  {
-    id: 2,
-    title: "Wedding Class",
-    description: "Rolls Royce Phantom, Bentley Flying Spur or similar",
-    image: "/lovable-uploads/baf6dc09-5b63-470c-90a1-0231305e3b67.png"
-  },
-  {
-    id: 3,
-    title: "Travel Transfer",
-    description: "Luxury SUVs, Executive Sedans or similar",
-    image: "/lovable-uploads/af0f41d4-ae3b-415a-8813-f14552ab516c.png"
-  },
-  {
-    id: 4,
-    title: "Intercity Rides",
-    description: "Mercedes-Benz E-Class, BMW 5 Series, Cadillac XTS or similar",
-    image: "/lovable-uploads/4173129f-aea8-4579-aa0c-46930d2d3004.png"
-  }
-];
-
+const serviceSlides = [{
+  id: 1,
+  title: "Sprinter Class",
+  description: "Mercedes-Benz Sprinter, Ford Transit or similar",
+  image: "/lovable-uploads/3b4fd734-dc52-4a22-a8e3-b668b7629315.png"
+}, {
+  id: 2,
+  title: "Wedding Class",
+  description: "Rolls Royce Phantom, Bentley Flying Spur or similar",
+  image: "/lovable-uploads/baf6dc09-5b63-470c-90a1-0231305e3b67.png"
+}, {
+  id: 3,
+  title: "Travel Transfer",
+  description: "Luxury SUVs, Executive Sedans or similar",
+  image: "/lovable-uploads/af0f41d4-ae3b-415a-8813-f14552ab516c.png"
+}, {
+  id: 4,
+  title: "Intercity Rides",
+  description: "Mercedes-Benz E-Class, BMW 5 Series, Cadillac XTS or similar",
+  image: "/lovable-uploads/4173129f-aea8-4579-aa0c-46930d2d3004.png"
+}];
 const Index = () => {
   const [api, setApi] = useState<any>();
 
@@ -52,7 +45,6 @@ const Index = () => {
     // Clear interval on component unmount
     return () => clearInterval(interval);
   }, [api]);
-
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
@@ -78,9 +70,7 @@ const Index = () => {
               Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism for all your travel needs.
             </p>
             <div className="flex space-x-4">
-              <Button className="bg-brand hover:bg-brand-600 text-white py-[21px] px-[59px] text-base">
-                Book Now
-              </Button>
+              
               
             </div>
           </div>
@@ -99,11 +89,7 @@ const Index = () => {
             {/* Safety First */}
             <div className="flex flex-col items-center text-center">
               <div className="mb-6">
-                <img 
-                  src="/lovable-uploads/317b73c6-d260-46bf-a54a-8f509814815a.png" 
-                  alt="Safety First" 
-                  className="w-16 h-16 object-contain"
-                />
+                <img src="/lovable-uploads/317b73c6-d260-46bf-a54a-8f509814815a.png" alt="Safety First" className="w-16 h-16 object-contain" />
               </div>
               <h3 className="text-2xl font-normal mb-4">Safety First</h3>
               <p className="text-gray-600 font-light">
@@ -114,11 +100,7 @@ const Index = () => {
             {/* Prices With No Surprises */}
             <div className="flex flex-col items-center text-center">
               <div className="mb-6">
-                <img 
-                  src="/lovable-uploads/acddb1ee-40ba-410e-a859-767186f56f96.png" 
-                  alt="Prices With No Surprises" 
-                  className="w-16 h-16 object-contain"
-                />
+                <img src="/lovable-uploads/acddb1ee-40ba-410e-a859-767186f56f96.png" alt="Prices With No Surprises" className="w-16 h-16 object-contain" />
               </div>
               <h3 className="text-2xl font-normal mb-4">Prices With No Surprises</h3>
               <p className="text-gray-600 font-light">
@@ -129,11 +111,7 @@ const Index = () => {
             {/* Private Travel Solutions */}
             <div className="flex flex-col items-center text-center">
               <div className="mb-6">
-                <img 
-                  src="/lovable-uploads/9dffe454-d17e-4393-b086-9b697da7c149.png" 
-                  alt="Private Travel Solutions" 
-                  className="w-16 h-16 object-contain"
-                />
+                <img src="/lovable-uploads/9dffe454-d17e-4393-b086-9b697da7c149.png" alt="Private Travel Solutions" className="w-16 h-16 object-contain" />
               </div>
               <h3 className="text-2xl font-normal mb-4">Private Travel Solutions</h3>
               <p className="text-gray-600 font-light">
@@ -197,18 +175,13 @@ const Index = () => {
           
           <div className="relative">
             <Carousel setApi={setApi} className="w-full" opts={{
-              align: "start",
-              loop: true,
-            }}>
+            align: "start",
+            loop: true
+          }}>
               <CarouselContent className="-ml-4 md:ml-0">
-                {serviceSlides.map((slide) => (
-                  <CarouselItem key={slide.id} className="pl-4 md:pl-0 md:basis-1/2 lg:basis-1/4 px-3">
+                {serviceSlides.map(slide => <CarouselItem key={slide.id} className="pl-4 md:pl-0 md:basis-1/2 lg:basis-1/4 px-3">
                     <div className="relative h-96 group rounded-lg overflow-hidden">
-                      <img 
-                        src={slide.image} 
-                        alt={slide.title}
-                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      />
+                      <img src={slide.image} alt={slide.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/30 flex flex-col justify-end p-6 opacity-100 group-hover:opacity-100 transition-opacity duration-300">
                         <h3 className="text-2xl text-white font-normal mb-2">{slide.title}</h3>
                         <p className="text-white/80 font-light mb-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
@@ -219,8 +192,7 @@ const Index = () => {
                         </div>
                       </div>
                     </div>
-                  </CarouselItem>
-                ))}
+                  </CarouselItem>)}
               </CarouselContent>
               
               <div className="mt-8 flex items-center justify-start gap-2">
