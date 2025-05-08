@@ -35,26 +35,26 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
         </div>
         
         {/* Pickup and Dropoff */}
-        <div className="space-y-4 mb-4">
+        <div className="space-y-6 mb-4">
           <div className="flex space-x-4">
             <div className="flex flex-col items-center">
-              <div className="h-8 w-8 rounded-full bg-brand flex items-center justify-center text-white">
+              <div className="h-10 w-10 rounded-full bg-[#ED1B24] flex items-center justify-center text-white">
                 A
               </div>
-              <div className="w-px h-full bg-gray-300 my-1 flex-grow"></div>
-              <div className="h-8 w-8 rounded-full bg-brand flex items-center justify-center text-white">
+              <div className="w-0.5 h-16 bg-[#ED1B24] border-dashed border-[#ED1B24] border my-1"></div>
+              <div className="h-10 w-10 rounded-full bg-[#ED1B24] flex items-center justify-center text-white">
                 A
               </div>
             </div>
-            <div className="flex-1 space-y-5">
+            <div className="flex-1 space-y-8 py-2">
               <div>
-                <p className="text-black font-medium">
-                  {bookingData.pickupLocation.address || "Pickup Location"}
+                <p className="text-black font-normal">
+                  {bookingData.pickupLocation.address || "Manchester, UK"}
                 </p>
               </div>
               <div>
-                <p className="text-black font-medium">
-                  {bookingData.dropoffLocation.address || "Dropoff Location"}
+                <p className="text-black font-normal">
+                  {bookingData.dropoffLocation.address || "London, UK"}
                 </p>
               </div>
             </div>
@@ -62,27 +62,28 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
         </div>
 
         {/* Date & Time */}
-        <div className="flex items-center space-x-2 mb-2">
-          <Calendar size={18} className="text-brand" />
-          <span className="text-sm">
+        <div className="flex items-center space-x-3 mb-3">
+          <div className="h-10 w-10 rounded-full bg-[#ED1B24] flex items-center justify-center text-white">
+            <Calendar size={18} />
+          </div>
+          <span className="text-sm font-normal">
             {formatDate(bookingData.pickupDate)}
           </span>
         </div>
-        <div className="flex items-center space-x-2">
-          <Clock size={18} className="text-brand" />
-          <span className="text-sm">{bookingData.pickupTime}</span>
+        <div className="flex items-center space-x-3">
+          <div className="h-10 w-10 rounded-full bg-[#ED1B24] flex items-center justify-center text-white">
+            <Clock size={18} />
+          </div>
+          <span className="text-sm font-normal">{bookingData.pickupTime}</span>
         </div>
       </div>
 
       {/* Map */}
-      <div className="h-40 bg-gray-100 relative">
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Map size={30} className="text-gray-400" />
-        </div>
+      <div className="h-60 bg-gray-100 relative px-4 py-2">
         <img
           src="https://maps.googleapis.com/maps/api/staticmap?center=New+York,NY&zoom=12&size=600x300&key=YOUR_API_KEY"
           alt="Map"
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover rounded-lg"
         />
       </div>
 
@@ -97,6 +98,30 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
           <p className="font-normal">3h 43m</p>
         </div>
       </div>
+
+      {/* Booking assurances in a separate card as shown in the image */}
+      {vehiclePrice > 0 && showDetails && (
+        <div className="mt-4 border rounded-lg overflow-hidden">
+          <div className="p-4 space-y-3">
+            <div className="flex items-center space-x-3">
+              <Check size={16} className="text-green-500" />
+              <span className="text-sm font-normal">+100,000 passengers transported</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Check size={16} className="text-green-500" />
+              <span className="text-sm font-normal">Instant confirmation</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Check size={16} className="text-green-500" />
+              <span className="text-sm font-normal">All-inclusive pricing</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <Check size={16} className="text-green-500" />
+              <span className="text-sm font-normal">Secure Payment by credit card, debit card or Paypal</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDetails && bookingData.vehicle && (
         <>
@@ -136,28 +161,6 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
               <span>${total.toFixed(2)}</span>
             </div>
           </div>
-
-          {/* Booking assurances */}
-          {vehiclePrice > 0 && (
-            <div className="p-4 border-t space-y-2">
-              <div className="flex items-center space-x-2">
-                <Check size={16} className="text-green-500" />
-                <span className="text-sm">+100,000 passengers transported</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Check size={16} className="text-green-500" />
-                <span className="text-sm">Instant confirmation</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Check size={16} className="text-green-500" />
-                <span className="text-sm">All-inclusive pricing</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Check size={16} className="text-green-500" />
-                <span className="text-sm">Secure Payment by credit card, debit card or Paypal</span>
-              </div>
-            </div>
-          )}
         </>
       )}
     </div>

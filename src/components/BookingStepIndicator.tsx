@@ -1,3 +1,4 @@
+
 import { useBooking } from "@/contexts/BookingContext";
 
 interface BookingStepIndicatorProps {
@@ -53,7 +54,7 @@ const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicator
                 <span 
                   className={`text-sm ${
                     isActive ? 'text-black' : isCompleted ? 'text-black' : 'text-gray-400'
-                  }`}
+                  } font-normal`}
                 >
                   {step.name}
                 </span>
