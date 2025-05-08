@@ -11,6 +11,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 const BookingWidget = () => {
   const navigate = useNavigate();
   const {
@@ -50,7 +51,7 @@ const BookingWidget = () => {
     // Navigate to booking page
     navigate("/booking");
   };
-  return <div className="bg-white rounded-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10">
+  return <div className="bg-white rounded-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10 border border-gray-200">
       <Tabs defaultValue="one-way" className="mb-6">
         <TabsList className="grid grid-cols-4 mb-8">
           <TabsTrigger value="one-way" onClick={() => setWidgetBookingType("one-way")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
