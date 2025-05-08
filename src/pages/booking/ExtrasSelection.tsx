@@ -13,7 +13,7 @@ const ExtrasSelection = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Extra Options</h2>
+      <h2 className="text-2xl font-normal mb-6">Extra Options</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -38,7 +38,7 @@ const ExtrasSelection = () => {
             {extras.slice(4).map((extra) => (
               <div key={extra.id} className="bg-white border rounded-lg p-4 flex justify-between items-center">
                 <div>
-                  <h4 className="font-semibold flex items-center">
+                  <h4 className="font-normal flex items-center">
                     {extra.name}
                     <span className="ml-2 px-2 py-1 bg-brand text-white rounded-md text-sm">
                       ${extra.price}
@@ -54,7 +54,7 @@ const ExtrasSelection = () => {
 
             {/* Notes for chauffeur */}
             <div className="mt-8">
-              <h4 className="mb-2 font-medium">Notes for the chauffeur</h4>
+              <h4 className="mb-2 font-normal">Notes for the chauffeur</h4>
               <Textarea
                 placeholder="There are many variations of passages of Lorem Ipsum available."
                 className="w-full h-32 p-3"

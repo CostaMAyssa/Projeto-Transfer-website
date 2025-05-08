@@ -38,7 +38,7 @@ const PassengerDetails = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Passenger Details</h2>
+      <h2 className="text-2xl font-normal mb-6">Passenger Details</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -85,7 +85,7 @@ const PassengerDetails = () => {
             </div>
 
             {/* Options */}
-            <h3 className="text-xl font-semibold pt-4">Options</h3>
+            <h3 className="text-xl font-normal pt-4">Options</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select defaultValue="2">

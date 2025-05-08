@@ -20,7 +20,7 @@ const Confirmation = () => {
             <Check size={48} className="text-white" />
           </div>
         </div>
-        <h1 className="text-3xl font-bold mb-2">System, your order was submitted successfully!</h1>
+        <h1 className="text-3xl font-normal mb-2">System, your order was submitted successfully!</h1>
         <p className="text-gray-600">
           Booking details has been sent to: booking@luxride.com
         </p>
@@ -31,53 +31,53 @@ const Confirmation = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 p-6">
           <div>
             <p className="text-gray-500 text-sm mb-1">Order Number</p>
-            <p className="font-semibold">{reservationId}</p>
+            <p className="font-normal">{reservationId}</p>
           </div>
           <div>
             <p className="text-gray-500 text-sm mb-1">Date</p>
-            <p className="font-semibold">{formatDate(bookingData.pickupDate)}</p>
+            <p className="font-normal">{formatDate(bookingData.pickupDate)}</p>
           </div>
           <div>
             <p className="text-gray-500 text-sm mb-1">Total</p>
-            <p className="font-semibold">
+            <p className="font-normal">
               ${bookingData.vehicle ? bookingData.vehicle.price.toFixed(2) : "0.00"}
             </p>
           </div>
           <div>
             <p className="text-gray-500 text-sm mb-1">Payment Method</p>
-            <p className="font-semibold">Direct Bank Transfer</p>
+            <p className="font-normal">Direct Bank Transfer</p>
           </div>
         </div>
       </div>
 
       {/* Reservation Details */}
       <div className="border rounded-lg overflow-hidden mb-8">
-        <h2 className="bg-gray-50 p-4 font-semibold border-b">Reservation Information</h2>
+        <h2 className="bg-gray-50 p-4 font-normal border-b">Reservation Information</h2>
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4">
             <div>
               <p className="text-gray-500 text-sm mb-1">Pick Up Address</p>
-              <p className="font-medium">{bookingData.pickupLocation.address || "London City Airport (LCY)"}</p>
+              <p className="font-normal">{bookingData.pickupLocation.address || "London City Airport (LCY)"}</p>
             </div>
             <div>
               <p className="text-gray-500 text-sm mb-1">Drop Off Address</p>
-              <p className="font-medium">{bookingData.dropoffLocation.address || "London City Airport (LCY)"}</p>
+              <p className="font-normal">{bookingData.dropoffLocation.address || "London City Airport (LCY)"}</p>
             </div>
             <div>
               <p className="text-gray-500 text-sm mb-1">Pick Up Date</p>
-              <p className="font-medium">{formatDate(bookingData.pickupDate)}</p>
+              <p className="font-normal">{formatDate(bookingData.pickupDate)}</p>
             </div>
             <div>
               <p className="text-gray-500 text-sm mb-1">Pick Up Time</p>
-              <p className="font-medium">{bookingData.pickupTime}</p>
+              <p className="font-normal">{bookingData.pickupTime}</p>
             </div>
             <div>
               <p className="text-gray-500 text-sm mb-1">Distance</p>
-              <p className="font-medium">311 km/ 194 miles</p>
+              <p className="font-normal">311 km/ 194 miles</p>
             </div>
             <div>
               <p className="text-gray-500 text-sm mb-1">Time</p>
-              <p className="font-medium">3h 43m</p>
+              <p className="font-normal">3h 43m</p>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@ const Confirmation = () => {
       {/* Selected Vehicle */}
       {bookingData.vehicle && (
         <div className="border rounded-lg overflow-hidden mb-8">
-          <h2 className="bg-gray-50 p-4 font-semibold border-b">Selected Car</h2>
+          <h2 className="bg-gray-50 p-4 font-normal border-b">Selected Car</h2>
           
           <div className="p-6">
             <img 
@@ -98,11 +98,11 @@ const Confirmation = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4">
               <div>
                 <p className="text-gray-500 text-sm mb-1">Class</p>
-                <p className="font-medium">{bookingData.vehicle.category}</p>
+                <p className="font-normal">{bookingData.vehicle.category}</p>
               </div>
               <div>
                 <p className="text-gray-500 text-sm mb-1">Cars</p>
-                <p className="font-medium">{bookingData.vehicle.models.split(',')[0]}</p>
+                <p className="font-normal">{bookingData.vehicle.models.split(',')[0]}</p>
               </div>
             </div>
           </div>
