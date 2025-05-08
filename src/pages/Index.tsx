@@ -71,7 +71,7 @@ const Index = () => {
               <div className="p-6">
                 <h3 className="text-xl font-normal mb-2">{vehicle.category}</h3>
                 <p className="text-gray-600 text-sm mb-4">{vehicle.models}</p>
-                <div className="flex justify-between items-center">
+                <div className="flex flex-col space-y-4">
                   <div className="flex space-x-4">
                     <div className="flex items-center">
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mr-1 text-gray-500">
@@ -79,12 +79,18 @@ const Index = () => {
                       </svg>
                       <span className="text-sm text-gray-500">Passengers: {vehicle.capacity}</span>
                     </div>
-                    <div className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mr-1 text-gray-500">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                      </svg>
-                      <span className="text-sm text-gray-500">Luggage: {vehicle.luggage}</span>
-                    </div>
+                  </div>
+                  <div className="flex flex-col space-y-2">
+                    <span className="text-sm text-gray-500">Luggage:</span>
+                    {vehicle.id === "suv" && (
+                      <p className="text-xs text-gray-600">6 of 23kg (checked baggage) and 5 of 10kg (carry-on baggage)</p>
+                    )}
+                    {vehicle.id === "sedan" && (
+                      <p className="text-xs text-gray-600">3 of 23kg (checked baggage) and 2 of 10kg (carry-on baggage)</p>
+                    )}
+                    {vehicle.id === "minivan" && (
+                      <p className="text-xs text-gray-600">4 of 23kg (checked baggage) and 4 of 10kg (carry-on baggage)</p>
+                    )}
                   </div>
                 </div>
               </div>

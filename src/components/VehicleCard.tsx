@@ -12,6 +12,19 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
   const { selectVehicle, bookingData } = useBooking();
   const isSelected = bookingData.vehicle?.id === vehicle.id;
 
+  const getLuggageText = (vehicleId: string) => {
+    switch(vehicleId) {
+      case "suv":
+        return "6 of 23kg (checked baggage) and 5 of 10kg (carry-on baggage)";
+      case "sedan":
+        return "3 of 23kg (checked baggage) and 2 of 10kg (carry-on baggage)";
+      case "minivan":
+        return "4 of 23kg (checked baggage) and 4 of 10kg (carry-on baggage)";
+      default:
+        return `${vehicle.luggage} pieces`;
+    }
+  };
+
   return (
     <div className="border rounded-lg overflow-hidden mb-6 bg-white">
       <div className="grid grid-cols-1 lg:grid-cols-3">
@@ -31,14 +44,17 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
             <p className="text-sm text-gray-600">{vehicle.models}</p>
           </div>
 
-          <div className="flex items-center mb-4 space-x-6">
+          <div className="flex flex-col mb-4 space-y-2">
             <div className="flex items-center">
               <Users size={18} className="mr-1" />
-              <span className="text-sm">Passengers {vehicle.capacity}</span>
+              <span className="text-sm">Passengers: {vehicle.capacity}</span>
             </div>
-            <div className="flex items-center">
-              <Briefcase size={18} className="mr-1" />
-              <span className="text-sm">Luggage {vehicle.luggage}</span>
+            <div className="flex items-start">
+              <Briefcase size={18} className="mr-1 mt-0.5" />
+              <div className="text-sm">
+                <span>Luggage: </span>
+                <span className="text-gray-600 text-xs">{getLuggageText(vehicle.id)}</span>
+              </div>
             </div>
           </div>
 
