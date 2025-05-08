@@ -15,7 +15,7 @@ const Index = () => {
       <div className="relative h-[700px]">
         {/* Background Image */}
         <div className="absolute inset-0 bg-cover bg-center" style={{ 
-          backgroundImage: "url('/lovable-uploads/ef881b59-74e6-418a-b499-2644701effa8.png')", 
+          backgroundImage: "url('/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png')", 
           backgroundSize: 'cover',
           backgroundPosition: 'center'
         }}>
