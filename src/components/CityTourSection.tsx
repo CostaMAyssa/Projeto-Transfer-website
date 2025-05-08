@@ -30,8 +30,20 @@ const CityTourSection = () => {
 
   return (
     <section className="py-16 relative overflow-hidden">
-      {/* Dark overlay for entire section */}
-      <div className="absolute inset-0 bg-black/90 z-0"></div>
+      {/* Dark background color - changed to #111111 */}
+      <div className="absolute inset-0 bg-[#111111] z-0"></div>
+      
+      {/* Red curved line on the right side */}
+      <div 
+        className="absolute right-0 top-0 bottom-0 z-0" 
+        style={{ 
+          width: '40%', 
+          backgroundImage: `url("/lovable-uploads/45b9942a-dad5-4d13-ad48-48f01e8e8772.png")`, 
+          backgroundRepeat: 'no-repeat',
+          backgroundSize: 'contain',
+          backgroundPosition: 'right center'
+        }}
+      ></div>
       
       {/* Background pattern */}
       <div 
