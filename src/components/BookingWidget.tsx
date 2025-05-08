@@ -226,7 +226,7 @@ const BookingWidget = () => {
               </div>
               
               <div className="flex justify-center">
-                <Button type="submit" size="lg" className="bg-brand hover:bg-brand-600 text-white w-full self-end\n\n">
+                <Button type="submit" size="lg" className="bg-brand hover:bg-brand-600 text-white w-full self-end">
                   <Search size={18} className="mr-2" />
                   Find My Transfer
                 </Button>
