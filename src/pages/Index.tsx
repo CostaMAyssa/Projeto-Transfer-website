@@ -1,26 +1,23 @@
-
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
 import { Play, Shield, FileText, Car, ArrowRight, ArrowLeft } from "lucide-react";
 import { vehicles } from "@/data/mockData";
 import { Link } from "react-router-dom";
-
 const Index = () => {
-  return (
-    <div className="min-h-screen flex flex-col">
+  return <div className="min-h-screen flex flex-col">
       <Navbar />
       
       {/* Hero Section with Background */}
       <div className="relative h-[700px]">
         {/* Background Image */}
-        <div className="absolute inset-0 bg-cover bg-center" style={{ 
-          backgroundImage: "url('/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png')", 
-          backgroundSize: 'cover',
-          backgroundPosition: 'center'
-        }}>
+        <div className="absolute inset-0 bg-cover bg-center" style={{
+        backgroundImage: "url('/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png')",
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }}>
           {/* Overlay */}
-          <div className="absolute inset-0 bg-black/60"></div>
+          <div className="absolute inset-0 bg-black/60 my-0 py-0"></div>
         </div>
         
         {/* Hero Content */}
@@ -33,12 +30,10 @@ const Index = () => {
               Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism for all your travel needs.
             </p>
             <div className="flex space-x-4">
-              <Button className="bg-brand hover:bg-brand-600 text-white px-8 py-6 text-lg">
+              <Button className="bg-brand hover:bg-brand-600 text-white py-[21px] px-[59px] text-base">
                 Book Now
               </Button>
-              <Button variant="outline" className="border-white text-white hover:bg-white/20 px-8 py-6 text-lg">
-                <Play size={20} className="mr-2" /> Watch Video
-              </Button>
+              
             </div>
           </div>
         </div>
@@ -59,15 +54,12 @@ const Index = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {vehicles.map((vehicle) => (
-            <div key={vehicle.id} className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
+          {vehicles.map(vehicle => <div key={vehicle.id} className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
               <div className="p-4 bg-gray-50 flex items-center justify-center h-60 overflow-hidden">
-                <img 
-                  src={vehicle.image} 
-                  alt={vehicle.name} 
-                  className="w-full h-full object-contain"
-                  style={{ transform: "scale(1.3)" }} // 30% zoom
-                />
+                <img src={vehicle.image} alt={vehicle.name} className="w-full h-full object-contain" style={{
+              transform: "scale(1.3)"
+            }} // 30% zoom
+            />
               </div>
               <div className="p-6">
                 <h3 className="text-xl font-normal mb-2">{vehicle.category}</h3>
@@ -83,20 +75,13 @@ const Index = () => {
                   </div>
                   <div className="flex flex-col space-y-2">
                     <span className="text-sm text-gray-500">Luggage:</span>
-                    {vehicle.id === "suv" && (
-                      <p className="text-xs text-gray-600">6 of 23kg (checked baggage) and 5 of 10kg (carry-on baggage)</p>
-                    )}
-                    {vehicle.id === "sedan" && (
-                      <p className="text-xs text-gray-600">3 of 23kg (checked baggage) and 2 of 10kg (carry-on baggage)</p>
-                    )}
-                    {vehicle.id === "minivan" && (
-                      <p className="text-xs text-gray-600">4 of 23kg (checked baggage) and 4 of 10kg (carry-on baggage)</p>
-                    )}
+                    {vehicle.id === "suv" && <p className="text-xs text-gray-600">6 of 23kg (checked baggage) and 5 of 10kg (carry-on baggage)</p>}
+                    {vehicle.id === "sedan" && <p className="text-xs text-gray-600">3 of 23kg (checked baggage) and 2 of 10kg (carry-on baggage)</p>}
+                    {vehicle.id === "minivan" && <p className="text-xs text-gray-600">4 of 23kg (checked baggage) and 4 of 10kg (carry-on baggage)</p>}
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
       </section>
 
@@ -180,8 +165,6 @@ const Index = () => {
           </div>
         </div>
       </footer>
-    </div>
-  );
+    </div>;
 };
-
 export default Index;

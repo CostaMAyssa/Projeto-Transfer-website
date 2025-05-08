@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { useNavigate } from "react-router-dom";
@@ -7,32 +6,23 @@ import { Input } from "@/components/ui/input";
 import { Calendar as CalendarIcon, Clock, MapPin, Search, Users, Briefcase, ChevronRight } from "lucide-react";
 import { BookingType } from "@/types/booking";
 import { format } from "date-fns";
-
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from "@/components/ui/tabs";
-
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 const BookingWidget = () => {
   const navigate = useNavigate();
-  const { bookingData, setBookingType, setPickupLocation, setDropoffLocation, setPickupDate, setPickupTime, setPassengers, setLuggage } = useBooking();
+  const {
+    bookingData,
+    setBookingType,
+    setPickupLocation,
+    setDropoffLocation,
+    setPickupDate,
+    setPickupTime,
+    setPassengers,
+    setLuggage
+  } = useBooking();
   const [bookingType, setWidgetBookingType] = useState<BookingType>("one-way");
   const [pickupAddress, setPickupAddress] = useState("");
   const [dropoffAddress, setDropoffAddress] = useState("");
@@ -41,53 +31,38 @@ const BookingWidget = () => {
   const [passengers, setPassengerCount] = useState(1);
   const [smallLuggage, setSmallLuggage] = useState(0);
   const [largeLuggage, setLargeLuggage] = useState(0);
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Update booking data in context
     setBookingType(bookingType);
-    setPickupLocation({ address: pickupAddress });
-    setDropoffLocation({ address: dropoffAddress });
+    setPickupLocation({
+      address: pickupAddress
+    });
+    setDropoffLocation({
+      address: dropoffAddress
+    });
     setPickupDate(date);
     setPickupTime(time);
     setPassengers(passengers);
     setLuggage(smallLuggage, largeLuggage);
-    
+
     // Navigate to booking page
     navigate("/booking");
   };
-
-  return (
-    <div className="bg-white rounded-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10">
+  return <div className="bg-white rounded-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10">
       <Tabs defaultValue="one-way" className="mb-6">
         <TabsList className="grid grid-cols-4 mb-8">
-          <TabsTrigger 
-            value="one-way" 
-            onClick={() => setWidgetBookingType("one-way")}
-            className="data-[state=active]:bg-brand data-[state=active]:text-white"
-          >
+          <TabsTrigger value="one-way" onClick={() => setWidgetBookingType("one-way")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             One-way
           </TabsTrigger>
-          <TabsTrigger 
-            value="round-trip" 
-            onClick={() => setWidgetBookingType("round-trip")}
-            className="data-[state=active]:bg-brand data-[state=active]:text-white"
-          >
+          <TabsTrigger value="round-trip" onClick={() => setWidgetBookingType("round-trip")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             Round-trip
           </TabsTrigger>
-          <TabsTrigger 
-            value="hourly" 
-            onClick={() => setWidgetBookingType("hourly")}
-            className="data-[state=active]:bg-brand data-[state=active]:text-white"
-          >
+          <TabsTrigger value="hourly" onClick={() => setWidgetBookingType("hourly")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             Hourly
           </TabsTrigger>
-          <TabsTrigger 
-            value="city-tour" 
-            onClick={() => setWidgetBookingType("city-tour")}
-            className="data-[state=active]:bg-brand data-[state=active]:text-white"
-          >
+          <TabsTrigger value="city-tour" onClick={() => setWidgetBookingType("city-tour")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             City Tour
           </TabsTrigger>
         </TabsList>
@@ -101,12 +76,7 @@ const BookingWidget = () => {
                   <MapPin size={16} className="text-brand mr-1" />
                   <span className="text-sm font-medium">Pick-up Location</span>
                 </div>
-                <Input 
-                  placeholder="Enter pick-up location" 
-                  value={pickupAddress}
-                  onChange={(e) => setPickupAddress(e.target.value)}
-                  required
-                />
+                <Input placeholder="Enter pick-up location" value={pickupAddress} onChange={e => setPickupAddress(e.target.value)} required />
               </div>
               
               {/* Drop-off Location */}
@@ -115,12 +85,7 @@ const BookingWidget = () => {
                   <MapPin size={16} className="text-brand mr-1" />
                   <span className="text-sm font-medium">Drop-off Location</span>
                 </div>
-                <Input 
-                  placeholder="Enter drop-off location" 
-                  value={dropoffAddress}
-                  onChange={(e) => setDropoffAddress(e.target.value)}
-                  required
-                />
+                <Input placeholder="Enter drop-off location" value={dropoffAddress} onChange={e => setDropoffAddress(e.target.value)} required />
               </div>
               
               {/* Date Picker */}
@@ -131,24 +96,13 @@ const BookingWidget = () => {
                 </div>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button
-                      variant={"outline"}
-                      className={cn(
-                        "w-full justify-start text-left font-normal",
-                        !date && "text-muted-foreground"
-                      )}
-                    >
+                    <Button variant={"outline"} className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}>
                       <CalendarIcon className="mr-2 h-4 w-4" />
                       {date ? format(date, "PPP") : <span>Pick a date</span>}
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      onSelect={(date) => date && setDate(date)}
-                      initialFocus
-                    />
+                    <Calendar mode="single" selected={date} onSelect={date => date && setDate(date)} initialFocus />
                   </PopoverContent>
                 </Popover>
               </div>
@@ -200,10 +154,7 @@ const BookingWidget = () => {
                   <Users size={16} className="text-brand mr-1" />
                   <span className="text-sm font-medium">Passengers</span>
                 </div>
-                <Select 
-                  value={passengers.toString()} 
-                  onValueChange={(value) => setPassengerCount(parseInt(value))}
-                >
+                <Select value={passengers.toString()} onValueChange={value => setPassengerCount(parseInt(value))}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select passengers" />
                   </SelectTrigger>
@@ -228,10 +179,7 @@ const BookingWidget = () => {
                     <Briefcase size={16} className="text-brand mr-1" />
                     <span className="text-sm font-medium">10kg Luggage</span>
                   </div>
-                  <Select 
-                    value={smallLuggage.toString()} 
-                    onValueChange={(value) => setSmallLuggage(parseInt(value))}
-                  >
+                  <Select value={smallLuggage.toString()} onValueChange={value => setSmallLuggage(parseInt(value))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Small luggage" />
                     </SelectTrigger>
@@ -256,10 +204,7 @@ const BookingWidget = () => {
                     <Briefcase size={16} className="text-brand mr-1" />
                     <span className="text-sm font-medium">23kg Luggage</span>
                   </div>
-                  <Select 
-                    value={largeLuggage.toString()} 
-                    onValueChange={(value) => setLargeLuggage(parseInt(value))}
-                  >
+                  <Select value={largeLuggage.toString()} onValueChange={value => setLargeLuggage(parseInt(value))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Large luggage" />
                     </SelectTrigger>
@@ -281,11 +226,7 @@ const BookingWidget = () => {
               </div>
               
               <div className="flex justify-center">
-                <Button 
-                  type="submit" 
-                  className="bg-brand hover:bg-brand-600 text-white w-full"
-                  size="lg"
-                >
+                <Button type="submit" size="lg" className="bg-brand hover:bg-brand-600 text-white w-full self-end\n\n">
                   <Search size={18} className="mr-2" />
                   Find My Transfer
                 </Button>
@@ -312,8 +253,6 @@ const BookingWidget = () => {
           </div>
         </TabsContent>
       </Tabs>
-    </div>
-  );
+    </div>;
 };
-
 export default BookingWidget;
