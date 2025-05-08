@@ -1,6 +1,6 @@
 
 import { Link } from "react-router-dom";
-import { Instagram, Facebook, Tiktok, Mail, Phone, Smartphone } from "lucide-react";
+import { Instagram, Facebook, TikTok, Mail, Phone, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Footer = () => {
@@ -48,7 +48,7 @@ const Footer = () => {
                 rel="noopener noreferrer"
                 className="hover:text-brand transition-colors p-2 bg-gray-800 rounded-full"
               >
-                <Tiktok size={18} />
+                <TikTok size={18} />
                 <span className="sr-only">TikTok</span>
               </a>
             </div>
