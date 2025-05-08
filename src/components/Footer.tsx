@@ -1,6 +1,8 @@
+
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, Phone, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   return <footer className="bg-black text-white py-24">
@@ -71,19 +73,19 @@ const Footer = () => {
             <h3 className="text-xl font-light tracking-wide border-b border-gray-800 pb-2">Contact Us</h3>
             <ul className="space-y-6">
               <li className="flex items-start gap-3">
-                <Mail size={18} className="text-brand min-w-[18px] mt-1" />
+                <Mail size={18} className="text-[#F35B62] min-w-[18px] mt-1" />
                 <a href="mailto:hello@aztransfergroup.com" className="text-gray-400 hover:text-white transition-colors font-light">
                   hello@aztransfergroup.com
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Phone size={18} className="text-brand min-w-[18px] mt-1" />
+                <Phone size={18} className="text-[#F35B62] min-w-[18px] mt-1" />
                 <a href="tel:+13478487765" className="text-gray-400 hover:text-white transition-colors font-light">
                   +1 (347) 848-7765
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Smartphone size={18} className="text-brand min-w-[18px] mt-1" />
+                <Smartphone size={18} className="text-[#25D366] min-w-[18px] mt-1" />
                 <a href="https://wa.me/13478487765" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors font-light">
                   WhatsApp: +1 (347) 848-7765
                 </a>
