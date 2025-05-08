@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
@@ -43,6 +44,46 @@ const Index = () => {
       <div className="container mx-auto px-4">
         <BookingWidget />
       </div>
+
+      {/* Benefits Section - NEW SECTION */}
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {/* Safety First */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-brand-50 rounded-full flex items-center justify-center mb-6">
+                <Shield size={40} className="text-brand" />
+              </div>
+              <h3 className="text-2xl font-normal mb-4">Safety First</h3>
+              <p className="text-gray-600 font-light">
+                Both you and your shipments will travel with professional drivers. Always with the highest quality standards.
+              </p>
+            </div>
+            
+            {/* Prices With No Surprises */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-brand-50 rounded-full flex items-center justify-center mb-6">
+                <FileText size={40} className="text-brand" />
+              </div>
+              <h3 className="text-2xl font-normal mb-4">Prices With No Surprises</h3>
+              <p className="text-gray-600 font-light">
+                Both you and your shipments will travel with professional drivers. Always with the highest quality standards.
+              </p>
+            </div>
+            
+            {/* Private Travel Solutions */}
+            <div className="flex flex-col items-center text-center">
+              <div className="w-24 h-24 bg-brand-50 rounded-full flex items-center justify-center mb-6">
+                <Car size={40} className="text-brand" />
+              </div>
+              <h3 className="text-2xl font-normal mb-4">Private Travel Solutions</h3>
+              <p className="text-gray-600 font-light">
+                Both you and your shipments will travel with professional drivers. Always with the highest quality standards.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Fleet Section */}
       <section className="py-20 container mx-auto px-4">
