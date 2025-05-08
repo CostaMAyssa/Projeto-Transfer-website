@@ -1,10 +1,21 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
-import { cityTours } from "@/data/cityTours";
+import { ArrowRight, Landmark, Map } from "lucide-react";
+import { cityTours, createCityTours } from "@/data/cityTours";
+import { useEffect } from "react";
 
 const CityTourSection = () => {
+  // Initialize the city tours with icons on component mount
+  useEffect(() => {
+    // Clear the existing tours
+    cityTours.length = 0;
+    
+    // Add the tours with icons
+    const tours = createCityTours();
+    cityTours.push(...tours);
+  }, []);
+
   return (
     <section className="py-16 relative overflow-hidden">
       {/* Dark overlay for entire section */}
@@ -47,7 +58,7 @@ const CityTourSection = () => {
                     <span className="bg-brand-500 p-2 rounded-full mr-3">
                       {tour.icon}
                     </span>
-                    <span className="text-gray-300 text-sm">{tour.duration} duration</span>
+                    <span className="text-gray-300 text-sm">{tour.duration}</span>
                   </div>
                   
                   <h3 className="text-white text-3xl font-normal mb-2">

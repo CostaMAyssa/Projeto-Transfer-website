@@ -3,7 +3,7 @@ import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { cityTours, CityTour } from "@/data/cityTours";
+import { cityTours, CityTour, createCityTours } from "@/data/cityTours";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -13,6 +13,13 @@ const CityTourDetails = () => {
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Initialize city tours if empty
+    if (cityTours.length === 0) {
+      const tours = createCityTours();
+      cityTours.push(...tours);
+    }
+    
     const foundTour = cityTours.find(t => t.id === tourId);
     if (foundTour) {
       setTour(foundTour);

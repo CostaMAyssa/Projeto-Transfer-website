@@ -20,7 +20,8 @@ export interface CityTour {
   }[];
 }
 
-export const cityTours: CityTour[] = [
+// Create a function to generate the city tours with the icons
+export const createCityTours = () => [
   {
     id: "new-york",
     city: "New York",
@@ -132,3 +133,6 @@ export const cityTours: CityTour[] = [
     ]
   },
 ];
+
+// Export the city tours array
+export const cityTours: CityTour[] = [];
