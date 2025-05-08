@@ -1,66 +1,32 @@
-
 import { Link } from "react-router-dom";
 import { Instagram, Facebook, Mail, Phone, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
 const Footer = () => {
   const currentYear = new Date().getFullYear();
-  
-  return (
-    <footer className="bg-black text-white py-24">
+  return <footer className="bg-black text-white py-24">
       <div className="container mx-auto px-4">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Company Info */}
           <div className="space-y-8">
             <div className="mb-8">
-              <img 
-                src="/lovable-uploads/38f717db-0697-430d-8dd5-cc6b4cb08c47.png" 
-                alt="AZ Transfer Logo" 
-                className="h-20 w-auto"
-              />
+              <img src="/lovable-uploads/38f717db-0697-430d-8dd5-cc6b4cb08c47.png" alt="AZ Transfer Logo" className="h-10 w-auto" />
             </div>
             <p className="text-gray-400 max-w-xs font-light">
               Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism.
             </p>
             <div className="flex space-x-4">
-              <a 
-                href="https://www.instagram.com/aztransfer_oficial" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-brand transition-colors p-2 bg-gray-900 rounded-full"
-              >
+              <a href="https://www.instagram.com/aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-900 rounded-full">
                 <Instagram size={18} />
                 <span className="sr-only">Instagram</span>
               </a>
-              <a 
-                href="https://www.facebook.com/aztransferoficial" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-brand transition-colors p-2 bg-gray-900 rounded-full"
-              >
+              <a href="https://www.facebook.com/aztransferoficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-900 rounded-full">
                 <Facebook size={18} />
                 <span className="sr-only">Facebook</span>
               </a>
-              <a 
-                href="https://www.tiktok.com/@aztransfer_oficial" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hover:text-brand transition-colors p-2 bg-gray-900 rounded-full"
-              >
+              <a href="https://www.tiktok.com/@aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-900 rounded-full">
                 {/* Custom TikTok SVG icon since it's not available in lucide-react */}
-                <svg 
-                  xmlns="http://www.w3.org/2000/svg" 
-                  width="18" 
-                  height="18" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2" 
-                  strokeLinecap="round" 
-                  strokeLinejoin="round"
-                  className="lucide-tiktok"
-                >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-tiktok">
                   <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
                 </svg>
                 <span className="sr-only">TikTok</span>
@@ -132,15 +98,8 @@ const Footer = () => {
               Subscribe to our newsletter to receive updates and promotions.
             </p>
             <form className="flex flex-col sm:flex-row gap-2">
-              <input
-                type="email"
-                placeholder="Your Email Address"
-                className="bg-gray-900 border border-gray-800 rounded-none px-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand text-white"
-              />
-              <Button 
-                type="submit" 
-                className="bg-brand hover:bg-brand-600 text-white font-light"
-              >
+              <input type="email" placeholder="Your Email Address" className="bg-gray-900 border border-gray-800 rounded-none px-4 py-2 focus:outline-none focus:ring-1 focus:ring-brand text-white" />
+              <Button type="submit" className="bg-brand hover:bg-brand-600 text-white font-light">
                 Subscribe
               </Button>
             </form>
@@ -167,8 +126,6 @@ const Footer = () => {
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
