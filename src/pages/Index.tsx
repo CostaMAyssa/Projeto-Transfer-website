@@ -11,22 +11,22 @@ const serviceSlides = [
   {
     id: 1,
     title: "Sprinter Class",
-    image: "/lovable-uploads/398a580a-246d-46ba-89e3-80f1491551d4.png"
+    image: "/lovable-uploads/3b4fd734-dc52-4a22-a8e3-b668b7629315.png"
   },
   {
     id: 2,
     title: "Wedding Class",
-    image: "/lovable-uploads/d7859a6e-d290-4f3f-a494-2dd91f50c9cd.png"
+    image: "/lovable-uploads/baf6dc09-5b63-470c-90a1-0231305e3b67.png"
   },
   {
     id: 3,
     title: "Travel Transfer",
-    image: "/lovable-uploads/55cd9c56-3e07-4df9-a7c3-88577f60ff05.png"
+    image: "/lovable-uploads/af0f41d4-ae3b-415a-8813-f14552ab516c.png"
   },
   {
     id: 4,
     title: "Intercity Rides",
-    image: "/lovable-uploads/2fc23855-16a2-4858-9fa6-3c8cd43a7d9e.png"
+    image: "/lovable-uploads/4173129f-aea8-4579-aa0c-46930d2d3004.png"
   }
 ];
 
@@ -195,7 +195,7 @@ const Index = () => {
             }}>
               <CarouselContent className="-ml-4 md:ml-0">
                 {serviceSlides.map((slide) => (
-                  <CarouselItem key={slide.id} className="pl-4 md:pl-0 md:basis-1/2 lg:basis-1/4">
+                  <CarouselItem key={slide.id} className="pl-4 md:pl-0 md:basis-1/2 lg:basis-1/4 px-3">
                     <div className="relative h-80 group rounded-lg overflow-hidden">
                       <img 
                         src={slide.image} 
