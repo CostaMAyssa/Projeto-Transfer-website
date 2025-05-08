@@ -24,7 +24,7 @@ const Index = () => {
         </div>
         
         {/* Hero Content */}
-        <div className="container mx-auto px-4 h-full flex flex-col justify-center relative z-10">
+        <div className="container mx-auto px-4 h-full flex flex-col justify-center relative z-10 pt-16">
           <div className="max-w-3xl text-white">
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
               The Nation's #1 Largest Personal Driver Service
