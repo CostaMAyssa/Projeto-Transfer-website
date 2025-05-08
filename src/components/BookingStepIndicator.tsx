@@ -21,8 +21,8 @@ const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicator
   return (
     <div className="mb-8">
       <div className="flex justify-between relative">
-        {/* Connection line that runs through all steps */}
-        <div className="absolute top-7 left-0 right-0 h-[1px] bg-gray-200 z-0"></div>
+        {/* Connection line that runs through all steps - made darker and thicker */}
+        <div className="absolute top-7 left-0 right-0 h-0.5 bg-gray-300 z-0"></div>
         
         {steps.map((step, index) => {
           const isActive = currentStep === index;
@@ -61,9 +61,9 @@ const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicator
           );
         })}
         
-        {/* Progress line that fills based on current step */}
+        {/* Progress line that fills based on current step - made darker and thicker */}
         <div 
-          className="absolute top-7 left-0 h-[1px] bg-black z-0 transition-all duration-300"
+          className="absolute top-7 left-0 h-0.5 bg-black z-0 transition-all duration-300"
           style={{ 
             width: `${currentStep === 0 ? 0 : ((currentStep / (steps.length - 1)) * 100)}%` 
           }}
