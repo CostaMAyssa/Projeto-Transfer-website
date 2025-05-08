@@ -59,7 +59,7 @@ const BookingWidget = () => {
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10">
+    <div className="bg-white rounded-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10">
       <Tabs defaultValue="one-way" className="mb-6">
         <TabsList className="grid grid-cols-4 mb-8">
           <TabsTrigger 
@@ -280,14 +280,16 @@ const BookingWidget = () => {
                 </div>
               </div>
               
-              <Button 
-                type="submit" 
-                className="bg-brand hover:bg-brand-600 text-white"
-                size="lg"
-              >
-                <Search size={18} className="mr-2" />
-                Find My Transfer
-              </Button>
+              <div className="flex justify-center">
+                <Button 
+                  type="submit" 
+                  className="bg-brand hover:bg-brand-600 text-white w-full"
+                  size="lg"
+                >
+                  <Search size={18} className="mr-2" />
+                  Find My Transfer
+                </Button>
+              </div>
             </div>
           </form>
         </TabsContent>
