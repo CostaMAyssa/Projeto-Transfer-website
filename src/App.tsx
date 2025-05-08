@@ -8,6 +8,7 @@ import { BookingProvider } from "./contexts/BookingContext";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import BookingLayout from "./pages/booking/BookingLayout";
+import CityTourDetails from "./pages/city-tours/CityTourDetails";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/booking" element={<BookingLayout />} />
+            <Route path="/city-tours/:tourId" element={<CityTourDetails />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

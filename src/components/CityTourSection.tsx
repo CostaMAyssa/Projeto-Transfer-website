@@ -1,63 +1,8 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Map, Landmark } from "lucide-react";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-
-// City tour data
-const cityTours = [
-  {
-    id: "new-york",
-    city: "New York",
-    title: "Big Apple Explorer",
-    description: "Experience the vibrant energy of New York City with our comprehensive tour of iconic landmarks including Times Square, Central Park, Empire State Building, and more.",
-    image: "/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png",
-    duration: "8 hours",
-    highlights: [
-      "Times Square & Broadway District",
-      "Central Park Tour",
-      "Empire State Building",
-      "Statue of Liberty View",
-      "Brooklyn Bridge",
-    ],
-    price: 249,
-    icon: <Landmark className="h-5 w-5" />
-  },
-  {
-    id: "philadelphia",
-    city: "Philadelphia",
-    title: "Historic Philadelphia",
-    description: "Discover America's historic roots with our comprehensive tour of Philadelphia featuring Independence Hall, Liberty Bell, and other significant American landmarks.",
-    image: "/lovable-uploads/af0f41d4-ae3b-415a-8813-f14552ab516c.png",
-    duration: "6 hours",
-    highlights: [
-      "Independence Hall",
-      "Liberty Bell Center",
-      "Philadelphia Museum of Art",
-      "Reading Terminal Market",
-      "Rocky Steps Experience",
-    ],
-    price: 199,
-    icon: <Landmark className="h-5 w-5" />
-  },
-  {
-    id: "washington",
-    city: "Washington, DC",
-    title: "Capitol Explorer",
-    description: "Tour the nation's capital with visits to iconic monuments, museums, and government buildings including the White House, Capitol Building, and Lincoln Memorial.",
-    image: "/lovable-uploads/baf6dc09-5b63-470c-90a1-0231305e3b67.png",
-    duration: "10 hours",
-    highlights: [
-      "White House (Exterior View)",
-      "Capitol Building Tour",
-      "Lincoln & Jefferson Memorials",
-      "Smithsonian Museums",
-      "Arlington National Cemetery",
-    ],
-    price: 279,
-    icon: <Map className="h-5 w-5" />
-  },
-];
+import { ArrowRight } from "lucide-react";
+import { cityTours } from "@/data/cityTours";
 
 const CityTourSection = () => {
   return (
@@ -126,9 +71,11 @@ const CityTourSection = () => {
                       <span className="text-gray-300 text-sm ml-1">per person</span>
                     </div>
                     
-                    <Button variant="default" className="bg-brand hover:bg-brand-600">
-                      Book Now <ArrowRight className="ml-2 h-5 w-5" />
-                    </Button>
+                    <Link to={`/city-tours/${tour.id}`}>
+                      <Button variant="default" className="bg-brand hover:bg-brand-600">
+                        Book Now <ArrowRight className="ml-2 h-5 w-5" />
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
