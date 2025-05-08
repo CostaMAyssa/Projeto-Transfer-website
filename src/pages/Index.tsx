@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import { Play, ArrowRight } from "lucide-react";
 import { vehicles } from "@/data/mockData";
 import { Link } from "react-router-dom";
@@ -235,39 +236,7 @@ const Index = () => {
       <FAQ />
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-xl font-normal mb-4">About Us</h3>
-              <p className="text-gray-400">
-                We provide premium chauffeur services for airport transfers, executive travel, and special events. Our mission is to deliver exceptional service and comfort.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-xl font-normal mb-4">Quick Links</h3>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Services</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Fleet</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
-                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">FAQs</a></li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-xl font-normal mb-4">Contact Us</h3>
-              <address className="text-gray-400 not-italic">
-                <p>123 Main Street</p>
-                <p>New York, NY 10001</p>
-                <p className="mt-2">Phone: (123) 456-7890</p>
-                <p>Email: info@transferbooking.com</p>
-              </address>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-gray-400">&copy; {new Date().getFullYear()} Transfer Booking. All rights reserved.</p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>;
 };
 export default Index;
