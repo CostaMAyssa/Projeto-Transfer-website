@@ -41,21 +41,31 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
               <div className="h-10 w-10 rounded-full bg-[#ED1B24] flex items-center justify-center text-white">
                 A
               </div>
-              <div className="w-0.5 h-16 bg-[#ED1B24] border-dashed border-[#ED1B24] border my-1"></div>
+              <div className="w-0.5 h-16 bg-gray-200 border-dashed border-[#ED1B24] my-1"></div>
               <div className="h-10 w-10 rounded-full bg-[#ED1B24] flex items-center justify-center text-white">
-                A
+                B
               </div>
             </div>
             <div className="flex-1 space-y-8 py-2">
               <div>
                 <p className="text-black font-normal">
-                  {bookingData.pickupLocation.address || "Manchester, UK"}
+                  {bookingData.pickupLocation.address || "Select pickup location"}
                 </p>
+                {bookingData.pickupLocation.city && (
+                  <p className="text-sm text-gray-500">
+                    {bookingData.pickupLocation.city}, {bookingData.pickupLocation.country || ""}
+                  </p>
+                )}
               </div>
               <div>
                 <p className="text-black font-normal">
-                  {bookingData.dropoffLocation.address || "London, UK"}
+                  {bookingData.dropoffLocation.address || "Select dropoff location"}
                 </p>
+                {bookingData.dropoffLocation.city && (
+                  <p className="text-sm text-gray-500">
+                    {bookingData.dropoffLocation.city}, {bookingData.dropoffLocation.country || ""}
+                  </p>
+                )}
               </div>
             </div>
           </div>
@@ -74,12 +84,12 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
           <div className="h-10 w-10 rounded-full bg-[#ED1B24] flex items-center justify-center text-white">
             <Clock size={18} />
           </div>
-          <span className="text-sm font-normal">{bookingData.pickupTime}</span>
+          <span className="text-sm font-normal">{bookingData.pickupTime || "Select time"}</span>
         </div>
       </div>
 
       {/* Map */}
-      <div className="h-60 bg-gray-100 relative px-4 py-2">
+      <div className="h-60 bg-gray-100 relative p-4">
         <img
           src="https://maps.googleapis.com/maps/api/staticmap?center=New+York,NY&zoom=12&size=600x300&key=YOUR_API_KEY"
           alt="Map"
