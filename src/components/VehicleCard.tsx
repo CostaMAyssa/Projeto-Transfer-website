@@ -41,7 +41,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
         {/* Details */}
         <div className="lg:col-span-2 p-4 lg:p-6 flex flex-col">
           <div className="mb-4">
-            <h3 className="text-xl font-bold mb-1">{vehicle.category}</h3>
+            <h3 className="text-xl font-normal mb-1">{vehicle.category}</h3>
             <p className="text-sm text-gray-600">{vehicle.models}</p>
           </div>
 
@@ -61,7 +61,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
 
           <div className="mt-auto">
             <div className="mb-2">
-              <span className="text-2xl font-bold">${vehicle.price.toFixed(0)}</span>
+              <span className="text-2xl font-normal">${vehicle.price.toFixed(0)}</span>
               <p className="text-sm text-gray-600">All prices include VAT, fees & tip.</p>
             </div>
             

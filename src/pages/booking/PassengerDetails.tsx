@@ -141,7 +141,7 @@ const PassengerDetails = () => {
             <div className="mt-6">
               <Button 
                 onClick={handleContinue} 
-                className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto"
+                className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto font-normal"
               >
                 Continue <ChevronRight size={18} className="ml-1" />
               </Button>

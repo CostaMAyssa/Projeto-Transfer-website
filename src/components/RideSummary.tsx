@@ -1,3 +1,4 @@
+
 import { useBooking } from "@/contexts/BookingContext";
 import { format } from "date-fns";
 import { Calendar, Clock, Map, Check } from "lucide-react";
@@ -20,7 +21,7 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
     <div className="bg-white border rounded-lg overflow-hidden">
       <div className="p-4 border-b">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="text-lg font-semibold">Ride Summary</h3>
+          <h3 className="text-lg font-normal">Ride Summary</h3>
           {onEdit && (
             <Button 
               variant="ghost" 
@@ -89,11 +90,11 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
       <div className="grid grid-cols-2 border-t">
         <div className="p-3 border-r">
           <p className="text-xs text-gray-500">Total Distance</p>
-          <p className="font-semibold">311 km/ 194 miles</p>
+          <p className="font-normal">311 km/ 194 miles</p>
         </div>
         <div className="p-3">
           <p className="text-xs text-gray-500">Total Time</p>
-          <p className="font-semibold">3h 43m</p>
+          <p className="font-normal">3h 43m</p>
         </div>
       </div>
 
@@ -102,7 +103,7 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
           {/* Vehicle */}
           <div className="p-4 border-t">
             <p className="text-xs text-gray-500">Vehicle</p>
-            <p className="font-semibold">{bookingData.vehicle.name}</p>
+            <p className="font-normal">{bookingData.vehicle.name}</p>
           </div>
 
           {/* Extras */}
@@ -121,16 +122,16 @@ const RideSummary = ({ onEdit, showDetails = true }: RideSummaryProps) => {
           {/* Pricing */}
           <div className="p-4 border-t">
             <div className="flex justify-between mb-2">
-              <span className="font-medium">Selected vehicle</span>
-              <span className="font-semibold">${vehiclePrice.toFixed(2)}</span>
+              <span className="font-normal">Selected vehicle</span>
+              <span className="font-normal">${vehiclePrice.toFixed(2)}</span>
             </div>
             {extrasPrice > 0 && (
               <div className="flex justify-between mb-2">
-                <span className="font-medium">Extra options</span>
-                <span className="font-semibold">${extrasPrice.toFixed(2)}</span>
+                <span className="font-normal">Extra options</span>
+                <span className="font-normal">${extrasPrice.toFixed(2)}</span>
               </div>
             )}
-            <div className="flex justify-between text-lg font-bold mt-4 pt-4 border-t">
+            <div className="flex justify-between text-lg font-normal mt-4 pt-4 border-t">
               <span>Total</span>
               <span>${total.toFixed(2)}</span>
             </div>

@@ -1,74 +1,67 @@
-
-import React from "react";
-import { cn } from "@/lib/utils";
-import { Car, CreditCard, User, Package, Check } from "lucide-react";
+import { useBooking } from "@/contexts/BookingContext";
 
 interface BookingStepIndicatorProps {
   currentStep: number;
-  onStepClick?: (step: number) => void;
+  onStepClick: (step: number) => void;
 }
 
 const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicatorProps) => {
   const steps = [
-    { number: 1, label: "Vehicle", icon: Car },
-    { number: 2, label: "Extras", icon: Package },
-    { number: 3, label: "Details", icon: User },
-    { number: 4, label: "Payment", icon: CreditCard },
+    { name: 'Select Car' },
+    { name: 'Extras' },
+    { name: 'Details' },
+    { name: 'Payment' }
   ];
 
-  const isCompleted = (stepNumber: number) => currentStep > stepNumber;
-  const isActive = (stepNumber: number) => currentStep === stepNumber;
-
-  const handleStepClick = (stepNumber: number) => {
-    if (stepNumber < currentStep && onStepClick) {
-      onStepClick(stepNumber);
-    }
+  const isStepClickable = (stepIndex: number): boolean => {
+    return stepIndex < currentStep;
   };
 
   return (
-    <div className="flex items-center justify-between w-full mb-8">
-      {steps.map((step, index) => (
-        <React.Fragment key={step.number}>
-          <div 
-            className={cn(
-              "flex flex-col items-center",
-              (onStepClick && step.number < currentStep) ? "cursor-pointer" : ""
-            )}
-            onClick={() => handleStepClick(step.number - 1)}
-          >
-            <div
-              className={cn(
-                "w-12 h-12 rounded-full flex items-center justify-center text-white mb-2",
-                isCompleted(step.number - 1) ? "bg-brand" : 
-                isActive(step.number - 1) ? "bg-black" : 
-                "bg-gray-200"
-              )}
+    <div className="mb-8">
+      <div className="flex justify-between">
+        {steps.map((step, index) => {
+          const isActive = currentStep === index;
+          const isCompleted = index < currentStep;
+          const canClick = isStepClickable(index);
+          
+          return (
+            <div 
+              key={index}
+              className={`flex-1 relative ${index < steps.length - 1 ? 'after:content-[""] after:absolute after:top-1/2 after:w-full after:h-[2px] after:bg-gray-200 after:transform after:-translate-y-1/2 after:z-0' : ''}`}
             >
-              <step.icon size={22} />
+              <div className="flex flex-col items-center relative z-10">
+                <button
+                  onClick={() => canClick && onStepClick(index)}
+                  disabled={!canClick}
+                  className={`flex items-center justify-center h-14 w-14 rounded-full border-2 mb-2 transition-colors ${
+                    isActive
+                      ? 'bg-brand text-white border-brand'
+                      : isCompleted
+                      ? 'bg-brand text-white border-brand'
+                      : 'bg-white text-gray-400 border-gray-300'
+                  } ${canClick ? 'cursor-pointer' : 'cursor-default'}`}
+                >
+                  {isCompleted ? (
+                    <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  ) : (
+                    <span className="text-lg font-normal">0{index + 1}</span>
+                  )}
+                </button>
+                <span 
+                  className={`text-sm ${
+                    isActive ? 'text-black' : isCompleted ? 'text-black' : 'text-gray-400'
+                  }`}
+                >
+                  {step.name}
+                </span>
+              </div>
             </div>
-            <span className="text-sm font-medium">
-              {(isCompleted(step.number - 1) || isActive(step.number - 1)) ? (
-                <span className="font-semibold">{step.label}</span>
-              ) : (
-                step.label
-              )}
-            </span>
-            <span className={cn(
-              "text-xl font-bold",
-              (isCompleted(step.number - 1) || isActive(step.number - 1)) ? "text-black" : "text-gray-400"
-            )}>
-              {step.number.toString().padStart(2, '0')}
-            </span>
-          </div>
-
-          {index < steps.length - 1 && (
-            <div className={cn(
-              "h-px flex-1 mx-4", 
-              isCompleted(step.number - 1) ? "bg-brand" : "bg-gray-200"
-            )} />
-          )}
-        </React.Fragment>
-      ))}
+          );
+        })}
+      </div>
     </div>
   );
 };
