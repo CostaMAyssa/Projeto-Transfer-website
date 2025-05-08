@@ -20,7 +20,10 @@ const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicator
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between">
+      <div className="flex justify-between relative">
+        {/* Connection line that runs through all steps */}
+        <div className="absolute top-7 left-0 right-0 h-[2px] bg-gray-200 z-0"></div>
+        
         {steps.map((step, index) => {
           const isActive = currentStep === index;
           const isCompleted = index < currentStep;
@@ -29,17 +32,17 @@ const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicator
           return (
             <div 
               key={index}
-              className={`flex-1 relative ${index < steps.length - 1 ? 'after:content-[""] after:absolute after:top-1/2 after:w-full after:h-[2px] after:bg-gray-200 after:transform after:-translate-y-1/2 after:z-0' : ''}`}
+              className="flex-1 relative z-10"
             >
-              <div className="flex flex-col items-center relative z-10">
+              <div className="flex flex-col items-center">
                 <button
                   onClick={() => canClick && onStepClick(index)}
                   disabled={!canClick}
                   className={`flex items-center justify-center h-14 w-14 rounded-full border-2 mb-2 transition-colors ${
                     isActive
-                      ? 'bg-brand text-white border-brand'
+                      ? 'bg-[#ED1B24] text-white border-[#ED1B24]'
                       : isCompleted
-                      ? 'bg-brand text-white border-brand'
+                      ? 'bg-[#ED1B24] text-white border-[#ED1B24]'
                       : 'bg-white text-gray-400 border-gray-300'
                   } ${canClick ? 'cursor-pointer' : 'cursor-default'}`}
                 >
@@ -62,6 +65,14 @@ const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicator
             </div>
           );
         })}
+        
+        {/* Progress line that fills based on current step */}
+        <div 
+          className="absolute top-7 left-0 h-[2px] bg-[#ED1B24] z-0 transition-all duration-300"
+          style={{ 
+            width: `${currentStep === 0 ? 0 : ((currentStep / (steps.length - 1)) * 100)}%` 
+          }}
+        ></div>
       </div>
     </div>
   );
