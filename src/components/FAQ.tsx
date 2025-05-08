@@ -1,4 +1,6 @@
+
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 // FAQ data with questions and answers
 const faqItems = [{
@@ -53,24 +55,87 @@ const faqItems = [{
   question: "Vocês têm indicação de hotéis?",
   answer: "Sim, podemos oferecer recomendações de hotéis baseadas em nossas experiências e no feedback de clientes, considerando sua preferência de localização e orçamento."
 }];
+
 const FAQ = () => {
-  return <section className="py-20 bg-white">
+  const isMobile = useIsMobile();
+  
+  // Split items into two arrays for desktop view
+  const midIndex = Math.ceil(faqItems.length / 2);
+  const leftColumnItems = faqItems.slice(0, midIndex);
+  const rightColumnItems = faqItems.slice(midIndex);
+  
+  return (
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-normal mb-10 text-center">Perguntas Frequentes</h2>
         
-        <div className="max-w-4xl mx-auto">
-          <Accordion type="single" collapsible className="w-full space-y-4">
-            {faqItems.map((item, index) => <AccordionItem key={index} value={`item-${index}`} className="border border-gray-200 rounded-lg shadow-sm px-[25px] py-0">
-                <AccordionTrigger className="text-left font-normal">
-                  {item.question}
-                </AccordionTrigger>
-                <AccordionContent className="text-gray-600">
-                  {item.answer}
-                </AccordionContent>
-              </AccordionItem>)}
-          </Accordion>
-        </div>
+        {isMobile ? (
+          // Mobile view - Single column
+          <div className="max-w-4xl mx-auto">
+            <Accordion type="single" collapsible className="w-full space-y-4">
+              {faqItems.map((item, index) => (
+                <AccordionItem 
+                  key={index} 
+                  value={`item-${index}`} 
+                  className="border border-gray-200 rounded-lg shadow-sm px-[25px] py-0"
+                >
+                  <AccordionTrigger className="text-left font-normal">
+                    {item.question}
+                  </AccordionTrigger>
+                  <AccordionContent className="text-gray-600">
+                    {item.answer}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </div>
+        ) : (
+          // Desktop view - Two columns
+          <div className="grid grid-cols-2 gap-6 max-w-7xl mx-auto">
+            {/* Left column */}
+            <div>
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {leftColumnItems.map((item, index) => (
+                  <AccordionItem 
+                    key={index} 
+                    value={`item-left-${index}`} 
+                    className="border border-gray-200 rounded-lg shadow-sm px-[25px] py-0"
+                  >
+                    <AccordionTrigger className="text-left font-normal">
+                      {item.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-600">
+                      {item.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+            
+            {/* Right column */}
+            <div>
+              <Accordion type="single" collapsible className="w-full space-y-4">
+                {rightColumnItems.map((item, index) => (
+                  <AccordionItem 
+                    key={index} 
+                    value={`item-right-${index}`} 
+                    className="border border-gray-200 rounded-lg shadow-sm px-[25px] py-0"
+                  >
+                    <AccordionTrigger className="text-left font-normal">
+                      {item.question}
+                    </AccordionTrigger>
+                    <AccordionContent className="text-gray-600">
+                      {item.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </div>
+          </div>
+        )}
       </div>
-    </section>;
+    </section>
+  );
 };
+
 export default FAQ;
