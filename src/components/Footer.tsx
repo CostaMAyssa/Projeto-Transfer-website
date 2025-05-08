@@ -13,11 +13,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
           {/* Company Info */}
           <div className="space-y-8">
-            <div className="mb-6 flex justify-start items-center">
+            <div className="mb-8">
               <img 
-                src="/lovable-uploads/c2fc4186-469d-4557-a80b-4a3e32dbc017.png" 
+                src="/lovable-uploads/38f717db-0697-430d-8dd5-cc6b4cb08c47.png" 
                 alt="AZ Transfer Logo" 
-                className="h-16 w-auto"
+                className="h-20 w-auto"
               />
             </div>
             <p className="text-gray-400 max-w-xs font-light">
