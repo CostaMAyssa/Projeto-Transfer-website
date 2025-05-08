@@ -15,24 +15,27 @@ const Footer = () => {
               <img src="/lovable-uploads/168f2f96-96fb-4f79-a0a2-cbd7929ea8a9.png" alt="AZ Transfer Logo" className="h-12 w-auto" />
             </div>
             <p className="text-gray-600 max-w-xs font-light">
-              Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism.
+              Luxury executive transfer service providing premium transportation solutions with comfort, safety, and professionalism.
             </p>
-            <div className="flex space-x-4">
-              <a href="https://www.instagram.com/aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-100 rounded-full">
-                <Instagram size={18} />
-                <span className="sr-only">Instagram</span>
-              </a>
-              <a href="https://www.facebook.com/aztransferoficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-100 rounded-full">
-                <Facebook size={18} />
-                <span className="sr-only">Facebook</span>
-              </a>
-              <a href="https://www.tiktok.com/@aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-100 rounded-full">
-                {/* Custom TikTok SVG icon since it's not available in lucide-react */}
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-tiktok">
-                  <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
-                </svg>
-                <span className="sr-only">TikTok</span>
-              </a>
+            <div className="space-y-2">
+              <p className="text-gray-600 font-light text-sm">Follow Us</p>
+              <div className="flex space-x-4">
+                <a href="https://www.instagram.com/aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-100 rounded-full">
+                  <Instagram size={18} />
+                  <span className="sr-only">Instagram</span>
+                </a>
+                <a href="https://www.facebook.com/aztransferoficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-100 rounded-full">
+                  <Facebook size={18} />
+                  <span className="sr-only">Facebook</span>
+                </a>
+                <a href="https://www.tiktok.com/@aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="hover:text-brand transition-colors p-2 bg-gray-100 rounded-full">
+                  {/* Custom TikTok SVG icon since it's not available in lucide-react */}
+                  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide-tiktok">
+                    <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
+                  </svg>
+                  <span className="sr-only">TikTok</span>
+                </a>
+              </div>
             </div>
           </div>
 
