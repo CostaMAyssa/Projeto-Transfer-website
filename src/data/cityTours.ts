@@ -1,6 +1,5 @@
 
 import { ReactNode } from 'react';
-import { Landmark, Map } from 'lucide-react';
 
 export interface CityTour {
   id: string;
@@ -11,7 +10,7 @@ export interface CityTour {
   duration: string;
   highlights: string[];
   price: number;
-  icon: ReactNode;
+  icon: string; // Changed from ReactNode to string identifier
   fullDescription?: string;
   includedServices?: string[];
   schedule?: {
@@ -37,7 +36,7 @@ export const createCityTours = () => [
       "Brooklyn Bridge",
     ],
     price: 249,
-    icon: <Landmark className="h-5 w-5" />,
+    icon: "landmark", // Use string identifier instead of JSX
     fullDescription: "Our Big Apple Explorer tour takes you through the heart of Manhattan, experiencing the very best that New York City has to offer. With a professional chauffeur and knowledgeable guide, you'll discover iconic landmarks, vibrant neighborhoods, and the unique energy that makes NYC the city that never sleeps. From the bright lights of Times Square to the peaceful paths of Central Park, this comprehensive tour provides an unforgettable introduction to America's largest city.",
     includedServices: [
       "Luxury vehicle transportation throughout the tour",
@@ -74,7 +73,7 @@ export const createCityTours = () => [
       "Rocky Steps Experience",
     ],
     price: 199,
-    icon: <Landmark className="h-5 w-5" />,
+    icon: "landmark", // Use string identifier instead of JSX
     fullDescription: "Step back in time and explore the birthplace of American democracy with our Historic Philadelphia tour. Walk the same streets as the Founding Fathers, see where the Declaration of Independence was signed, and immerse yourself in the rich heritage of this historic city. Our experienced guides will bring history to life as you visit iconic landmarks and discover the stories behind Philadelphia's most treasured sites.",
     includedServices: [
       "Luxury vehicle transportation throughout the tour",
@@ -110,7 +109,7 @@ export const createCityTours = () => [
       "Arlington National Cemetery",
     ],
     price: 279,
-    icon: <Map className="h-5 w-5" />,
+    icon: "map", // Use string identifier instead of JSX
     fullDescription: "Experience the grandeur and historical significance of America's capital city with our comprehensive Washington, DC tour. From the iconic monuments of the National Mall to the corridors of power in the Capitol Building, our tour provides an in-depth look at the heart of American democracy. With skip-the-line access to key attractions and expert commentary throughout, you'll gain a deeper understanding of the nation's history and political system.",
     includedServices: [
       "Luxury vehicle transportation throughout the tour",

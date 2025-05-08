@@ -1,7 +1,7 @@
 
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Calendar, Clock, MapPin } from "lucide-react";
+import { ArrowLeft, Calendar, Clock, MapPin, Landmark, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cityTours, CityTour, createCityTours } from "@/data/cityTours";
 import Navbar from "@/components/Navbar";
@@ -25,6 +25,20 @@ const CityTourDetails = () => {
       setTour(foundTour);
     }
   }, [tourId]);
+  
+  // Helper function to render the correct icon
+  const renderIcon = (iconName?: string) => {
+    if (!iconName) return null;
+    
+    switch (iconName) {
+      case 'landmark':
+        return <Landmark className="w-5 h-5 mr-2 text-brand-400" />;
+      case 'map':
+        return <Map className="w-5 h-5 mr-2 text-brand-400" />;
+      default:
+        return <Landmark className="w-5 h-5 mr-2 text-brand-400" />;
+    }
+  };
   
   if (!tour) {
     return (

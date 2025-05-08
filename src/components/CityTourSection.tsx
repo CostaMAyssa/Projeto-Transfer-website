@@ -16,6 +16,18 @@ const CityTourSection = () => {
     cityTours.push(...tours);
   }, []);
 
+  // Helper function to render the correct icon based on icon string
+  const renderIcon = (iconName: string) => {
+    switch (iconName) {
+      case 'landmark':
+        return <Landmark className="h-5 w-5 text-white" />;
+      case 'map':
+        return <Map className="h-5 w-5 text-white" />;
+      default:
+        return <Landmark className="h-5 w-5 text-white" />;
+    }
+  };
+
   return (
     <section className="py-16 relative overflow-hidden">
       {/* Dark overlay for entire section */}
@@ -56,7 +68,7 @@ const CityTourSection = () => {
                 <div className="absolute bottom-0 left-0 right-0 p-8">
                   <div className="flex items-center mb-3">
                     <span className="bg-brand-500 p-2 rounded-full mr-3">
-                      {tour.icon}
+                      {renderIcon(tour.icon)}
                     </span>
                     <span className="text-gray-300 text-sm">{tour.duration}</span>
                   </div>
