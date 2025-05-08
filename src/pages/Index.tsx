@@ -9,6 +9,8 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import { useEffect, useState } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import FAQ from "@/components/FAQ";
+import CityTourSection from "@/components/CityTourSection";
+
 const serviceSlides = [{
   id: 1,
   title: "Sprinter Class",
@@ -30,6 +32,7 @@ const serviceSlides = [{
   description: "Mercedes-Benz E-Class, BMW 5 Series, Cadillac XTS or similar",
   image: "/lovable-uploads/4173129f-aea8-4579-aa0c-46930d2d3004.png"
 }];
+
 const Index = () => {
   const [api, setApi] = useState<any>();
 
@@ -203,6 +206,9 @@ const Index = () => {
           </div>
         </div>
       </section>
+
+      {/* City Tour Section */}
+      <CityTourSection />
 
       {/* FAQ Section */}
       <FAQ />
