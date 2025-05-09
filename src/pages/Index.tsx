@@ -65,8 +65,8 @@ const Index = () => {
         
         {/* Hero Content */}
         <div className="container mx-auto px-4 h-full flex relative z-10">
-          {/* Left side content */}
-          <div className="w-full md:w-2/3 flex flex-col justify-center h-full pt-16">
+          {/* Left side content - reduced width to give more space to the booking widget */}
+          <div className="w-full md:w-3/5 flex flex-col justify-center h-full pt-16">
             <div className="text-white max-w-xl">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
                 The Nation's #1 Largest Personal Driver Service
@@ -77,8 +77,8 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Right side booking widget */}
-          <div className="hidden md:block md:w-1/3 h-full pt-16">
+          {/* Right side booking widget - moved slightly to the left */}
+          <div className="hidden md:block md:w-2/5 h-full pt-16 pl-8">
             <div className="h-full flex items-center">
               <BookingWidget vertical={true} />
             </div>
