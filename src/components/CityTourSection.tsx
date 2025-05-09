@@ -1,9 +1,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Landmark, Map } from "lucide-react";
+import { ArrowRight, Landmark, Map, Calendar, Star } from "lucide-react";
 import { cityTours, createCityTours } from "@/data/cityTours";
 import { useEffect, useState } from "react";
+import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { Card, CardContent } from "@/components/ui/card";
 
 const CityTourSection = () => {
   const [tours, setTours] = useState([]);
@@ -23,11 +25,11 @@ const CityTourSection = () => {
   const renderIcon = (iconName: string) => {
     switch (iconName) {
       case 'landmark':
-        return <Landmark className="h-5 w-5 text-white" />;
+        return <Landmark className="h-4 w-4" />;
       case 'map':
-        return <Map className="h-5 w-5 text-white" />;
+        return <Map className="h-4 w-4" />;
       default:
-        return <Landmark className="h-5 w-5 text-white" />;
+        return <Landmark className="h-4 w-4" />;
     }
   };
 
@@ -58,57 +60,54 @@ const CityTourSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {tours.map((tour) => (
-            <div key={tour.id} className="relative group">
-              {/* City card with image background */}
-              <div className="relative h-[500px] rounded-xl overflow-hidden">
-                {/* Background image */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
-                  style={{ backgroundImage: `url(${tour.image})` }}
-                ></div>
+            <Link key={tour.id} to={`/city-tours/${tour.id}`} className="group">
+              <Card className="bg-transparent border-none shadow-none overflow-hidden relative">
+                <div className="overflow-hidden rounded-lg">
+                  <AspectRatio ratio={3/4} className="bg-black/20">
+                    <img 
+                      src={tour.image} 
+                      alt={tour.city} 
+                      className="object-cover w-full h-full transition-transform duration-700 group-hover:scale-110"
+                    />
+                  </AspectRatio>
+                </div>
                 
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent"></div>
-                
-                {/* Card content */}
-                <div className="absolute bottom-0 left-0 right-0 p-8">
-                  <div className="flex items-center mb-3">
-                    <span className="bg-brand-500 p-2 rounded-full mr-3">
-                      {renderIcon(tour.icon)}
-                    </span>
-                    <span className="text-gray-300 text-sm">{tour.duration}</span>
+                <CardContent className="px-1 pt-4">
+                  {/* Eyebrow */}
+                  <div className="flex items-center space-x-2 mb-2">
+                    <span className="text-brand-500 text-sm font-medium uppercase tracking-wider">{tour.duration}</span>
                   </div>
                   
-                  <h3 className="text-white text-3xl font-normal mb-2">
+                  {/* Title */}
+                  <h3 className="text-white text-xl font-medium mb-2">
                     {tour.city}
                   </h3>
-                  <p className="text-gray-300 text-lg mb-4">{tour.title}</p>
                   
-                  {/* Highlights */}
-                  <div className="space-y-2 mb-6">
-                    {tour.highlights.map((highlight, index) => (
-                      <div key={index} className="flex items-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-brand-500 mr-2"></div>
-                        <span className="text-gray-300 text-sm">{highlight}</span>
-                      </div>
+                  {/* Description */}
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">{tour.title}</p>
+                  
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {tour.highlights.slice(0, 3).map((highlight, index) => (
+                      <span 
+                        key={index} 
+                        className="bg-white/10 text-xs px-2 py-1 rounded-full text-gray-300 flex items-center"
+                      >
+                        {index === 0 && <Calendar className="h-3 w-3 mr-1" />}
+                        {index === 1 && <Star className="h-3 w-3 mr-1" />}
+                        {index === 2 && <Map className="h-3 w-3 mr-1" />}
+                        {highlight.split(' ').slice(0, 2).join(' ')}
+                      </span>
                     ))}
                   </div>
                   
-                  <div className="flex items-center justify-between">
-                    <div className="text-white">
-                      <span className="text-2xl font-medium">${tour.price}</span>
-                      <span className="text-gray-300 text-sm ml-1">per person</span>
-                    </div>
-                    
-                    <Link to={`/city-tours/${tour.id}`}>
-                      <Button variant="default" className="bg-brand hover:bg-brand-600">
-                        Book Now <ArrowRight className="ml-2 h-5 w-5" />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  {/* Call to Action */}
+                  <Button variant="outline" size="sm" className="border-brand-500 text-brand-500 hover:bg-brand-500 hover:text-white transition-colors">
+                    Book Tour <ArrowRight className="ml-1 h-3 w-3" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
         
