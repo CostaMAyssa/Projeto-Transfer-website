@@ -34,8 +34,8 @@ const AddressAutocomplete = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debouncedValue = useDebounce(value, 400);
 
-  // Updated token - using a public token for demo purposes
-  const mapboxToken = "pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNsdTU4ZW12ODBkYzEyaW85cmUwYzg4aTcifQ.YK8BN3UDur9AgNnd2kJs2g";
+  // Updated token - using a public token that works
+  const mapboxToken = "pk.eyJ1IjoiYXp0cmFuc2ZlciIsImEiOiJjbHg4cjBnNHUwNWF2Mmp0OXJpMzE0bzdvIn0.Z_RMY5yzB-f6fFXS3lEuFw";
 
   useEffect(() => {
     const fetchSuggestions = async () => {
