@@ -30,6 +30,7 @@ const RideMap = ({ className }: RideMapProps) => {
       return;
     }
 
+    // Log pickup and dropoff locations to debug
     console.log("Initializing map with pickup:", bookingData.pickupLocation);
     console.log("Initializing map with dropoff:", bookingData.dropoffLocation);
     
@@ -79,6 +80,9 @@ const RideMap = ({ className }: RideMapProps) => {
       console.log("Has pickup coordinates:", hasPickup);
       console.log("Has dropoff coordinates:", hasDropoff);
 
+      // Default center if no coordinates are available
+      let defaultCenter: [number, number] = [-74.006, 40.7128]; // Default to NYC
+
       if (hasPickup) {
         console.log("Adding pickup marker at:", bookingData.pickupLocation.coordinates);
         // Create a custom marker element for pickup
@@ -100,6 +104,7 @@ const RideMap = ({ className }: RideMapProps) => {
           .addTo(mapRef.current);
         
         markersRef.current.push(pickupMarker);
+        defaultCenter = bookingData.pickupLocation.coordinates;
       }
 
       if (hasDropoff) {
@@ -123,6 +128,13 @@ const RideMap = ({ className }: RideMapProps) => {
           .addTo(mapRef.current);
         
         markersRef.current.push(dropoffMarker);
+        defaultCenter = bookingData.dropoffLocation.coordinates;
+      }
+
+      // Center map on default or available location
+      if (!hasPickup && !hasDropoff) {
+        console.log("Centering map on default location");
+        mapRef.current.setCenter(defaultCenter);
       }
 
       // Draw route if both pickup and dropoff coordinates are available
@@ -247,10 +259,15 @@ const RideMap = ({ className }: RideMapProps) => {
   useEffect(() => {
     console.log("RideMap useEffect - pickup:", bookingData.pickupLocation);
     console.log("RideMap useEffect - dropoff:", bookingData.dropoffLocation);
-    initializeMap();
+    
+    // Fix: Small delay to ensure DOM is ready
+    const timer = setTimeout(() => {
+      initializeMap();
+    }, 300);
     
     // Clean up on unmount
     return () => {
+      clearTimeout(timer);
       if (mapRef.current) {
         // Don't destroy the map, just remove markers
         markersRef.current.forEach(marker => marker.remove());
@@ -260,7 +277,7 @@ const RideMap = ({ className }: RideMapProps) => {
   }, [bookingData.pickupLocation, bookingData.dropoffLocation]);
 
   // Check if we have any location coordinates
-  const hasLocations = bookingData.pickupLocation?.coordinates || bookingData.dropoffLocation?.coordinates;
+  const hasLocations = Boolean(bookingData.pickupLocation?.coordinates || bookingData.dropoffLocation?.coordinates);
   console.log("Has locations:", hasLocations);
 
   return (
