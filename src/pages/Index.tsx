@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
@@ -64,25 +65,31 @@ const Index = () => {
         </div>
         
         {/* Hero Content */}
-        <div className="container mx-auto px-4 h-full flex flex-col justify-center relative z-10 pt-16">
-          <div className="max-w-3xl text-white">
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
-              The Nation's #1 Largest Personal Driver Service
-            </h1>
-            <p className="text-xl mb-8 font-light max-w-2xl">
-              Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism for all your travel needs.
-            </p>
-            <div className="flex space-x-4">
-              
-              
+        <div className="container mx-auto px-4 h-full flex relative z-10">
+          {/* Left side content */}
+          <div className="w-full md:w-2/3 flex flex-col justify-center h-full pt-16">
+            <div className="text-white max-w-xl">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
+                The Nation's #1 Largest Personal Driver Service
+              </h1>
+              <p className="text-xl mb-8 font-light max-w-2xl">
+                Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism for all your travel needs.
+              </p>
+            </div>
+          </div>
+          
+          {/* Right side booking widget */}
+          <div className="hidden md:block md:w-1/3 h-full pt-16">
+            <div className="h-full flex items-center">
+              <BookingWidget vertical={true} />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Booking Widget */}
-      <div className="container mx-auto px-4">
-        <BookingWidget />
+      {/* Mobile Booking Widget (Only shows on small screens) */}
+      <div className="md:hidden container mx-auto px-4 -mt-36 relative z-10">
+        <BookingWidget vertical={false} />
       </div>
 
       {/* Benefits Section */}

@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { useNavigate } from "react-router-dom";
@@ -12,7 +13,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const BookingWidget = () => {
+interface BookingWidgetProps {
+  vertical?: boolean;
+}
+
+const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const navigate = useNavigate();
   const {
     bookingData,
@@ -32,6 +37,7 @@ const BookingWidget = () => {
   const [passengers, setPassengerCount] = useState(1);
   const [smallLuggage, setSmallLuggage] = useState(0);
   const [largeLuggage, setLargeLuggage] = useState(0);
+  
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -51,26 +57,43 @@ const BookingWidget = () => {
     // Navigate to booking page
     navigate("/booking");
   };
-  return <div className="bg-white rounded-xl max-w-5xl mx-auto p-6 -mt-36 relative z-10 border border-gray-200">
-      <Tabs defaultValue="one-way" className="mb-6">
-        <TabsList className="grid grid-cols-4 mb-8">
+  
+  return (
+    <div className={cn(
+      "bg-white rounded-xl border border-gray-200",
+      vertical 
+        ? "p-4 h-full w-full max-h-[600px] overflow-y-auto"
+        : "max-w-5xl mx-auto p-6 -mt-36 relative z-10"
+    )}>
+      <Tabs defaultValue="one-way" className={cn("mb-4", vertical && "flex flex-col h-full")}>
+        <TabsList className={cn(
+          vertical ? "grid grid-cols-2 mb-4" : "grid grid-cols-4 mb-8"
+        )}>
           <TabsTrigger value="one-way" onClick={() => setWidgetBookingType("one-way")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             One-way
           </TabsTrigger>
           <TabsTrigger value="round-trip" onClick={() => setWidgetBookingType("round-trip")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             Round-trip
           </TabsTrigger>
-          <TabsTrigger value="hourly" onClick={() => setWidgetBookingType("hourly")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
-            Hourly
-          </TabsTrigger>
-          <TabsTrigger value="city-tour" onClick={() => setWidgetBookingType("city-tour")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
-            City Tour
-          </TabsTrigger>
+          {!vertical && (
+            <>
+              <TabsTrigger value="hourly" onClick={() => setWidgetBookingType("hourly")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
+                Hourly
+              </TabsTrigger>
+              <TabsTrigger value="city-tour" onClick={() => setWidgetBookingType("city-tour")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
+                City Tour
+              </TabsTrigger>
+            </>
+          )}
         </TabsList>
 
-        <TabsContent value="one-way" className="mt-0">
-          <form onSubmit={handleSubmit}>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <TabsContent value="one-way" className="mt-0 flex-grow">
+          <form onSubmit={handleSubmit} className={vertical ? "flex flex-col space-y-3" : ""}>
+            <div className={cn(
+              vertical 
+                ? "flex flex-col gap-3" 
+                : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+            )}>
               {/* Pick-up Location */}
               <div className="space-y-2">
                 <div className="flex items-center mb-1">
@@ -149,7 +172,11 @@ const BookingWidget = () => {
             </div>
             
             {/* Second Row - Passengers, Luggage, Search Button */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+            <div className={cn(
+              vertical 
+                ? "flex flex-col space-y-3 mt-3" 
+                : "grid grid-cols-1 md:grid-cols-3 gap-4 mt-6"
+            )}>
               <div className="space-y-2">
                 <div className="flex items-center mb-1">
                   <Users size={16} className="text-brand mr-1" />
@@ -174,7 +201,7 @@ const BookingWidget = () => {
                 </Select>
               </div>
               
-              <div className="grid grid-cols-2 gap-2">
+              <div className={vertical ? "grid grid-cols-2 gap-2" : "grid grid-cols-2 gap-2"}>
                 <div className="space-y-2">
                   <div className="flex items-center mb-1">
                     <Briefcase size={16} className="text-brand mr-1" />
@@ -226,7 +253,7 @@ const BookingWidget = () => {
                 </div>
               </div>
               
-              <div className="flex justify-center">
+              <div className={cn(vertical ? "mt-auto pt-2" : "flex justify-center")}>
                 <Button type="submit" size="lg" className="bg-brand hover:bg-brand-600 text-white w-full self-end">
                   <Search size={18} className="mr-2" />
                   Find My Transfer
@@ -254,6 +281,7 @@ const BookingWidget = () => {
           </div>
         </TabsContent>
       </Tabs>
-    </div>;
+    </div>
+  );
 };
 export default BookingWidget;
