@@ -21,18 +21,6 @@ const CityTourSection = () => {
     cityTours.push(...toursData);
   }, []);
 
-  // Helper function to render the correct icon based on icon string
-  const renderIcon = (iconName: string) => {
-    switch (iconName) {
-      case 'landmark':
-        return <Landmark className="h-4 w-4" />;
-      case 'map':
-        return <Map className="h-4 w-4" />;
-      default:
-        return <Landmark className="h-4 w-4" />;
-    }
-  };
-
   return (
     <section className="py-16 relative overflow-hidden">
       {/* Dark background color */}
@@ -84,7 +72,7 @@ const CityTourSection = () => {
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">{tour.title}</p>
+                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">{tour.title}</p>
                   
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -102,7 +90,10 @@ const CityTourSection = () => {
                   </div>
                   
                   {/* Call to Action */}
-                  <Button variant="outline" size="sm" className="border-brand-500 text-brand-500 hover:bg-brand-500 hover:text-white transition-colors">
+                  <Button 
+                    className="bg-brand-500 text-white hover:bg-brand-600 transition-colors"
+                    size="sm"
+                  >
                     Book Tour <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </CardContent>
