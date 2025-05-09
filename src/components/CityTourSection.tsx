@@ -1,11 +1,10 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Landmark, Map, Calendar, Star } from "lucide-react";
+import { ArrowRight, Map, Calendar, Star } from "lucide-react";
 import { cityTours, createCityTours } from "@/data/cityTours";
 import { useEffect, useState } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
-import { Card, CardContent } from "@/components/ui/card";
 
 const CityTourSection = () => {
   const [tours, setTours] = useState([]);
@@ -41,7 +40,7 @@ const CityTourSection = () => {
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-normal text-white mb-4">City Tour Packages</h2>
-          <p className="text-gray-300 max-w-3xl mx-auto text-lg">
+          <p className="text-white/80 max-w-3xl mx-auto text-lg">
             Experience the beauty and history of America's most iconic cities with our premium chauffeur-guided tours
           </p>
         </div>
@@ -49,7 +48,7 @@ const CityTourSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {tours.map((tour) => (
             <Link key={tour.id} to={`/city-tours/${tour.id}`} className="group">
-              <Card className="bg-transparent border-none shadow-none overflow-hidden relative">
+              <div className="bg-transparent overflow-hidden relative">
                 <div className="overflow-hidden rounded-lg">
                   <AspectRatio ratio={3/4} className="bg-black/20">
                     <img 
@@ -60,51 +59,54 @@ const CityTourSection = () => {
                   </AspectRatio>
                 </div>
                 
-                <CardContent className="px-1 pt-4">
-                  {/* Eyebrow */}
-                  <div className="flex items-center space-x-2 mb-2">
-                    <span className="text-brand-500 text-sm font-medium uppercase tracking-wider">{tour.duration}</span>
+                <div className="px-1 pt-4">
+                  {/* Eyebrow - Duration */}
+                  <div className="mb-2">
+                    <span className="text-brand-500 text-sm font-medium tracking-wider">{tour.duration}</span>
                   </div>
                   
-                  {/* Title */}
+                  {/* Title - City Name */}
                   <h3 className="text-white text-xl font-medium mb-2">
                     {tour.city}
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-gray-300 text-sm mb-4 line-clamp-2">{tour.title}</p>
+                  <p className="text-white/70 text-sm mb-4 line-clamp-2">{tour.title}</p>
                   
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {tour.highlights.slice(0, 3).map((highlight, index) => (
-                      <span 
-                        key={index} 
-                        className="bg-white/10 text-xs px-2 py-1 rounded-full text-gray-300 flex items-center"
-                      >
-                        {index === 0 && <Calendar className="h-3 w-3 mr-1" />}
-                        {index === 1 && <Star className="h-3 w-3 mr-1" />}
-                        {index === 2 && <Map className="h-3 w-3 mr-1" />}
-                        {highlight.split(' ').slice(0, 2).join(' ')}
-                      </span>
-                    ))}
+                    {tour.highlights.slice(0, 3).map((highlight, index) => {
+                      const highlightText = highlight.split(' ').slice(0, 2).join(' ');
+                      return (
+                        <span 
+                          key={index} 
+                          className="bg-white/10 text-xs px-3 py-1 rounded-full text-white flex items-center"
+                        >
+                          {index === 0 && <Map className="h-3 w-3 mr-1" />}
+                          {index === 1 && <Star className="h-3 w-3 mr-1" />}
+                          {index === 2 && <Calendar className="h-3 w-3 mr-1" />}
+                          {highlightText}
+                        </span>
+                      );
+                    })}
                   </div>
                   
                   {/* Call to Action */}
                   <Button 
-                    className="bg-brand-500 text-white hover:bg-brand-600 transition-colors"
+                    className="bg-brand-500 text-white hover:bg-brand-600 transition-colors rounded-full"
                     size="sm"
                   >
                     Book Tour <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </Link>
           ))}
         </div>
         
         <div className="text-center mt-12">
-          <Link to="/services" className="inline-flex items-center text-brand-500 hover:text-brand-400">
-            View All City Tours <ArrowRight size={16} className="ml-2" />
+          <Link to="/services" className="inline-flex items-center text-brand-500 hover:text-brand-400 group">
+            View All City Tours <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
       </div>
