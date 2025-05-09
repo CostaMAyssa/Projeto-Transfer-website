@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, Users, Newspaper } from "lucide-react";
+import { Menu, X, Phone } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,12 +61,10 @@ const Navbar = () => {
             <Link to="/fleet" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Our Fleet
             </Link>
-            <Link to="/partners" className="text-white hover:text-brand-500 transition-colors text-sm font-light flex items-center gap-1">
-              <Users size={16} />
+            <Link to="/partners" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Partners
             </Link>
-            <Link to="/blog" className="text-white hover:text-brand-500 transition-colors text-sm font-light flex items-center gap-1">
-              <Newspaper size={16} />
+            <Link to="/blog" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Blog
             </Link>
             <Link to="/about" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
@@ -123,18 +121,16 @@ const Navbar = () => {
             </Link>
             <Link 
               to="/partners" 
-              className="flex items-center text-white hover:text-brand-500 transition-colors text-sm font-light"
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              <Users size={16} className="mr-2" />
               Partners
             </Link>
             <Link 
               to="/blog" 
-              className="flex items-center text-white hover:text-brand-500 transition-colors text-sm font-light"
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              <Newspaper size={16} className="mr-2" />
               Blog
             </Link>
             <Link 
