@@ -64,21 +64,21 @@ export default {
 					ring: 'hsl(var(--sidebar-ring))'
 				},
 				brand: {
-					DEFAULT: '#ED1B24', // Updated from #EA553E to #ED1B24
-					50: '#FEEBEC', // Adjusted for the new red
-					100: '#FCD6D8', // Adjusted for the new red
-					200: '#F9ADB1', // Adjusted for the new red
-					300: '#F6848A', // Adjusted for the new red
-					400: '#F35B62', // Adjusted for the new red
-					500: '#ED1B24', // New primary red
-					600: '#C60F17', // Darker red
-					700: '#940B12', // Even darker red
-					800: '#63080C', // Very dark red
-					900: '#310406' // Extremely dark red
+					DEFAULT: '#DA3237', // Updated from #ED1B24 to #DA3237
+					50: '#F8E5E7', // Adjusted for the new red
+					100: '#F2CCD0', // Adjusted for the new red
+					200: '#E99AA2', // Adjusted for the new red
+					300: '#E06974', // Adjusted for the new red
+					400: '#D74953', // Adjusted for the new red
+					500: '#DA3237', // New primary red
+					600: '#B32029', // Darker red
+					700: '#8C191F', // Even darker red
+					800: '#651116', // Very dark red
+					900: '#3E0A0D' // Extremely dark red
 				},
-				black: '#111111', // New custom black
-				gray: '#4BB7DA', // New custom gray/blue
-				white: '#FFFFFF', // White
+				black: '#070A0D', // Updated custom black
+				gray: '#EDECE6', // Updated custom gray to light gray
+				white: '#FFFFFE', // Updated custom white
 			},
 			borderRadius: {
 				lg: 'var(--radius)',

@@ -74,7 +74,7 @@ const Contact = () => {
 
     // Add marker for office location
     const marker = new mapboxgl.Marker({
-      color: "#333333" // Dark gray marker
+      color: "#070A0D" // Updated to new black color
     })
       .setLngLat([-74.006, 40.7128])
       .addTo(mapRef.current);
@@ -84,9 +84,9 @@ const Contact = () => {
       if (!mapRef.current) return;
       
       // Style the map in monochrome
-      mapRef.current.setPaintProperty('background', 'background-color', '#ffffff');
-      mapRef.current.setPaintProperty('water', 'fill-color', '#f0f0f0');
-      mapRef.current.setPaintProperty('land', 'background-color', '#ffffff');
+      mapRef.current.setPaintProperty('background', 'background-color', '#FFFFFE');
+      mapRef.current.setPaintProperty('water', 'fill-color', '#EDECE6');
+      mapRef.current.setPaintProperty('land', 'background-color', '#FFFFFE');
       
       // Adjust colors of various map layers to create a B&W effect
       const layers = ['road', 'building', 'admin', 'water', 'landuse'];
@@ -98,10 +98,10 @@ const Contact = () => {
         layerIds?.forEach(layerId => {
           if (mapRef.current?.getLayer(layerId)) {
             if (mapRef.current?.getPaintProperty(layerId, 'fill-color')) {
-              mapRef.current?.setPaintProperty(layerId, 'fill-color', '#e0e0e0');
+              mapRef.current?.setPaintProperty(layerId, 'fill-color', '#EDECE6');
             }
             if (mapRef.current?.getPaintProperty(layerId, 'line-color')) {
-              mapRef.current?.setPaintProperty(layerId, 'line-color', '#b0b0b0');
+              mapRef.current?.setPaintProperty(layerId, 'line-color', '#070A0D');
             }
           }
         });
@@ -120,7 +120,7 @@ const Contact = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <div className="bg-[#111111] py-16 px-4 mt-16">
+      <div className="bg-[#070A0D] py-16 px-4 mt-16">
         <div className="container mx-auto max-w-6xl">
           <h1 className="text-4xl md:text-5xl font-light text-white mb-2 text-center">
             Contact Us
@@ -134,36 +134,36 @@ const Contact = () => {
       {/* Contact Information */}
       <div className="container mx-auto py-12 px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="p-6 flex flex-col items-center text-center border-b border-gray-100">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-gray-50">
-              <Phone className="h-7 w-7 text-[#F35B62]" />
+          <div className="p-6 flex flex-col items-center text-center border-b border-[#EDECE6]">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-[#EDECE6]">
+              <Phone className="h-7 w-7 text-[#DA3237]" />
             </div>
             <h3 className="text-xl font-light mb-2">Phone</h3>
             <p className="text-gray-500 mb-2 text-sm">Speak with our team</p>
-            <a href="tel:+13478487765" className="text-[#F35B62] hover:underline">+1 (347) 848-7765</a>
+            <a href="tel:+13478487765" className="text-[#DA3237] hover:underline">+1 (347) 848-7765</a>
           </div>
 
-          <div className="p-6 flex flex-col items-center text-center border-b border-gray-100">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-gray-50">
-              <Mail className="h-7 w-7 text-[#F35B62]" />
+          <div className="p-6 flex flex-col items-center text-center border-b border-[#EDECE6]">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-[#EDECE6]">
+              <Mail className="h-7 w-7 text-[#DA3237]" />
             </div>
             <h3 className="text-xl font-light mb-2">Email</h3>
             <p className="text-gray-500 mb-2 text-sm">We'll respond as soon as possible</p>
-            <a href="mailto:hello@aztransfergroup.com" className="text-[#F35B62] hover:underline">hello@aztransfergroup.com</a>
+            <a href="mailto:hello@aztransfergroup.com" className="text-[#DA3237] hover:underline">hello@aztransfergroup.com</a>
           </div>
 
-          <div className="p-6 flex flex-col items-center text-center border-b border-gray-100">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-gray-50">
-              <MapPin className="h-7 w-7 text-[#F35B62]" />
+          <div className="p-6 flex flex-col items-center text-center border-b border-[#EDECE6]">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-[#EDECE6]">
+              <MapPin className="h-7 w-7 text-[#DA3237]" />
             </div>
             <h3 className="text-xl font-light mb-2">Location</h3>
             <p className="text-gray-500 mb-2 text-sm">Visit our office</p>
             <p className="text-gray-700">New York City, NY</p>
           </div>
 
-          <div className="p-6 flex flex-col items-center text-center border-b border-gray-100">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-gray-50">
-              <Clock className="h-7 w-7 text-[#F35B62]" />
+          <div className="p-6 flex flex-col items-center text-center border-b border-[#EDECE6]">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-[#EDECE6]">
+              <Clock className="h-7 w-7 text-[#DA3237]" />
             </div>
             <h3 className="text-xl font-light mb-2">Hours</h3>
             <p className="text-gray-500 mb-2 text-sm">We're available for you</p>
@@ -176,7 +176,7 @@ const Contact = () => {
         {/* Form and Content Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Contact Form - Styled to match booking page */}
-          <div className="bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm">
+          <div className="bg-white border border-[#EDECE6] rounded-lg overflow-hidden shadow-sm">
             <div className="p-8">
               <h2 className="text-2xl font-light mb-6">Send a Message</h2>
               <p className="text-gray-600 mb-8 font-light">
@@ -239,7 +239,7 @@ const Contact = () => {
                         <FormMessage />
                       </FormItem>} />
 
-                  <Button type="submit" className="bg-[#F35B62] hover:bg-[#dc4f56] text-white font-light" disabled={isSubmitting}>
+                  <Button type="submit" className="bg-[#DA3237] hover:bg-[#b32029] text-white font-light" disabled={isSubmitting}>
                     {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
@@ -248,11 +248,11 @@ const Contact = () => {
           </div>
 
           {/* FAQ Section - Styled to match booking page */}
-          <div className="bg-white border border-gray-100 rounded-lg overflow-hidden shadow-sm">
+          <div className="bg-white border border-[#EDECE6] rounded-lg overflow-hidden shadow-sm">
             <div className="p-8">
               <h2 className="text-2xl font-light mb-6">Frequently Asked Questions</h2>
               <div className="space-y-6">
-                {faqs.map((faq, index) => <div key={index} className="border-b border-gray-100 pb-5">
+                {faqs.map((faq, index) => <div key={index} className="border-b border-[#EDECE6] pb-5">
                     <h3 className="text-lg font-light mb-2">{faq.question}</h3>
                     <p className="text-gray-600 font-light">{faq.answer}</p>
                   </div>)}
@@ -268,17 +268,17 @@ const Contact = () => {
           <h2 className="text-2xl font-light mb-8 text-center">Follow Us on Social Media</h2>
           
           <div className="flex justify-center gap-8">
-            <a href="https://www.instagram.com/aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#F35B62]">
+            <a href="https://www.instagram.com/aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#DA3237]">
               <Instagram size={24} />
               <span className="sr-only">Instagram</span>
             </a>
             
-            <a href="https://www.facebook.com/aztransferoficial" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#F35B62]">
+            <a href="https://www.facebook.com/aztransferoficial" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#DA3237]">
               <Facebook size={24} />
               <span className="sr-only">Facebook</span>
             </a>
             
-            <a href="https://www.tiktok.com/@aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#F35B62]">
+            <a href="https://www.tiktok.com/@aztransfer_oficial" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-[#DA3237]">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"></path>
               </svg>
@@ -289,7 +289,7 @@ const Contact = () => {
       </div>
 
       {/* Map Section - Full width outside container */}
-      <div className="w-full bg-gray-50 py-16">
+      <div className="w-full bg-[#EDECE6] py-16">
         <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
         <div className="h-[500px] w-full" ref={mapContainerRef}></div>
       </div>
