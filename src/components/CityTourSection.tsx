@@ -62,7 +62,7 @@ const CityTourSection = () => {
                 <div className="px-1 pt-4">
                   {/* Title - Themed Title - smaller eyebrow with lighter red */}
                   <div className="mb-2">
-                    <span className="text-brand-300 text-sm font-medium">
+                    <span className="text-[#FCD6D8] text-sm font-medium">
                       {tour.id === "washington" && "Experiência Histórica"}
                       {tour.id === "new-york" && "Mais Popular"}
                       {tour.id === "philadelphia" && "Cultura Americana"}
