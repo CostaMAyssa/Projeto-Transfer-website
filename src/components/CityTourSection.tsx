@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Map, Calendar, Star } from "lucide-react";
+import { ArrowRight, Map } from "lucide-react";
 import { cityTours, createCityTours } from "@/data/cityTours";
 import { useEffect, useState } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -60,40 +60,84 @@ const CityTourSection = () => {
                 </div>
                 
                 <div className="px-1 pt-4">
-                  {/* Eyebrow - Duration */}
+                  {/* Title - Themed Title */}
                   <div className="mb-2">
-                    <span className="text-brand-500 text-sm font-medium tracking-wider">{tour.duration}</span>
+                    <span className="text-brand-500 text-lg font-medium">
+                      {tour.id === "washington" && "Experiência Histórica"}
+                      {tour.id === "new-york" && "Mais Popular"}
+                      {tour.id === "philadelphia" && "Cultura Americana"}
+                    </span>
                   </div>
                   
-                  {/* Title - City Name */}
+                  {/* City Name */}
                   <h3 className="text-white text-xl font-medium mb-2">
                     {tour.city}
                   </h3>
                   
                   {/* Description */}
-                  <p className="text-white/70 text-sm mb-4 line-clamp-2">{tour.title}</p>
+                  <p className="text-white/90 text-sm mb-4 line-clamp-3">
+                    {tour.id === "washington" && "Descubra a capital americana com visitas à Casa Branca, ao Capitólio e aos monumentos históricos do National Mall."}
+                    {tour.id === "new-york" && "Explore a Grande Maçã com nosso tour abrangente pelos pontos turísticos icônicos, incluindo Times Square, Central Park e a Estátua da Liberdade."}
+                    {tour.id === "philadelphia" && "Conheça o berço da democracia americana com passeios pelo Independence Hall, o Sino da Liberdade e os vibrantes distritos culturais."}
+                  </p>
                   
                   {/* Tags */}
                   <div className="flex flex-wrap gap-2 mb-4">
-                    {tour.highlights.slice(0, 3).map((highlight, index) => {
-                      const highlightText = highlight.split(' ').slice(0, 2).join(' ');
-                      return (
-                        <span 
-                          key={index} 
-                          className="bg-white/10 text-xs px-3 py-1 rounded-full text-white flex items-center"
-                        >
-                          {index === 0 && <Map className="h-3 w-3 mr-1" />}
-                          {index === 1 && <Star className="h-3 w-3 mr-1" />}
-                          {index === 2 && <Calendar className="h-3 w-3 mr-1" />}
-                          {highlightText}
+                    {tour.id === "washington" && (
+                      <>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Casa Branca
                         </span>
-                      );
-                    })}
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Capitólio
+                        </span>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Memorial Lincoln
+                        </span>
+                      </>
+                    )}
+                    
+                    {tour.id === "new-york" && (
+                      <>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Times Square
+                        </span>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Central Park
+                        </span>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Estátua da Liberdade
+                        </span>
+                      </>
+                    )}
+                    
+                    {tour.id === "philadelphia" && (
+                      <>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Independence Hall
+                        </span>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Sino da Liberdade
+                        </span>
+                        <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
+                          <Map className="h-3 w-3 mr-1" />
+                          Museu de Arte
+                        </span>
+                      </>
+                    )}
                   </div>
                   
                   {/* Call to Action */}
                   <Button 
-                    className="bg-brand-500 text-white hover:bg-brand-600 transition-colors rounded-full"
+                    className="bg-brand-500 text-white hover:bg-brand-600 transition-colors"
                     size="sm"
                   >
                     Book Tour <ArrowRight className="ml-1 h-3 w-3" />
