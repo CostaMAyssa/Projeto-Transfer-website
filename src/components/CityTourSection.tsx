@@ -21,7 +21,7 @@ const CityTourSection = () => {
   }, []);
 
   return (
-    <section className="py-16 relative overflow-hidden">
+    <section className="py-24 relative overflow-hidden">
       {/* Dark background color */}
       <div className="absolute inset-0 bg-[#111111] z-0"></div>
       
@@ -60,17 +60,17 @@ const CityTourSection = () => {
                 </div>
                 
                 <div className="px-1 pt-4">
-                  {/* Title - Themed Title */}
+                  {/* Title - Themed Title - smaller eyebrow with lighter red */}
                   <div className="mb-2">
-                    <span className="text-brand-500 text-lg font-medium">
+                    <span className="text-brand-300 text-sm font-medium">
                       {tour.id === "washington" && "Experiência Histórica"}
                       {tour.id === "new-york" && "Mais Popular"}
                       {tour.id === "philadelphia" && "Cultura Americana"}
                     </span>
                   </div>
                   
-                  {/* City Name */}
-                  <h3 className="text-white text-xl font-medium mb-2">
+                  {/* City Name - larger title */}
+                  <h3 className="text-white text-2xl font-medium mb-2">
                     {tour.city}
                   </h3>
                   
