@@ -55,11 +55,14 @@ const AddressAutocomplete = ({
       
       try {
         console.log("Fetching suggestions for:", debouncedValue);
-        // Adicionando parâmetros country=us para restringir aos EUA e types para tipos específicos de locais
+        
+        // Restrict to specific states: New Jersey, New York, Pennsylvania, and Connecticut
+        // Using bbox (bounding box) parameter to restrict the search area to these states
+        // We also add "poi.landmark" to types to better find landmarks like airports
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
             debouncedValue
-          )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5&country=us&types=address,poi,place,postcode`
+          )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5&country=us&types=address,poi,place,postcode,poi.landmark&bbox=-80.519891,39.719799,-71.856214,45.013027`
         );
         
         if (!response.ok) {
@@ -76,10 +79,26 @@ const AddressAutocomplete = ({
         
         const data = await response.json();
         console.log("Received suggestions:", data.features);
-        setSuggestions(data.features || []);
+        
+        // Filter the results to only include the specified states
+        const filteredSuggestions = data.features?.filter((feature: any) => {
+          const context = feature.context || [];
+          const stateRegion = context.find((item: any) => item.id.includes('region'));
+          
+          if (!stateRegion) return false;
+          
+          // Check if the state short code matches any of our target states
+          const stateShortCode = stateRegion.short_code;
+          return stateShortCode === 'US-NY' || 
+                 stateShortCode === 'US-NJ' || 
+                 stateShortCode === 'US-PA' || 
+                 stateShortCode === 'US-CT';
+        }) || [];
+        
+        setSuggestions(filteredSuggestions);
         
         // Show suggestions if we have any
-        setIsOpen(data.features && data.features.length > 0);
+        setIsOpen(filteredSuggestions.length > 0);
       } catch (error) {
         console.error("Error fetching address suggestions:", error);
         setSuggestions([]);
