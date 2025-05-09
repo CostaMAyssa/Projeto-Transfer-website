@@ -41,14 +41,20 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Form submitted with pickup:", pickupAddress);
+    console.log("Form submitted with dropoff:", dropoffAddress);
 
     // Update booking data in context
     setBookingType(bookingType);
     setPickupLocation({
-      address: pickupAddress
+      address: pickupAddress,
+      // Ensure coordinates are included if they exist
+      coordinates: bookingData.pickupLocation.coordinates
     });
     setDropoffLocation({
-      address: dropoffAddress
+      address: dropoffAddress,
+      // Ensure coordinates are included if they exist
+      coordinates: bookingData.dropoffLocation.coordinates
     });
     setPickupDate(date);
     setPickupTime(time);
@@ -60,6 +66,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   };
 
   const handlePickupAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
+    console.log("Pickup location selected:", location);
     setPickupAddress(location.address);
     setPickupLocation({
       address: location.address,
@@ -68,6 +75,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   };
 
   const handleDropoffAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
+    console.log("Dropoff location selected:", location);
     setDropoffAddress(location.address);
     setDropoffLocation({
       address: location.address,
