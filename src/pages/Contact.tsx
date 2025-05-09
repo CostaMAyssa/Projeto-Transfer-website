@@ -130,114 +130,118 @@ const Contact = () => {
 
         {/* Form and Content Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          {/* Contact Form */}
-          <div className="p-8 border border-gray-100">
-            <h2 className="text-2xl font-light mb-6">Send a Message</h2>
-            <p className="text-gray-600 mb-8 font-light">
-              Fill out the form below and our team will get back to you as soon as possible.
-            </p>
-            
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <FormField
-                    control={form.control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-light">Name</FormLabel>
-                        <FormControl>
-                          <Input placeholder="John Smith" {...field} className="font-light" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  
-                  <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-light">Email</FormLabel>
-                        <FormControl>
-                          <Input placeholder="john@example.com" {...field} className="font-light" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
+          {/* Contact Form - Styled to match booking page */}
+          <div className="bg-white border border-gray-100 rounded-md overflow-hidden">
+            <div className="p-8">
+              <h2 className="text-2xl font-light mb-6">Send a Message</h2>
+              <p className="text-gray-600 mb-8 font-light">
+                Fill out the form below and our team will get back to you as soon as possible.
+              </p>
+              
+              <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-light">Name</FormLabel>
+                          <FormControl>
+                            <Input placeholder="John Smith" {...field} className="font-light" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-light">Email</FormLabel>
+                          <FormControl>
+                            <Input placeholder="john@example.com" {...field} className="font-light" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-light">Phone (Optional)</FormLabel>
+                          <FormControl>
+                            <Input placeholder="(123) 456-7890" {...field} className="font-light" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    
+                    <FormField
+                      control={form.control}
+                      name="subject"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="font-light">Subject</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Service booking" {...field} className="font-light" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
                   <FormField
                     control={form.control}
-                    name="phone"
+                    name="message"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Phone (Optional)</FormLabel>
+                        <FormLabel className="font-light">Your Message</FormLabel>
                         <FormControl>
-                          <Input placeholder="(123) 456-7890" {...field} className="font-light" />
+                          <Textarea 
+                            placeholder="How can we help you?" 
+                            className="min-h-32 font-light" 
+                            {...field} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
-                  <FormField
-                    control={form.control}
-                    name="subject"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="font-light">Subject</FormLabel>
-                        <FormControl>
-                          <Input placeholder="Service booking" {...field} className="font-light" />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                </div>
 
-                <FormField
-                  control={form.control}
-                  name="message"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="font-light">Your Message</FormLabel>
-                      <FormControl>
-                        <Textarea 
-                          placeholder="How can we help you?" 
-                          className="min-h-32 font-light" 
-                          {...field} 
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <Button 
-                  type="submit" 
-                  className="bg-brand-500 hover:bg-brand-600 text-white"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Sending..." : "Send Message"}
-                </Button>
-              </form>
-            </Form>
+                  <Button 
+                    type="submit" 
+                    className="bg-brand-500 hover:bg-brand-600 text-white font-light"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Sending..." : "Send Message"}
+                  </Button>
+                </form>
+              </Form>
+            </div>
           </div>
 
-          {/* FAQ Section */}
-          <div className="p-8 border border-gray-100">
-            <h2 className="text-2xl font-light mb-6">Frequently Asked Questions</h2>
-            <div className="space-y-6">
-              {faqs.map((faq, index) => (
-                <div key={index} className="border-b border-gray-100 pb-5">
-                  <h3 className="text-lg font-light mb-2">{faq.question}</h3>
-                  <p className="text-gray-600 font-light">{faq.answer}</p>
-                </div>
-              ))}
+          {/* FAQ Section - Styled to match booking page */}
+          <div className="bg-white border border-gray-100 rounded-md overflow-hidden">
+            <div className="p-8">
+              <h2 className="text-2xl font-light mb-6">Frequently Asked Questions</h2>
+              <div className="space-y-6">
+                {faqs.map((faq, index) => (
+                  <div key={index} className="border-b border-gray-100 pb-5">
+                    <h3 className="text-lg font-light mb-2">{faq.question}</h3>
+                    <p className="text-gray-600 font-light">{faq.answer}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -276,7 +280,7 @@ const Contact = () => {
       <div className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
-          <div className="h-[400px] overflow-hidden border border-gray-100">
+          <div className="h-[400px] overflow-hidden rounded-md border border-gray-100">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d214616.86204587483!2d-112.07403710797066!3d33.56197553928274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872b12ed50a179cb%3A0x8c69c7f8354a1bac!2sPhoenix%2C%20AZ%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr"
               className="w-full h-full border-0"
