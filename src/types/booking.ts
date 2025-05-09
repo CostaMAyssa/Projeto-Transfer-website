@@ -17,15 +17,22 @@ export interface PassengerDetails {
   lastName: string;
   email: string;
   phone: string;
+  notes?: string; // Added notes property
 }
 
 export interface PaymentDetails {
   firstName: string;
   lastName: string;
+  company?: string; // Added company property
   address: string;
   country: string;
   city: string;
   postal: string;
+  cardHolder?: string; // Added cardHolder property
+  cardNumber?: string; // Added cardNumber property
+  expiryMonth?: string; // Added expiryMonth property
+  expiryYear?: string; // Added expiryYear property
+  cvv?: string; // Added cvv property
   termsAccepted: boolean;
   newsletterSubscription: boolean;
 }
@@ -36,6 +43,7 @@ export interface VehicleType {
   category: string;
   price: number;
   capacity: number;
+  luggage?: number; // Added luggage property
   image: string;
   features: string[];
   description: string;
