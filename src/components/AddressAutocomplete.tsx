@@ -126,6 +126,7 @@ const AddressAutocomplete = ({
       address: suggestion.place_name,
       coordinates: suggestion.center
     });
+    // Immediately close the dropdown when an address is selected
     setIsOpen(false);
   };
 
@@ -143,12 +144,14 @@ const AddressAutocomplete = ({
             }
           }}
           onBlur={() => {
-            // Delay hiding the dropdown to allow clicks on suggestions
+            // Immediately close the dropdown when the input loses focus
+            setIsFocused(false);
+            // We need to delay here to allow the click event to register first
             setTimeout(() => {
               if (!wrapperRef.current?.contains(document.activeElement)) {
-                setIsFocused(false);
+                setIsOpen(false);
               }
-            }, 150);
+            }, 100); // Reduced timeout for faster response
           }}
           required={required}
           className={className}
@@ -167,10 +170,7 @@ const AddressAutocomplete = ({
               <div
                 key={suggestion.id}
                 className="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start gap-2"
-                onMouseDown={(e) => {
-                  e.preventDefault(); // Prevent input blur
-                  handleSuggestionClick(suggestion);
-                }}
+                onClick={() => handleSuggestionClick(suggestion)}
               >
                 <MapPin size={18} className="text-brand mt-0.5 flex-shrink-0" />
                 <span className="text-sm">{suggestion.place_name}</span>
