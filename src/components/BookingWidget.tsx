@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { useNavigate } from "react-router-dom";
@@ -31,8 +30,14 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
     setLuggage
   } = useBooking();
   const [bookingType, setWidgetBookingType] = useState<BookingType>("one-way");
+  
+  // Separate state for the entered and selected values
   const [pickupAddress, setPickupAddress] = useState("");
+  const [selectedPickupAddress, setSelectedPickupAddress] = useState("");
+  
   const [dropoffAddress, setDropoffAddress] = useState("");
+  const [selectedDropoffAddress, setSelectedDropoffAddress] = useState("");
+  
   const [pickupCoordinates, setPickupCoordinates] = useState<[number, number] | undefined>(
     bookingData.pickupLocation.coordinates
   );
@@ -47,17 +52,22 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted with pickup:", pickupAddress, pickupCoordinates);
-    console.log("Form submitted with dropoff:", dropoffAddress, dropoffCoordinates);
+    
+    // Use the selected addresses from state for consistency
+    const finalPickupAddress = selectedPickupAddress || pickupAddress;
+    const finalDropoffAddress = selectedDropoffAddress || dropoffAddress;
+    
+    console.log("Form submitted with pickup:", finalPickupAddress, pickupCoordinates);
+    console.log("Form submitted with dropoff:", finalDropoffAddress, dropoffCoordinates);
 
     // Update booking data in context
     setBookingType(bookingType);
     setPickupLocation({
-      address: pickupAddress,
+      address: finalPickupAddress,
       coordinates: pickupCoordinates
     });
     setDropoffLocation({
-      address: dropoffAddress,
+      address: finalDropoffAddress,
       coordinates: dropoffCoordinates
     });
     setPickupDate(date);
@@ -71,8 +81,12 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
 
   const handlePickupAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
     console.log("Pickup location selected:", location);
+    // Store both the input value and selected address
     setPickupAddress(location.address);
+    setSelectedPickupAddress(location.address);
     setPickupCoordinates(location.coordinates);
+    
+    // Also update the booking context immediately for consistency
     setPickupLocation({
       address: location.address,
       coordinates: location.coordinates
@@ -81,12 +95,34 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
 
   const handleDropoffAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
     console.log("Dropoff location selected:", location);
+    // Store both the input value and selected address
     setDropoffAddress(location.address);
+    setSelectedDropoffAddress(location.address);
     setDropoffCoordinates(location.coordinates);
+    
+    // Also update the booking context immediately for consistency
     setDropoffLocation({
       address: location.address,
       coordinates: location.coordinates
     });
+  };
+
+  // Handler for pickup address input changes
+  const handlePickupAddressChange = (value: string) => {
+    setPickupAddress(value);
+    // Keep track of whether this is user input or a selection
+    if (value !== selectedPickupAddress) {
+      setSelectedPickupAddress("");
+    }
+  };
+
+  // Handler for dropoff address input changes
+  const handleDropoffAddressChange = (value: string) => {
+    setDropoffAddress(value);
+    // Keep track of whether this is user input or a selection
+    if (value !== selectedDropoffAddress) {
+      setSelectedDropoffAddress("");
+    }
   };
   
   return (
@@ -134,7 +170,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                 <AddressAutocomplete
                   placeholder="Enter pick-up location"
                   value={pickupAddress}
-                  onChange={setPickupAddress}
+                  onChange={handlePickupAddressChange}
                   onAddressSelect={handlePickupAddressSelect}
                   required
                 />
@@ -149,7 +185,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                 <AddressAutocomplete
                   placeholder="Enter drop-off location"
                   value={dropoffAddress}
-                  onChange={setDropoffAddress}
+                  onChange={handleDropoffAddressChange}
                   onAddressSelect={handleDropoffAddressSelect}
                   required
                 />
