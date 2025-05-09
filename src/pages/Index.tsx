@@ -168,7 +168,19 @@ const Index = () => {
 
       {/* Services Section with Carousel */}
       <section className="py-20 bg-gray-50 overflow-hidden relative">
-        <div className="container mx-auto px-4">
+        {/* Red curved line on the left side - moved from CityTourSection */}
+        <div 
+          className="absolute left-0 top-0 bottom-0 z-0" 
+          style={{ 
+            width: '40%', 
+            backgroundImage: `url("/lovable-uploads/45b9942a-dad5-4d13-ad48-48f01e8e8772.png")`, 
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: 'contain',
+            backgroundPosition: 'left center'
+          }}
+        ></div>
+        
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex justify-between items-center mb-10">
             <h2 className="text-3xl font-normal">Our Services</h2>
             <Link to="/services" className="flex items-center text-brand hover:text-brand-700">

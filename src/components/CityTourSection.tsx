@@ -21,22 +21,10 @@ const CityTourSection = () => {
   }, []);
 
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-32 relative overflow-hidden">
       {/* Dark background color */}
       <div className="absolute inset-0 bg-[#111111] z-0"></div>
       
-      {/* Red curved line on the left side */}
-      <div 
-        className="absolute left-0 top-0 bottom-0 z-0" 
-        style={{ 
-          width: '40%', 
-          backgroundImage: `url("/lovable-uploads/45b9942a-dad5-4d13-ad48-48f01e8e8772.png")`, 
-          backgroundRepeat: 'no-repeat',
-          backgroundSize: 'contain',
-          backgroundPosition: 'left center'
-        }}
-      ></div>
-
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
           <h2 className="text-4xl font-normal text-white mb-4">City Tour Packages</h2>
@@ -62,7 +50,7 @@ const CityTourSection = () => {
                 <div className="px-1 pt-4">
                   {/* Title - Themed Title - smaller eyebrow with lighter red */}
                   <div className="mb-2">
-                    <span className="text-[#FCD6D8] text-sm font-medium">
+                    <span className="text-[#FCD6D8] text-xs font-medium">
                       {tour.id === "washington" && "Experiência Histórica"}
                       {tour.id === "new-york" && "Mais Popular"}
                       {tour.id === "philadelphia" && "Cultura Americana"}
@@ -70,7 +58,7 @@ const CityTourSection = () => {
                   </div>
                   
                   {/* City Name - larger title */}
-                  <h3 className="text-white text-2xl font-medium mb-2">
+                  <h3 className="text-white text-3xl font-medium mb-2">
                     {tour.city}
                   </h3>
                   
