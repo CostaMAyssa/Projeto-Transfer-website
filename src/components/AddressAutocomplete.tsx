@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin, AlertCircle } from "lucide-react";
@@ -52,10 +53,11 @@ const AddressAutocomplete = ({
       
       try {
         console.log("Fetching suggestions for:", debouncedValue);
+        // Adicionando parâmetros country=us para restringir aos EUA e types para tipos específicos de locais
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
             debouncedValue
-          )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5`
+          )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5&country=us&types=address,poi,place,postcode`
         );
         
         if (!response.ok) {
