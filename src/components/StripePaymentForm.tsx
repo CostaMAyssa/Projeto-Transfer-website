@@ -44,7 +44,7 @@ const paymentSchema = z.object({
 type PaymentFormData = z.infer<typeof paymentSchema>;
 
 const StripePaymentForm = () => {
-  const { completeBooking, bookingData, setPaymentDetails } = useBooking();
+  const { completeBooking, bookingData, setPaymentDetails, calculateTotal } = useBooking();
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
 
@@ -74,8 +74,26 @@ const StripePaymentForm = () => {
     try {
       setIsProcessing(true);
       
+      // Create a non-optional version of the payment details to satisfy TypeScript
+      const paymentDetails = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        company: data.company || "",
+        address: data.address,
+        country: data.country,
+        city: data.city,
+        postal: data.postal,
+        cardHolder: data.cardHolder,
+        cardNumber: data.cardNumber,
+        expiryMonth: data.expiryMonth,
+        expiryYear: data.expiryYear,
+        cvv: data.cvv,
+        termsAccepted: data.termsAccepted,
+        newsletterSubscription: data.newsletterSubscription || false,
+      };
+      
       // Save details to context
-      setPaymentDetails(data);
+      setPaymentDetails(paymentDetails);
       
       // Call process-payment function
       const { data: paymentResponse, error } = await supabase.functions.invoke("process-payment", {
@@ -83,7 +101,7 @@ const StripePaymentForm = () => {
           paymentDetails: data, 
           bookingData: {
             ...bookingData,
-            calculateTotal: bookingData.calculateTotal(),
+            total: calculateTotal().total,
           }
         }
       });
