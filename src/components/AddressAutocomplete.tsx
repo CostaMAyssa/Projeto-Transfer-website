@@ -41,27 +41,33 @@ const AddressAutocomplete = ({
     const fetchSuggestions = async () => {
       if (debouncedValue.length < 3) {
         setSuggestions([]);
+        setIsOpen(false);
         return;
       }
 
       setIsLoading(true);
       try {
+        console.log("Fetching suggestions for:", debouncedValue);
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
             debouncedValue
           )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5`
         );
-        if (!response.ok) throw new Error("Geocoding request failed");
+        
+        if (!response.ok) {
+          console.error("Geocoding request failed with status:", response.status);
+          throw new Error("Geocoding request failed");
+        }
         
         const data = await response.json();
+        console.log("Received suggestions:", data.features);
         setSuggestions(data.features);
         
         // Show suggestions if we have any
-        if (data.features.length > 0) {
-          setIsOpen(true);
-        }
+        setIsOpen(data.features && data.features.length > 0);
       } catch (error) {
         console.error("Error fetching address suggestions:", error);
+        setSuggestions([]);
       } finally {
         setIsLoading(false);
       }
@@ -71,6 +77,7 @@ const AddressAutocomplete = ({
       fetchSuggestions();
     } else {
       setSuggestions([]);
+      setIsOpen(false);
     }
   }, [debouncedValue, mapboxToken]);
 
@@ -89,12 +96,16 @@ const AddressAutocomplete = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
+    
     if (newValue.length >= 3) {
-      setIsOpen(true);
+      setIsLoading(true);
+    } else {
+      setIsOpen(false);
     }
   };
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
+    console.log("Selected suggestion:", suggestion);
     onChange(suggestion.place_name);
     onAddressSelect({
       address: suggestion.place_name,
@@ -111,15 +122,24 @@ const AddressAutocomplete = ({
         onChange={handleInputChange}
         onFocus={() => {
           setIsFocused(true);
-          if (suggestions.length > 0) {
+          if (value.length >= 3 && suggestions.length > 0) {
             setIsOpen(true);
           }
         }}
+        onBlur={() => {
+          // Delay hiding the dropdown to allow clicks on suggestions
+          setTimeout(() => {
+            if (!wrapperRef.current?.contains(document.activeElement)) {
+              setIsFocused(false);
+            }
+          }, 150);
+        }}
         required={required}
         className={className}
+        autoComplete="off" // Disable browser's native autocomplete
       />
 
-      {isLoading && isFocused && (
+      {isLoading && (
         <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
           <div className="animate-spin h-4 w-4 border-2 border-gray-500 rounded-full border-t-transparent"></div>
         </div>
@@ -131,7 +151,10 @@ const AddressAutocomplete = ({
             <div
               key={suggestion.id}
               className="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start gap-2"
-              onClick={() => handleSuggestionClick(suggestion)}
+              onMouseDown={(e) => {
+                e.preventDefault(); // Prevent input blur
+                handleSuggestionClick(suggestion);
+              }}
             >
               <MapPin size={18} className="text-brand mt-0.5 flex-shrink-0" />
               <span className="text-sm">{suggestion.place_name}</span>
