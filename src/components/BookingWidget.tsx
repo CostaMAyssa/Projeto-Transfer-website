@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { useNavigate } from "react-router-dom";
@@ -62,10 +61,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
     <div className={cn(
       "bg-white rounded-xl border border-gray-200",
       vertical 
-        ? "p-4 h-full w-full max-h-[600px] overflow-y-auto"
+        ? "p-4 w-full h-auto" // Removed max-height and overflow to prevent scrolling
         : "max-w-5xl mx-auto p-6 -mt-36 relative z-10"
     )}>
-      <Tabs defaultValue="one-way" className={cn("mb-4", vertical && "flex flex-col h-full")}>
+      <Tabs defaultValue="one-way" className={cn("mb-4", vertical && "flex flex-col")}>
         <TabsList className={cn(
           vertical ? "grid grid-cols-2 mb-4" : "grid grid-cols-4 mb-8"
         )}>
@@ -87,7 +86,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
           )}
         </TabsList>
 
-        <TabsContent value="one-way" className="mt-0 flex-grow">
+        <TabsContent value="one-way" className="mt-0">
           <form onSubmit={handleSubmit} className={vertical ? "flex flex-col space-y-3" : ""}>
             <div className={cn(
               vertical 

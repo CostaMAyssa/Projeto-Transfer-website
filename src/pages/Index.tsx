@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
@@ -52,8 +51,8 @@ const Index = () => {
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
-      {/* Hero Section with Background */}
-      <div className="relative h-[700px]">
+      {/* Hero Section with Background - Increased height to fit booking widget without scrolling */}
+      <div className="relative h-[850px] md:h-[800px]">
         {/* Background Image */}
         <div className="absolute inset-0 bg-cover bg-center" style={{
         backgroundImage: "url('/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png')",
