@@ -149,8 +149,8 @@ const CityTourSection = () => {
         </div>
         
         <div className="text-center mt-12">
-          <Link to="/services" className="inline-flex items-center text-brand-500 hover:text-brand-400 group">
-            View All City Tours <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1" />
+          <Link to="/services" className="inline-flex items-center text-white hover:text-white/80 group">
+            View All City Tours <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1 text-white" />
           </Link>
         </div>
       </div>
