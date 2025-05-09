@@ -33,7 +33,9 @@ const AddressAutocomplete = ({
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
   const wrapperRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
   const debouncedValue = useDebounce(value, 400);
 
   // Using the updated token
@@ -111,6 +113,8 @@ const AddressAutocomplete = ({
     const newValue = e.target.value;
     onChange(newValue);
     setErrorMessage(null);
+    // Reset selected address when user types
+    setSelectedAddress(null);
     
     if (newValue.length >= 3) {
       setIsLoading(true);
@@ -121,21 +125,30 @@ const AddressAutocomplete = ({
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
     console.log("Selected suggestion:", suggestion);
+    // Set the full address as the selected value
+    setSelectedAddress(suggestion.place_name);
+    // Update the parent component
     onChange(suggestion.place_name);
+    // Call the onAddressSelect callback with the complete address data
     onAddressSelect({
       address: suggestion.place_name,
       coordinates: suggestion.center
     });
     // Immediately close the dropdown when an address is selected
     setIsOpen(false);
+    // Set focus on the input to indicate selection has completed
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   return (
     <div className="space-y-2">
       <div className="relative w-full" ref={wrapperRef}>
         <Input
+          ref={inputRef}
           placeholder={placeholder}
-          value={value}
+          value={selectedAddress || value}
           onChange={handleInputChange}
           onFocus={() => {
             setIsFocused(true);
@@ -144,18 +157,16 @@ const AddressAutocomplete = ({
             }
           }}
           onBlur={() => {
-            // Immediately close the dropdown when the input loses focus
             setIsFocused(false);
-            // We need to delay here to allow the click event to register first
             setTimeout(() => {
               if (!wrapperRef.current?.contains(document.activeElement)) {
                 setIsOpen(false);
               }
-            }, 100); // Reduced timeout for faster response
+            }, 100);
           }}
           required={required}
           className={className}
-          autoComplete="off" // Disable browser's native autocomplete
+          autoComplete="off"
         />
 
         {isLoading && (
