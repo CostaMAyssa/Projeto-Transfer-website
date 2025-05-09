@@ -21,11 +21,11 @@ import { Textarea } from "@/components/ui/textarea";
 import Footer from "@/components/Footer";
 
 const contactFormSchema = z.object({
-  name: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
-  email: z.string().email("Por favor informe um email válido"),
+  name: z.string().min(2, "Name must be at least 2 characters"),
+  email: z.string().email("Please provide a valid email"),
   phone: z.string().optional(),
-  subject: z.string().min(3, "Assunto deve ter pelo menos 3 caracteres"),
-  message: z.string().min(10, "Mensagem deve ter pelo menos 10 caracteres"),
+  subject: z.string().min(3, "Subject must be at least 3 characters"),
+  message: z.string().min(10, "Message must be at least 10 characters"),
 });
 
 type ContactFormValues = z.infer<typeof contactFormSchema>;
@@ -54,10 +54,10 @@ const Contact = () => {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      toast.success("Mensagem enviada com sucesso! Entraremos em contato em breve.");
+      toast.success("Message sent successfully! We'll contact you soon.");
       form.reset();
     } catch (error) {
-      toast.error("Falha ao enviar mensagem. Por favor tente novamente.");
+      toast.error("Failed to send message. Please try again.");
       console.error("Form submission error:", error);
     } finally {
       setIsSubmitting(false);
@@ -72,10 +72,10 @@ const Contact = () => {
       <div className="bg-[#111111] py-16 px-4 mt-16">
         <div className="container mx-auto max-w-6xl">
           <h1 className="text-4xl md:text-5xl font-light text-white mb-2">
-            Entre em Contato
+            Contact Us
           </h1>
           <p className="text-lg text-gray-300 font-light max-w-2xl">
-            Nosso time está disponível para ajudar você com qualquer informação ou serviço 24/7.
+            Our team is available to help you with any information or service 24/7.
           </p>
         </div>
       </div>
@@ -87,8 +87,8 @@ const Contact = () => {
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-gray-50">
               <Phone className="h-7 w-7 text-brand-500" />
             </div>
-            <h3 className="text-xl font-light mb-2">Telefone</h3>
-            <p className="text-gray-500 mb-2 text-sm">Fale com nossa equipe</p>
+            <h3 className="text-xl font-light mb-2">Phone</h3>
+            <p className="text-gray-500 mb-2 text-sm">Speak with our team</p>
             <a href="tel:+1 480-680-7664" className="text-brand-500 hover:underline">
               +1 (480) 680-7664
             </a>
@@ -99,7 +99,7 @@ const Contact = () => {
               <Mail className="h-7 w-7 text-brand-500" />
             </div>
             <h3 className="text-xl font-light mb-2">Email</h3>
-            <p className="text-gray-500 mb-2 text-sm">Responderemos o mais rápido possível</p>
+            <p className="text-gray-500 mb-2 text-sm">We'll respond as soon as possible</p>
             <a href="mailto:info@aztransfer.com" className="text-brand-500 hover:underline">
               info@aztransfer.com
             </a>
@@ -109,8 +109,8 @@ const Contact = () => {
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-gray-50">
               <MapPin className="h-7 w-7 text-brand-500" />
             </div>
-            <h3 className="text-xl font-light mb-2">Localização</h3>
-            <p className="text-gray-500 mb-2 text-sm">Visite nosso escritório</p>
+            <h3 className="text-xl font-light mb-2">Location</h3>
+            <p className="text-gray-500 mb-2 text-sm">Visit our office</p>
             <p className="text-gray-700">
               Phoenix, Arizona
             </p>
@@ -120,20 +120,21 @@ const Contact = () => {
             <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4 bg-gray-50">
               <Clock className="h-7 w-7 text-brand-500" />
             </div>
-            <h3 className="text-xl font-light mb-2">Horário</h3>
-            <p className="text-gray-500 mb-2 text-sm">Estamos disponíveis para você</p>
+            <h3 className="text-xl font-light mb-2">Hours</h3>
+            <p className="text-gray-500 mb-2 text-sm">We're available for you</p>
             <p className="text-gray-700">
-              24/7 - Sempre ao seu serviço
+              24/7 - Always at your service
             </p>
           </div>
         </div>
 
+        {/* Form and Content Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           {/* Contact Form */}
           <div className="p-8 border border-gray-100">
-            <h2 className="text-2xl font-light mb-6">Envie uma Mensagem</h2>
+            <h2 className="text-2xl font-light mb-6">Send a Message</h2>
             <p className="text-gray-600 mb-8 font-light">
-              Preencha o formulário abaixo e nossa equipe entrará em contato o mais rápido possível.
+              Fill out the form below and our team will get back to you as soon as possible.
             </p>
             
             <Form {...form}>
@@ -144,9 +145,9 @@ const Contact = () => {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Nome</FormLabel>
+                        <FormLabel className="font-light">Name</FormLabel>
                         <FormControl>
-                          <Input placeholder="João Silva" {...field} className="font-light" />
+                          <Input placeholder="John Smith" {...field} className="font-light" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -160,7 +161,7 @@ const Contact = () => {
                       <FormItem>
                         <FormLabel className="font-light">Email</FormLabel>
                         <FormControl>
-                          <Input placeholder="joao@exemplo.com" {...field} className="font-light" />
+                          <Input placeholder="john@example.com" {...field} className="font-light" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -174,9 +175,9 @@ const Contact = () => {
                     name="phone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Telefone (Opcional)</FormLabel>
+                        <FormLabel className="font-light">Phone (Optional)</FormLabel>
                         <FormControl>
-                          <Input placeholder="(11) 98765-4321" {...field} className="font-light" />
+                          <Input placeholder="(123) 456-7890" {...field} className="font-light" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -188,9 +189,9 @@ const Contact = () => {
                     name="subject"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="font-light">Assunto</FormLabel>
+                        <FormLabel className="font-light">Subject</FormLabel>
                         <FormControl>
-                          <Input placeholder="Reserva de serviço" {...field} className="font-light" />
+                          <Input placeholder="Service booking" {...field} className="font-light" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -203,10 +204,10 @@ const Contact = () => {
                   name="message"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="font-light">Sua Mensagem</FormLabel>
+                      <FormLabel className="font-light">Your Message</FormLabel>
                       <FormControl>
                         <Textarea 
-                          placeholder="Como podemos te ajudar?" 
+                          placeholder="How can we help you?" 
                           className="min-h-32 font-light" 
                           {...field} 
                         />
@@ -221,52 +222,23 @@ const Contact = () => {
                   className="bg-brand-500 hover:bg-brand-600 text-white"
                   disabled={isSubmitting}
                 >
-                  {isSubmitting ? "Enviando..." : "Enviar Mensagem"}
+                  {isSubmitting ? "Sending..." : "Send Message"}
                 </Button>
               </form>
             </Form>
           </div>
 
-          {/* Map */}
-          <div className="h-full min-h-[400px] overflow-hidden border border-gray-100">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d214616.86204587483!2d-112.07403710797066!3d33.56197553928274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872b12ed50a179cb%3A0x8c69c7f8354a1bac!2sPhoenix%2C%20AZ%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr"
-              className="w-full h-full border-0"
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Office Location"
-            ></iframe>
-          </div>
-        </div>
-      </div>
-
-      {/* FAQ Section */}
-      <div className="bg-gray-50 py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-2xl font-light mb-2">Perguntas Frequentes</h2>
-            <p className="text-gray-600 max-w-2xl mx-auto font-light">
-              Encontre respostas rápidas para perguntas comuns sobre nossos serviços e processo de reserva.
-            </p>
-          </div>
-          
-          <div className="max-w-3xl mx-auto space-y-5">
-            {faqs.map((faq, index) => (
-              <div key={index} className="border-b border-gray-200 pb-5">
-                <h3 className="text-lg font-light mb-2">{faq.question}</h3>
-                <p className="text-gray-600 font-light">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
-          
-          <div className="text-center mt-10">
-            <p className="text-gray-600 mb-4 font-light">
-              Não encontrou a resposta que procura?
-            </p>
-            <Button className="bg-brand-500 hover:bg-brand-600 text-white">
-              Entre em Contato com Nossa Equipe
-            </Button>
+          {/* FAQ Section */}
+          <div className="p-8 border border-gray-100">
+            <h2 className="text-2xl font-light mb-6">Frequently Asked Questions</h2>
+            <div className="space-y-6">
+              {faqs.map((faq, index) => (
+                <div key={index} className="border-b border-gray-100 pb-5">
+                  <h3 className="text-lg font-light mb-2">{faq.question}</h3>
+                  <p className="text-gray-600 font-light">{faq.answer}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
@@ -274,7 +246,7 @@ const Contact = () => {
       {/* Social Media Section */}
       <div className="py-12 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-light mb-8 text-center">Siga-nos nas Redes Sociais</h2>
+          <h2 className="text-2xl font-light mb-8 text-center">Follow Us on Social Media</h2>
           
           <div className="flex justify-center gap-8">
             <a href="https://www.facebook.com/aztransfer" target="_blank" rel="noopener noreferrer" className="text-gray-600 hover:text-brand-500">
@@ -300,6 +272,23 @@ const Contact = () => {
         </div>
       </div>
 
+      {/* Map Section - Moved to bottom */}
+      <div className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
+          <div className="h-[400px] overflow-hidden border border-gray-100">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d214616.86204587483!2d-112.07403710797066!3d33.56197553928274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872b12ed50a179cb%3A0x8c69c7f8354a1bac!2sPhoenix%2C%20AZ%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr"
+              className="w-full h-full border-0"
+              allowFullScreen={false}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              title="Office Location"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+
       <Footer />
     </div>
   );
@@ -308,24 +297,24 @@ const Contact = () => {
 // FAQ data
 const faqs = [
   {
-    question: "Qual a antecedência recomendada para reservar um transfer?",
-    answer: "Recomendamos reservar com pelo menos 24 horas de antecedência para garantir disponibilidade. Para temporadas de pico ou eventos especiais, é aconselhável reservar com mais antecedência."
+    question: "How far in advance should I book a transfer?",
+    answer: "We recommend booking at least 24 hours in advance to ensure availability. For peak seasons or special events, it's advisable to book further in advance."
   },
   {
-    question: "O que acontece se meu voo atrasar?",
-    answer: "Não se preocupe! Monitoramos todos os voos e nossos motoristas ajustam o horário conforme seu tempo real de chegada, sem custo adicional."
+    question: "What happens if my flight is delayed?",
+    answer: "Don't worry! We monitor all flights and our drivers adjust their schedule according to your actual arrival time, at no extra cost."
   },
   {
-    question: "Há alguma taxa extra para bagagem?",
-    answer: "Bagagem padrão (até 2 peças por pessoa) está incluída no preço. Bagagem adicional ou de grandes dimensões pode ter custos extras."
+    question: "Is there an extra fee for luggage?",
+    answer: "Standard luggage (up to 2 pieces per person) is included in the price. Additional or oversized luggage may incur extra costs."
   },
   {
-    question: "Como posso pagar pelo serviço de transfer?",
-    answer: "Aceitamos todos os principais cartões de crédito, PayPal e transferências bancárias. O pagamento geralmente é necessário no momento da reserva para confirmar seu serviço."
+    question: "How can I pay for the transfer service?",
+    answer: "We accept all major credit cards, PayPal, and bank transfers. Payment is typically required at the time of booking to confirm your service."
   },
   {
-    question: "Qual é a política de cancelamento?",
-    answer: "Cancelamento gratuito até 24 horas antes do horário agendado para busca. Cancelamentos dentro de 24 horas podem estar sujeitos a uma taxa."
+    question: "What is the cancellation policy?",
+    answer: "Free cancellation up to 24 hours before your scheduled pickup time. Cancellations within 24 hours may be subject to a fee."
   }
 ];
 
