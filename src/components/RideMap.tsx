@@ -18,6 +18,7 @@ const RideMap = ({ className }: RideMapProps) => {
   const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isRouteLoaded, setIsRouteLoaded] = useState(false);
 
   // Using the updated token
   const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
@@ -56,6 +57,12 @@ const RideMap = ({ className }: RideMapProps) => {
       // Clear previous markers
       markersRef.current.forEach(marker => marker.remove());
       markersRef.current = [];
+
+      // Clear previous routes
+      if (mapRef.current.getSource('route')) {
+        mapRef.current.removeLayer('route');
+        mapRef.current.removeSource('route');
+      }
 
       // Add markers for pickup and dropoff if coordinates are available
       const hasPickup = bookingData.pickupLocation.coordinates;
@@ -105,6 +112,16 @@ const RideMap = ({ className }: RideMapProps) => {
         markersRef.current.push(dropoffMarker);
       }
 
+      // Draw route if both pickup and dropoff coordinates are available
+      if (hasPickup && hasDropoff && mapRef.current.isStyleLoaded()) {
+        drawRoute();
+      } else if (hasPickup && hasDropoff) {
+        // Wait for style to be loaded
+        mapRef.current.once('style.load', () => {
+          drawRoute();
+        });
+      }
+      
       // Fit map to include both markers if available
       if (hasPickup && hasDropoff) {
         const bounds = new mapboxgl.LngLatBounds()
@@ -122,6 +139,81 @@ const RideMap = ({ className }: RideMapProps) => {
     } catch (error) {
       console.error('Error initializing map:', error);
       setErrorMessage('Error initializing map. Please check your connection.');
+    }
+  };
+
+  const drawRoute = async () => {
+    if (!mapRef.current || !bookingData.pickupLocation.coordinates || !bookingData.dropoffLocation.coordinates) return;
+    
+    try {
+      setIsRouteLoaded(false);
+      const start = bookingData.pickupLocation.coordinates;
+      const end = bookingData.dropoffLocation.coordinates;
+      
+      // Get the route from Mapbox Directions API
+      const query = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxToken}`;
+      
+      const response = await fetch(query);
+      const data = await response.json();
+      
+      if (data.routes && data.routes.length > 0) {
+        const route = data.routes[0].geometry.coordinates;
+
+        // Check if map is loaded and source exists
+        if (mapRef.current.getSource('route')) {
+          // Update existing source
+          (mapRef.current.getSource('route') as mapboxgl.GeoJSONSource).setData({
+            type: 'Feature',
+            properties: {},
+            geometry: {
+              type: 'LineString',
+              coordinates: route
+            }
+          });
+        } else if (mapRef.current.isStyleLoaded()) {
+          // Add new source and layer
+          mapRef.current.addSource('route', {
+            type: 'geojson',
+            data: {
+              type: 'Feature',
+              properties: {},
+              geometry: {
+                type: 'LineString',
+                coordinates: route
+              }
+            }
+          });
+
+          mapRef.current.addLayer({
+            id: 'route',
+            type: 'line',
+            source: 'route',
+            layout: {
+              'line-join': 'round',
+              'line-cap': 'round'
+            },
+            paint: {
+              'line-color': '#3E63DD',
+              'line-width': 4,
+              'line-opacity': 0.8
+            }
+          });
+        } else {
+          // Wait for style to be loaded
+          mapRef.current.once('style.load', () => {
+            drawRoute();
+          });
+          return;
+        }
+        
+        setIsRouteLoaded(true);
+      } else {
+        console.error('No routes found in response');
+        setErrorMessage('Could not calculate route. Please try again.');
+      }
+    } catch (error) {
+      console.error('Error getting directions:', error);
+      setErrorMessage('Error calculating route. Please check your connection.');
     }
   };
 
