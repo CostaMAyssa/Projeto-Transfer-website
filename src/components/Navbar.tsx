@@ -1,14 +1,44 @@
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+  const [scrolled, setScrolled] = useState(false);
+  
+  // Check if we're on the home page
+  const isHomePage = location.pathname === "/";
+
+  // Add scroll event listener to change navbar background on scroll for home page
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 100) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    if (isHomePage) {
+      window.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [isHomePage]);
+
+  const navbarClasses = isHomePage 
+    ? `fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled ? 'bg-[#111111]' : 'bg-transparent'
+      }`
+    : 'fixed top-0 left-0 right-0 z-50 bg-[#111111]';
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-[#111111]">
+    <header className={navbarClasses}>
       <div className="container mx-auto px-4">
         <nav className="flex items-center justify-between h-16">
           {/* Logo */}
