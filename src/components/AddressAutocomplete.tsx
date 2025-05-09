@@ -36,18 +36,8 @@ const AddressAutocomplete = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debouncedValue = useDebounce(value, 400);
 
-  // Using a default public token from Mapbox examples
-  // This should be replaced with a proper token from environment variables in production
-  const [mapboxToken, setMapboxToken] = useState<string>(
-    localStorage.getItem('mapbox_token') || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA'
-  );
-
-  const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newToken = e.target.value;
-    setMapboxToken(newToken);
-    localStorage.setItem('mapbox_token', newToken);
-    setErrorMessage(null);
-  };
+  // Using the provided token
+  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbTk0bGplZXAweTIyMnJwdjQ0d2I1eDhxIn0.cTCGVYAunWY8b6N9NgZWmQ";
 
   useEffect(() => {
     const fetchSuggestions = async () => {
@@ -73,7 +63,7 @@ const AddressAutocomplete = ({
           console.error("Geocoding request failed with status:", response.status);
           
           if (response.status === 401) {
-            setErrorMessage("Invalid Mapbox token. Please update your token below.");
+            setErrorMessage("Invalid Mapbox token. Please contact support.");
           } else {
             setErrorMessage(`Geocoding request failed with status: ${response.status}`);
           }
@@ -102,7 +92,7 @@ const AddressAutocomplete = ({
       setIsOpen(false);
       setErrorMessage(null);
     }
-  }, [debouncedValue, mapboxToken]);
+  }, [debouncedValue]);
 
   useEffect(() => {
     // Close suggestions on outside click
@@ -194,20 +184,6 @@ const AddressAutocomplete = ({
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-xs">{errorMessage}</AlertDescription>
         </Alert>
-      )}
-
-      {errorMessage && errorMessage.includes("Invalid Mapbox token") && (
-        <div className="mt-2">
-          <Input
-            placeholder="Enter your Mapbox token"
-            value={mapboxToken}
-            onChange={handleTokenChange}
-            className="text-xs"
-          />
-          <p className="text-xs mt-1 text-gray-500">
-            Get your token at <a href="https://www.mapbox.com/account/access-tokens" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">mapbox.com</a>
-          </p>
-        </div>
       )}
     </div>
   );

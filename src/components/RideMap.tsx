@@ -4,7 +4,6 @@ import { useBooking } from "@/contexts/BookingContext";
 import { Skeleton } from '@/components/ui/skeleton';
 import { MapPin, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Input } from "@/components/ui/input";
 
 interface RideMapProps {
   className?: string;
@@ -17,24 +16,8 @@ const RideMap = ({ className }: RideMapProps) => {
   const markersRef = useRef<any[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Get token from localStorage or use default
-  const [mapboxToken, setMapboxToken] = useState<string>(
-    localStorage.getItem('mapbox_token') || 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA'
-  );
-
-  const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newToken = e.target.value;
-    setMapboxToken(newToken);
-    localStorage.setItem('mapbox_token', newToken);
-    setErrorMessage(null);
-    
-    // Reinitialize map with new token
-    if (mapRef.current) {
-      mapRef.current.remove();
-      mapRef.current = null;
-      initializeMap();
-    }
-  };
+  // Using the provided token
+  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbTk0bGplZXAweTIyMnJwdjQ0d2I1eDhxIn0.cTCGVYAunWY8b6N9NgZWmQ";
 
   const initializeMap = () => {
     // Initialize map only if container is available
@@ -64,7 +47,7 @@ const RideMap = ({ className }: RideMapProps) => {
         mapRef.current.on('error', (e: any) => {
           console.error('Map error:', e);
           if (e.error && e.error.status === 401) {
-            setErrorMessage('Invalid Mapbox token. Please update your token below.');
+            setErrorMessage('Invalid Mapbox token. Please contact support.');
           } else {
             setErrorMessage(`Map error: ${e.error ? e.error.message : 'Unknown error'}`);
           }
@@ -139,7 +122,7 @@ const RideMap = ({ className }: RideMapProps) => {
       setErrorMessage(null);
     } catch (error) {
       console.error('Error initializing map:', error);
-      setErrorMessage('Error initializing map. Please check your Mapbox token.');
+      setErrorMessage('Error initializing map. Please check your connection.');
     }
   };
 
@@ -154,7 +137,7 @@ const RideMap = ({ className }: RideMapProps) => {
         markersRef.current = [];
       }
     };
-  }, [bookingData.pickupLocation, bookingData.dropoffLocation, mapboxToken]);
+  }, [bookingData.pickupLocation, bookingData.dropoffLocation]);
 
   // Check if we have any location coordinates
   const hasLocations = bookingData.pickupLocation.coordinates || bookingData.dropoffLocation.coordinates;
@@ -177,20 +160,6 @@ const RideMap = ({ className }: RideMapProps) => {
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-xs">{errorMessage}</AlertDescription>
         </Alert>
-      )}
-
-      {errorMessage && errorMessage.includes("Invalid Mapbox token") && (
-        <div className="mt-2">
-          <Input
-            placeholder="Enter your Mapbox token"
-            value={mapboxToken}
-            onChange={handleTokenChange}
-            className="text-xs"
-          />
-          <p className="text-xs mt-1 text-gray-500">
-            Get your token at <a href="https://www.mapbox.com/account/access-tokens" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">mapbox.com</a>
-          </p>
-        </div>
       )}
     </div>
   );
