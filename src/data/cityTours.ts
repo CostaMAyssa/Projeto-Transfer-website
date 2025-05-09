@@ -26,7 +26,7 @@ export const createCityTours = () => [
     city: "New York",
     title: "Big Apple Explorer",
     description: "Experience the vibrant energy of New York City with our comprehensive tour of iconic landmarks including Times Square, Central Park, Empire State Building, and more.",
-    image: "/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png",
+    image: "/lovable-uploads/007295a4-7c51-499c-930d-f75c6764ff7a.png",
     duration: "8 hours",
     highlights: [
       "Times Square & Broadway District",
@@ -63,7 +63,7 @@ export const createCityTours = () => [
     city: "Philadelphia",
     title: "Historic Philadelphia",
     description: "Discover America's historic roots with our comprehensive tour of Philadelphia featuring Independence Hall, Liberty Bell, and other significant American landmarks.",
-    image: "/lovable-uploads/af0f41d4-ae3b-415a-8813-f14552ab516c.png",
+    image: "/lovable-uploads/c6e8c945-da87-4dd5-a4b2-f7d028dc458c.png",
     duration: "6 hours",
     highlights: [
       "Independence Hall",
@@ -99,7 +99,7 @@ export const createCityTours = () => [
     city: "Washington, DC",
     title: "Capitol Explorer",
     description: "Tour the nation's capital with visits to iconic monuments, museums, and government buildings including the White House, Capitol Building, and Lincoln Memorial.",
-    image: "/lovable-uploads/baf6dc09-5b63-470c-90a1-0231305e3b67.png",
+    image: "/lovable-uploads/de1e4c6d-8aba-414b-8792-750a8749846a.png",
     duration: "10 hours",
     highlights: [
       "White House (Exterior View)",
