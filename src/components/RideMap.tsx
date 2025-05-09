@@ -14,6 +14,9 @@ const RideMap = ({ className }: RideMapProps) => {
   const mapRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
 
+  // Updated token - using a public token for demo purposes
+  const mapboxToken = "pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNsdTU4ZW12ODBkYzEyaW85cmUwYzg4aTcifQ.YK8BN3UDur9AgNnd2kJs2g";
+
   useEffect(() => {
     // Initialize map only if container is available
     if (!mapContainerRef.current) return;
@@ -26,7 +29,7 @@ const RideMap = ({ className }: RideMapProps) => {
     }
 
     // Set access token
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZGVtb3VzZXIiLCJhIjoiY2xtcTE3MmtrMTRoZjJrcWhvOGhpNnJuNSJ9.LfK0bP7yfpFy-E7OTd9IGQ';
+    mapboxgl.accessToken = mapboxToken;
 
     // Create the map if it doesn't exist
     if (!mapRef.current) {
@@ -110,7 +113,7 @@ const RideMap = ({ className }: RideMapProps) => {
         markersRef.current = [];
       }
     };
-  }, [bookingData.pickupLocation, bookingData.dropoffLocation]);
+  }, [bookingData.pickupLocation, bookingData.dropoffLocation, mapboxToken]);
 
   // Check if we have any location coordinates
   const hasLocations = bookingData.pickupLocation.coordinates || bookingData.dropoffLocation.coordinates;

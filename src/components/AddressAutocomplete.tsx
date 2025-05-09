@@ -34,6 +34,9 @@ const AddressAutocomplete = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debouncedValue = useDebounce(value, 400);
 
+  // Updated token - using a public token for demo purposes
+  const mapboxToken = "pk.eyJ1IjoibG92YWJsZS1kZW1vIiwiYSI6ImNsdTU4ZW12ODBkYzEyaW85cmUwYzg4aTcifQ.YK8BN3UDur9AgNnd2kJs2g";
+
   useEffect(() => {
     const fetchSuggestions = async () => {
       if (debouncedValue.length < 3) {
@@ -46,12 +49,17 @@ const AddressAutocomplete = ({
         const response = await fetch(
           `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
             debouncedValue
-          )}.json?access_token=pk.eyJ1IjoiZGVtb3VzZXIiLCJhIjoiY2xtcTE3MmtrMTRoZjJrcWhvOGhpNnJuNSJ9.LfK0bP7yfpFy-E7OTd9IGQ&autocomplete=true&limit=5`
+          )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5`
         );
         if (!response.ok) throw new Error("Geocoding request failed");
         
         const data = await response.json();
         setSuggestions(data.features);
+        
+        // Show suggestions if we have any
+        if (data.features.length > 0) {
+          setIsOpen(true);
+        }
       } catch (error) {
         console.error("Error fetching address suggestions:", error);
       } finally {
@@ -64,7 +72,7 @@ const AddressAutocomplete = ({
     } else {
       setSuggestions([]);
     }
-  }, [debouncedValue]);
+  }, [debouncedValue, mapboxToken]);
 
   useEffect(() => {
     // Close suggestions on outside click
@@ -81,7 +89,9 @@ const AddressAutocomplete = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
-    setIsOpen(true);
+    if (newValue.length >= 3) {
+      setIsOpen(true);
+    }
   };
 
   const handleSuggestionClick = (suggestion: Suggestion) => {
@@ -101,7 +111,9 @@ const AddressAutocomplete = ({
         onChange={handleInputChange}
         onFocus={() => {
           setIsFocused(true);
-          setIsOpen(suggestions.length > 0);
+          if (suggestions.length > 0) {
+            setIsOpen(true);
+          }
         }}
         required={required}
         className={className}
