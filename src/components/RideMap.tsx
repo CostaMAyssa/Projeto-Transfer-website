@@ -1,8 +1,11 @@
+
 import { useEffect, useRef, useState } from 'react';
 import { useBooking } from "@/contexts/BookingContext";
 import { Skeleton } from '@/components/ui/skeleton';
 import { MapPin, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import mapboxgl from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface RideMapProps {
   className?: string;
@@ -11,9 +14,10 @@ interface RideMapProps {
 const RideMap = ({ className }: RideMapProps) => {
   const { bookingData } = useBooking();
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  const markersRef = useRef<mapboxgl.Marker[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   // Using the updated token
   const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
@@ -22,14 +26,6 @@ const RideMap = ({ className }: RideMapProps) => {
     // Initialize map only if container is available
     if (!mapContainerRef.current) return;
     
-    // Create a new map instance
-    const mapboxgl = window.mapboxgl;
-    if (!mapboxgl) {
-      console.error('Mapbox GL JS is not available');
-      setErrorMessage('Mapbox GL JS is not available');
-      return;
-    }
-
     try {
       // Set access token
       mapboxgl.accessToken = mapboxToken;
@@ -50,6 +46,10 @@ const RideMap = ({ className }: RideMapProps) => {
           } else {
             setErrorMessage(`Map error: ${e.error ? e.error.message : 'Unknown error'}`);
           }
+        });
+
+        mapRef.current.on('load', () => {
+          setIsMapLoaded(true);
         });
       }
 
@@ -150,7 +150,7 @@ const RideMap = ({ className }: RideMapProps) => {
         </div>
       ) : (
         <div className="h-64 relative" ref={mapContainerRef}>
-          <Skeleton className="w-full h-full" />
+          {!isMapLoaded && <Skeleton className="w-full h-full" />}
         </div>
       )}
       
