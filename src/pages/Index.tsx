@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
@@ -77,8 +78,8 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Right side booking widget - moved slightly to the left */}
-          <div className="hidden md:block md:w-2/5 h-full pt-16 pl-8">
+          {/* Right side booking widget - moved slightly to the left with right margin */}
+          <div className="hidden md:block md:w-2/5 h-full pt-16 pl-8 pr-12">
             <div className="h-full flex items-center">
               <BookingWidget vertical={true} />
             </div>
