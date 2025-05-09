@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin, AlertCircle } from "lucide-react";
@@ -36,8 +35,8 @@ const AddressAutocomplete = ({
   const wrapperRef = useRef<HTMLDivElement>(null);
   const debouncedValue = useDebounce(value, 400);
 
-  // Using the provided token
-  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbTk0bGplZXAweTIyMnJwdjQ0d2I1eDhxIn0.cTCGVYAunWY8b6N9NgZWmQ";
+  // Using the updated token
+  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
 
   useEffect(() => {
     const fetchSuggestions = async () => {

@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { useBooking } from "@/contexts/BookingContext";
 import { Skeleton } from '@/components/ui/skeleton';
@@ -16,8 +15,8 @@ const RideMap = ({ className }: RideMapProps) => {
   const markersRef = useRef<any[]>([]);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Using the provided token
-  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbTk0bGplZXAweTIyMnJwdjQ0d2I1eDhxIn0.cTCGVYAunWY8b6N9NgZWmQ";
+  // Using the updated token
+  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
 
   const initializeMap = () => {
     // Initialize map only if container is available
