@@ -3,17 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Landmark, Map } from "lucide-react";
 import { cityTours, createCityTours } from "@/data/cityTours";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 const CityTourSection = () => {
+  const [tours, setTours] = useState([]);
+
   // Initialize the city tours with icons on component mount
   useEffect(() => {
-    // Clear the existing tours
-    cityTours.length = 0;
-    
     // Add the tours with icons
-    const tours = createCityTours();
-    cityTours.push(...tours);
+    const toursData = createCityTours();
+    setTours(toursData);
+    
+    // Also update the cityTours array for other components
+    cityTours.length = 0;
+    cityTours.push(...toursData);
   }, []);
 
   // Helper function to render the correct icon based on icon string
@@ -54,7 +57,7 @@ const CityTourSection = () => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {cityTours.map((tour) => (
+          {tours.map((tour) => (
             <div key={tour.id} className="relative group">
               {/* City card with image background */}
               <div className="relative h-[500px] rounded-xl overflow-hidden">
