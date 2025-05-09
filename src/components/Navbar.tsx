@@ -52,26 +52,26 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
-            <Link to="/" className="text-white hover:text-brand-200 transition-colors text-sm font-light">
+            <Link to="/" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Home
             </Link>
-            <Link to="/services" className="text-white hover:text-brand-200 transition-colors text-sm font-light">
+            <Link to="/services" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Services
             </Link>
-            <Link to="/fleet" className="text-white hover:text-brand-200 transition-colors text-sm font-light">
+            <Link to="/fleet" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Our Fleet
             </Link>
-            <Link to="/about" className="text-white hover:text-brand-200 transition-colors text-sm font-light">
+            <Link to="/about" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               About Us
             </Link>
-            <Link to="/contact" className="text-white hover:text-brand-200 transition-colors text-sm font-light">
+            <Link to="/contact" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Contact
             </Link>
           </div>
 
           {/* Phone Number and Mobile Menu Button */}
           <div className="flex items-center space-x-4">
-            <a href="tel:+1234567890" className="hidden md:flex items-center text-white hover:text-brand-200">
+            <a href="tel:+1234567890" className="hidden md:flex items-center text-white hover:text-brand-500">
               <Phone size={16} className="mr-2" />
               <span>(123) 456-7890</span>
             </a>
@@ -79,7 +79,7 @@ const Navbar = () => {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="md:hidden text-white hover:text-brand-200"
+              className="md:hidden text-white hover:text-brand-500"
               onClick={() => setIsOpen(!isOpen)}
             >
               {isOpen ? <X size={24} /> : <Menu size={24} />}
@@ -94,35 +94,35 @@ const Navbar = () => {
           <div className="container mx-auto px-4 py-4 space-y-3">
             <Link 
               to="/" 
-              className="block text-white hover:text-brand-200 transition-colors text-sm font-light"
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
               Home
             </Link>
             <Link 
               to="/services" 
-              className="block text-white hover:text-brand-200 transition-colors text-sm font-light"
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
               Services
             </Link>
             <Link 
               to="/fleet" 
-              className="block text-white hover:text-brand-200 transition-colors text-sm font-light"
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
               Our Fleet
             </Link>
             <Link 
               to="/about" 
-              className="block text-white hover:text-brand-200 transition-colors text-sm font-light"
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
               About Us
             </Link>
             <Link 
               to="/contact" 
-              className="block text-white hover:text-brand-200 transition-colors text-sm font-light"
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
               Contact
@@ -130,7 +130,7 @@ const Navbar = () => {
             
             <a 
               href="tel:+1234567890" 
-              className="flex items-center text-white hover:text-brand-200 text-sm font-light"
+              className="flex items-center text-white hover:text-brand-500 text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
               <Phone size={16} className="mr-2" />
