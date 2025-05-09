@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +12,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import AddressAutocomplete from "./AddressAutocomplete";
 
 interface BookingWidgetProps {
   vertical?: boolean;
@@ -56,6 +58,22 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
     // Navigate to booking page
     navigate("/booking");
   };
+
+  const handlePickupAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
+    setPickupAddress(location.address);
+    setPickupLocation({
+      address: location.address,
+      coordinates: location.coordinates
+    });
+  };
+
+  const handleDropoffAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
+    setDropoffAddress(location.address);
+    setDropoffLocation({
+      address: location.address,
+      coordinates: location.coordinates
+    });
+  };
   
   return (
     <div className={cn(
@@ -99,7 +117,13 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                   <MapPin size={16} className="text-brand mr-1" />
                   <span className="text-sm font-medium">Pick-up Location</span>
                 </div>
-                <Input placeholder="Enter pick-up location" value={pickupAddress} onChange={e => setPickupAddress(e.target.value)} required />
+                <AddressAutocomplete
+                  placeholder="Enter pick-up location"
+                  value={pickupAddress}
+                  onChange={setPickupAddress}
+                  onAddressSelect={handlePickupAddressSelect}
+                  required
+                />
               </div>
               
               {/* Drop-off Location */}
@@ -108,7 +132,13 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                   <MapPin size={16} className="text-brand mr-1" />
                   <span className="text-sm font-medium">Drop-off Location</span>
                 </div>
-                <Input placeholder="Enter drop-off location" value={dropoffAddress} onChange={e => setDropoffAddress(e.target.value)} required />
+                <AddressAutocomplete
+                  placeholder="Enter drop-off location"
+                  value={dropoffAddress}
+                  onChange={setDropoffAddress}
+                  onAddressSelect={handleDropoffAddressSelect}
+                  required
+                />
               </div>
               
               {/* Date Picker */}

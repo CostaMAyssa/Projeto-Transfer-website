@@ -1,69 +1,67 @@
 
+// Define booking types
 export type BookingType = 'one-way' | 'round-trip' | 'hourly' | 'city-tour';
 
-export type LocationType = {
+export interface LocationData {
   address: string;
-  city?: string;
-  country?: string;
-};
+  coordinates?: [number, number]; // [longitude, latitude]
+}
 
-export type VehicleType = {
+export interface LuggageData {
+  small: number; // 10kg
+  large: number; // 23kg
+}
+
+export interface PassengerDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+}
+
+export interface PaymentDetails {
+  firstName: string;
+  lastName: string;
+  address: string;
+  country: string;
+  city: string;
+  postal: string;
+  termsAccepted: boolean;
+  newsletterSubscription: boolean;
+}
+
+export interface VehicleType {
   id: string;
   name: string;
   category: string;
-  description: string;
-  models: string;
-  capacity: number;
-  luggage: number;
   price: number;
+  capacity: number;
   image: string;
   features: string[];
-};
+  description: string;
+  models: string;
+}
 
-export type ExtraType = {
+export interface ExtraType {
   id: string;
   name: string;
-  description: string;
   price: number;
+  description: string;
   quantity: number;
-};
+}
 
-export type BookingFormData = {
+export interface BookingFormData {
   bookingType: BookingType;
-  pickupLocation: LocationType;
-  dropoffLocation: LocationType;
+  pickupLocation: LocationData;
+  dropoffLocation: LocationData;
   pickupDate: Date;
   pickupTime: string;
   returnDate?: Date;
   returnTime?: string;
   passengers: number;
-  luggage: {
-    small: number; // 10kg
-    large: number; // 23kg
-  };
+  luggage: LuggageData;
   vehicle?: VehicleType;
   extras: ExtraType[];
-  passengerDetails: {
-    firstName: string;
-    lastName: string;
-    email: string;
-    phone: string;
-    notes?: string;
-  };
-  paymentDetails: {
-    firstName: string;
-    lastName: string;
-    company?: string;
-    address: string;
-    country: string;
-    city: string;
-    postal: string;
-    cardHolder?: string;
-    cardNumber?: string;
-    expiryMonth?: string;
-    expiryYear?: string;
-    cvv?: string;
-    termsAccepted: boolean;
-    newsletterSubscription: boolean;
-  };
-};
+  passengerDetails: PassengerDetails;
+  paymentDetails: PaymentDetails;
+}

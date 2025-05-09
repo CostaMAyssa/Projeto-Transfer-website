@@ -38,8 +38,8 @@ type BookingContextType = {
   bookingData: BookingFormData;
   currentStep: number;
   setBookingType: (type: BookingFormData['bookingType']) => void;
-  setPickupLocation: (location: BookingFormData['pickupLocation']) => void;
-  setDropoffLocation: (location: BookingFormData['dropoffLocation']) => void;
+  setPickupLocation: (location: { address: string; coordinates?: [number, number] }) => void;
+  setDropoffLocation: (location: { address: string; coordinates?: [number, number] }) => void;
   setPickupDate: (date: Date) => void;
   setPickupTime: (time: string) => void;
   setReturnDate: (date?: Date) => void;
@@ -74,11 +74,11 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     setBookingData((prev) => ({ ...prev, bookingType: type }));
   };
 
-  const setPickupLocation = (location: BookingFormData['pickupLocation']) => {
+  const setPickupLocation = (location: { address: string; coordinates?: [number, number] }) => {
     setBookingData((prev) => ({ ...prev, pickupLocation: location }));
   };
 
-  const setDropoffLocation = (location: BookingFormData['dropoffLocation']) => {
+  const setDropoffLocation = (location: { address: string; coordinates?: [number, number] }) => {
     setBookingData((prev) => ({ ...prev, dropoffLocation: location }));
   };
 
