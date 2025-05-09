@@ -10,6 +10,10 @@ import NotFound from "./pages/NotFound";
 import BookingLayout from "./pages/booking/BookingLayout";
 import CityTourDetails from "./pages/city-tours/CityTourDetails";
 
+// Placeholder pages for new routes
+const Partners = () => <div className="pt-24 container mx-auto px-4 min-h-screen">Partners Page Coming Soon</div>;
+const Blog = () => <div className="pt-24 container mx-auto px-4 min-h-screen">Blog Page Coming Soon</div>;
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -23,6 +27,8 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/booking" element={<BookingLayout />} />
             <Route path="/city-tours/:tourId" element={<CityTourDetails />} />
+            <Route path="/partners" element={<Partners />} />
+            <Route path="/blog" element={<Blog />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
