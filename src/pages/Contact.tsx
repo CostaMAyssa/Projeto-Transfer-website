@@ -53,7 +53,7 @@ const Contact = () => {
       {/* Hero Section */}
       <div className="bg-[#111111] py-16 px-4 mt-16">
         <div className="container mx-auto max-w-6xl">
-          <h1 className="text-4xl md:text-5xl font-light text-white mb-2">
+          <h1 className="text-4xl md:text-5xl font-light text-white mb-2 text-center\n">
             Contact Us
           </h1>
           <p className="text-lg text-gray-300 font-light max-w-2xl">
@@ -71,9 +71,7 @@ const Contact = () => {
             </div>
             <h3 className="text-xl font-light mb-2">Phone</h3>
             <p className="text-gray-500 mb-2 text-sm">Speak with our team</p>
-            <a href="tel:+1 480-680-7664" className="text-brand-500 hover:underline">
-              +1 (480) 680-7664
-            </a>
+            <a href="tel:+1 480-680-7664" className="text-brand-500 hover:underline">+1 (347) 848-7765</a>
           </div>
 
           <div className="p-6 flex flex-col items-center text-center border-b border-gray-100">
