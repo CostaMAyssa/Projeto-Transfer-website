@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -10,6 +11,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Footer from "@/components/Footer";
+import { useEffect, useRef } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
@@ -23,6 +27,9 @@ type ContactFormValues = z.infer<typeof contactFormSchema>;
 
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapRef = useRef<mapboxgl.Map | null>(null);
+  
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -51,6 +58,62 @@ const Contact = () => {
       setIsSubmitting(false);
     }
   };
+
+  // Initialize Mapbox map
+  useEffect(() => {
+    if (!mapContainerRef.current || mapRef.current) return;
+
+    mapboxgl.accessToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
+    
+    mapRef.current = new mapboxgl.Map({
+      container: mapContainerRef.current,
+      style: "mapbox://styles/mapbox/light-v11", // Light style as base for B&W
+      center: [-74.006, 40.7128], // NYC coordinates
+      zoom: 12,
+    });
+
+    // Add marker for office location
+    const marker = new mapboxgl.Marker({
+      color: "#333333" // Dark gray marker
+    })
+      .setLngLat([-74.006, 40.7128])
+      .addTo(mapRef.current);
+
+    // Apply black and white styling after map loads
+    mapRef.current.on('load', () => {
+      if (!mapRef.current) return;
+      
+      // Style the map in monochrome
+      mapRef.current.setPaintProperty('background', 'background-color', '#ffffff');
+      mapRef.current.setPaintProperty('water', 'fill-color', '#f0f0f0');
+      mapRef.current.setPaintProperty('land', 'background-color', '#ffffff');
+      
+      // Adjust colors of various map layers to create a B&W effect
+      const layers = ['road', 'building', 'admin', 'water', 'landuse'];
+      layers.forEach(layer => {
+        const layerIds = mapRef.current?.getStyle().layers
+          .filter(l => l.id.includes(layer))
+          .map(l => l.id);
+          
+        layerIds?.forEach(layerId => {
+          if (mapRef.current?.getLayer(layerId)) {
+            if (mapRef.current?.getPaintProperty(layerId, 'fill-color')) {
+              mapRef.current?.setPaintProperty(layerId, 'fill-color', '#e0e0e0');
+            }
+            if (mapRef.current?.getPaintProperty(layerId, 'line-color')) {
+              mapRef.current?.setPaintProperty(layerId, 'line-color', '#b0b0b0');
+            }
+          }
+        });
+      });
+    });
+    
+    // Cleanup on unmount
+    return () => {
+      mapRef.current?.remove();
+      mapRef.current = null;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-white">
@@ -225,21 +288,10 @@ const Contact = () => {
         </div>
       </div>
 
-      {/* Map Section - Modified to cover full width */}
-      <div className="py-16 bg-gray-50 w-full">
-        <div className="container mx-auto px-4">
-          <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
-          <div className="h-[400px] w-full overflow-hidden rounded-lg border border-gray-100 shadow-sm">
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830894612!2d-74.11976379633643!3d40.69766374932352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr" 
-              className="w-full h-full border-0" 
-              allowFullScreen={false} 
-              loading="lazy" 
-              referrerPolicy="no-referrer-when-downgrade" 
-              title="Office Location">
-            </iframe>
-          </div>
-        </div>
+      {/* Map Section - Full width outside container */}
+      <div className="w-full bg-gray-50 py-16">
+        <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
+        <div className="h-[500px] w-full" ref={mapContainerRef}></div>
       </div>
 
       <Footer />
