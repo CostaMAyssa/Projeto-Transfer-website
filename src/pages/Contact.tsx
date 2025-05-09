@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -226,12 +225,19 @@ const Contact = () => {
         </div>
       </div>
 
-      {/* Map Section - Moved to bottom */}
-      <div className="py-16 bg-gray-50">
+      {/* Map Section - Modified to cover full width */}
+      <div className="py-16 bg-gray-50 w-full">
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
-          <div className="h-[400px] overflow-hidden rounded-lg border border-gray-100 shadow-sm">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830894612!2d-74.11976379633643!3d40.69766374932352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr" className="w-full h-full border-0" allowFullScreen={false} loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Office Location"></iframe>
+          <div className="h-[400px] w-full overflow-hidden rounded-lg border border-gray-100 shadow-sm">
+            <iframe 
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d193595.15830894612!2d-74.11976379633643!3d40.69766374932352!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c24fa5d33f083b%3A0xc80b8f06e177fe62!2sNew%20York%2C%20NY%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr" 
+              className="w-full h-full border-0" 
+              allowFullScreen={false} 
+              loading="lazy" 
+              referrerPolicy="no-referrer-when-downgrade" 
+              title="Office Location">
+            </iframe>
           </div>
         </div>
       </div>
