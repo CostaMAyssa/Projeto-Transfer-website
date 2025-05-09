@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -6,33 +5,21 @@ import { z } from "zod";
 import { toast } from "sonner";
 import { Mail, Phone, MapPin, Clock } from "lucide-react";
 import Navbar from "@/components/Navbar";
-
 import { Button } from "@/components/ui/button";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Footer from "@/components/Footer";
-
 const contactFormSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Please provide a valid email"),
   phone: z.string().optional(),
   subject: z.string().min(3, "Subject must be at least 3 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  message: z.string().min(10, "Message must be at least 10 characters")
 });
-
 type ContactFormValues = z.infer<typeof contactFormSchema>;
-
 const Contact = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const form = useForm<ContactFormValues>({
     resolver: zodResolver(contactFormSchema),
     defaultValues: {
@@ -40,20 +27,17 @@ const Contact = () => {
       email: "",
       phone: "",
       subject: "",
-      message: "",
-    },
+      message: ""
+    }
   });
-
   const onSubmit = async (data: ContactFormValues) => {
     setIsSubmitting(true);
-    
     try {
       // Here you would typically send the form data to your backend
       console.log("Form submitted:", data);
-      
+
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1000));
-      
       toast.success("Message sent successfully! We'll contact you soon.");
       form.reset();
     } catch (error) {
@@ -63,9 +47,7 @@ const Contact = () => {
       setIsSubmitting(false);
     }
   };
-
-  return (
-    <div className="min-h-screen bg-white">
+  return <div className="min-h-screen bg-white">
       <Navbar />
       
       {/* Hero Section */}
@@ -100,9 +82,7 @@ const Contact = () => {
             </div>
             <h3 className="text-xl font-light mb-2">Email</h3>
             <p className="text-gray-500 mb-2 text-sm">We'll respond as soon as possible</p>
-            <a href="mailto:info@aztransfer.com" className="text-brand-500 hover:underline">
-              info@aztransfer.com
-            </a>
+            <a href="mailto:info@aztransfer.com" className="text-brand-500 hover:underline">hello@aztransfergroup.com</a>
           </div>
 
           <div className="p-6 flex flex-col items-center text-center border-b border-gray-100">
@@ -111,9 +91,7 @@ const Contact = () => {
             </div>
             <h3 className="text-xl font-light mb-2">Location</h3>
             <p className="text-gray-500 mb-2 text-sm">Visit our office</p>
-            <p className="text-gray-700">
-              Phoenix, Arizona
-            </p>
+            <p className="text-gray-700">New York City, NY</p>
           </div>
 
           <div className="p-6 flex flex-col items-center text-center border-b border-gray-100">
@@ -141,88 +119,60 @@ const Contact = () => {
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="name"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="name" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel className="font-light">Name</FormLabel>
                           <FormControl>
                             <Input placeholder="John Smith" {...field} className="font-light" />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                     
-                    <FormField
-                      control={form.control}
-                      name="email"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="email" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel className="font-light">Email</FormLabel>
                           <FormControl>
                             <Input placeholder="john@example.com" {...field} className="font-light" />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <FormField
-                      control={form.control}
-                      name="phone"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="phone" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel className="font-light">Phone (Optional)</FormLabel>
                           <FormControl>
                             <Input placeholder="(123) 456-7890" {...field} className="font-light" />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                     
-                    <FormField
-                      control={form.control}
-                      name="subject"
-                      render={({ field }) => (
-                        <FormItem>
+                    <FormField control={form.control} name="subject" render={({
+                    field
+                  }) => <FormItem>
                           <FormLabel className="font-light">Subject</FormLabel>
                           <FormControl>
                             <Input placeholder="Service booking" {...field} className="font-light" />
                           </FormControl>
                           <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+                        </FormItem>} />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="message"
-                    render={({ field }) => (
-                      <FormItem>
+                  <FormField control={form.control} name="message" render={({
+                  field
+                }) => <FormItem>
                         <FormLabel className="font-light">Your Message</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            placeholder="How can we help you?" 
-                            className="min-h-32 font-light" 
-                            {...field} 
-                          />
+                          <Textarea placeholder="How can we help you?" className="min-h-32 font-light" {...field} />
                         </FormControl>
                         <FormMessage />
-                      </FormItem>
-                    )}
-                  />
+                      </FormItem>} />
 
-                  <Button 
-                    type="submit" 
-                    className="bg-brand-500 hover:bg-brand-600 text-white font-light"
-                    disabled={isSubmitting}
-                  >
+                  <Button type="submit" className="bg-brand-500 hover:bg-brand-600 text-white font-light" disabled={isSubmitting}>
                     {isSubmitting ? "Sending..." : "Send Message"}
                   </Button>
                 </form>
@@ -235,12 +185,10 @@ const Contact = () => {
             <div className="p-8">
               <h2 className="text-2xl font-light mb-6">Frequently Asked Questions</h2>
               <div className="space-y-6">
-                {faqs.map((faq, index) => (
-                  <div key={index} className="border-b border-gray-100 pb-5">
+                {faqs.map((faq, index) => <div key={index} className="border-b border-gray-100 pb-5">
                     <h3 className="text-lg font-light mb-2">{faq.question}</h3>
                     <p className="text-gray-600 font-light">{faq.answer}</p>
-                  </div>
-                ))}
+                  </div>)}
               </div>
             </div>
           </div>
@@ -281,45 +229,30 @@ const Contact = () => {
         <div className="container mx-auto px-4">
           <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
           <div className="h-[400px] overflow-hidden rounded-md border border-gray-100">
-            <iframe
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d214616.86204587483!2d-112.07403710797066!3d33.56197553928274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872b12ed50a179cb%3A0x8c69c7f8354a1bac!2sPhoenix%2C%20AZ%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr"
-              className="w-full h-full border-0"
-              allowFullScreen={false}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Office Location"
-            ></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d214616.86204587483!2d-112.07403710797066!3d33.56197553928274!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x872b12ed50a179cb%3A0x8c69c7f8354a1bac!2sPhoenix%2C%20AZ%2C%20USA!5e0!3m2!1sen!2sbr!4v1704406673789!5m2!1sen!2sbr" className="w-full h-full border-0" allowFullScreen={false} loading="lazy" referrerPolicy="no-referrer-when-downgrade" title="Office Location"></iframe>
           </div>
         </div>
       </div>
 
       <Footer />
-    </div>
-  );
+    </div>;
 };
 
 // FAQ data
-const faqs = [
-  {
-    question: "How far in advance should I book a transfer?",
-    answer: "We recommend booking at least 24 hours in advance to ensure availability. For peak seasons or special events, it's advisable to book further in advance."
-  },
-  {
-    question: "What happens if my flight is delayed?",
-    answer: "Don't worry! We monitor all flights and our drivers adjust their schedule according to your actual arrival time, at no extra cost."
-  },
-  {
-    question: "Is there an extra fee for luggage?",
-    answer: "Standard luggage (up to 2 pieces per person) is included in the price. Additional or oversized luggage may incur extra costs."
-  },
-  {
-    question: "How can I pay for the transfer service?",
-    answer: "We accept all major credit cards, PayPal, and bank transfers. Payment is typically required at the time of booking to confirm your service."
-  },
-  {
-    question: "What is the cancellation policy?",
-    answer: "Free cancellation up to 24 hours before your scheduled pickup time. Cancellations within 24 hours may be subject to a fee."
-  }
-];
-
+const faqs = [{
+  question: "How far in advance should I book a transfer?",
+  answer: "We recommend booking at least 24 hours in advance to ensure availability. For peak seasons or special events, it's advisable to book further in advance."
+}, {
+  question: "What happens if my flight is delayed?",
+  answer: "Don't worry! We monitor all flights and our drivers adjust their schedule according to your actual arrival time, at no extra cost."
+}, {
+  question: "Is there an extra fee for luggage?",
+  answer: "Standard luggage (up to 2 pieces per person) is included in the price. Additional or oversized luggage may incur extra costs."
+}, {
+  question: "How can I pay for the transfer service?",
+  answer: "We accept all major credit cards, PayPal, and bank transfers. Payment is typically required at the time of booking to confirm your service."
+}, {
+  question: "What is the cancellation policy?",
+  answer: "Free cancellation up to 24 hours before your scheduled pickup time. Cancellations within 24 hours may be subject to a fee."
+}];
 export default Contact;
