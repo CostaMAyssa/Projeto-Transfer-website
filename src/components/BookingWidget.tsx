@@ -33,6 +33,12 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [bookingType, setWidgetBookingType] = useState<BookingType>("one-way");
   const [pickupAddress, setPickupAddress] = useState("");
   const [dropoffAddress, setDropoffAddress] = useState("");
+  const [pickupCoordinates, setPickupCoordinates] = useState<[number, number] | undefined>(
+    bookingData.pickupLocation.coordinates
+  );
+  const [dropoffCoordinates, setDropoffCoordinates] = useState<[number, number] | undefined>(
+    bookingData.dropoffLocation.coordinates
+  );
   const [date, setDate] = useState<Date>(new Date());
   const [time, setTime] = useState("12:00");
   const [passengers, setPassengerCount] = useState(1);
@@ -41,20 +47,18 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted with pickup:", pickupAddress);
-    console.log("Form submitted with dropoff:", dropoffAddress);
+    console.log("Form submitted with pickup:", pickupAddress, pickupCoordinates);
+    console.log("Form submitted with dropoff:", dropoffAddress, dropoffCoordinates);
 
     // Update booking data in context
     setBookingType(bookingType);
     setPickupLocation({
       address: pickupAddress,
-      // Ensure coordinates are included if they exist
-      coordinates: bookingData.pickupLocation.coordinates
+      coordinates: pickupCoordinates
     });
     setDropoffLocation({
       address: dropoffAddress,
-      // Ensure coordinates are included if they exist
-      coordinates: bookingData.dropoffLocation.coordinates
+      coordinates: dropoffCoordinates
     });
     setPickupDate(date);
     setPickupTime(time);
@@ -68,6 +72,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const handlePickupAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
     console.log("Pickup location selected:", location);
     setPickupAddress(location.address);
+    setPickupCoordinates(location.coordinates);
     setPickupLocation({
       address: location.address,
       coordinates: location.coordinates
@@ -77,6 +82,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const handleDropoffAddressSelect = (location: { address: string; coordinates?: [number, number] }) => {
     console.log("Dropoff location selected:", location);
     setDropoffAddress(location.address);
+    setDropoffCoordinates(location.coordinates);
     setDropoffLocation({
       address: location.address,
       coordinates: location.coordinates
