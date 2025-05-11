@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone } from "lucide-react";
+import { Menu, X, Phone, BookOpen } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -75,12 +75,23 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Phone Number and Mobile Menu Button */}
+          {/* Phone Number, Book Now Button, and Mobile Menu Button */}
           <div className="flex items-center space-x-4">
-            <a href="tel:+1234567890" className="hidden md:flex items-center text-white hover:text-brand-500">
+            <a href="tel:+13478487765" className="hidden md:flex items-center text-white hover:text-brand-500">
               <Phone size={16} className="mr-2" />
-              <span>(123) 456-7890</span>
+              <span>+1 (347) 848-7765</span>
             </a>
+            
+            <Link to="/booking" className="hidden md:block">
+              <Button 
+                variant="default"
+                size="sm"
+                className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-2"
+              >
+                <BookOpen size={16} />
+                Book Now
+              </Button>
+            </Link>
             
             <Button 
               variant="ghost" 
@@ -149,13 +160,28 @@ const Navbar = () => {
             </Link>
             
             <a 
-              href="tel:+1234567890" 
+              href="tel:+13478487765" 
               className="flex items-center text-white hover:text-brand-500 text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
               <Phone size={16} className="mr-2" />
-              <span>(123) 456-7890</span>
+              <span>+1 (347) 848-7765</span>
             </a>
+            
+            <Link 
+              to="/booking"
+              className="block mt-4" 
+              onClick={() => setIsOpen(false)}
+            >
+              <Button 
+                variant="default"
+                size="sm"
+                className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-2 w-full"
+              >
+                <BookOpen size={16} />
+                Book Now
+              </Button>
+            </Link>
           </div>
         </div>
       )}
