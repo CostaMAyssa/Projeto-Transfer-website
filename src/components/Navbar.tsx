@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Phone, BookOpen } from "lucide-react";
+import { Menu, X, Phone, ArrowRight } from "lucide-react";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -88,8 +88,8 @@ const Navbar = () => {
                 size="sm"
                 className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-2"
               >
-                <BookOpen size={16} />
                 Book Now
+                <ArrowRight size={16} />
               </Button>
             </Link>
             
@@ -178,8 +178,8 @@ const Navbar = () => {
                 size="sm"
                 className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-2 w-full"
               >
-                <BookOpen size={16} />
                 Book Now
+                <ArrowRight size={16} />
               </Button>
             </Link>
           </div>
