@@ -82,7 +82,12 @@ const Navbar = () => {
               <span>+1 (347) 848-7765</span>
             </a>
             
-            <Link to="/booking" className="hidden md:block">
+            <a 
+              href="https://customer.moovs.app/az-transfer/new/info?moovs_source=widget" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hidden md:block"
+            >
               <Button 
                 variant="default"
                 size="sm"
@@ -91,7 +96,7 @@ const Navbar = () => {
                 Book Now
                 <ArrowRight size={16} />
               </Button>
-            </Link>
+            </a>
             
             <Button 
               variant="ghost" 
@@ -168,8 +173,10 @@ const Navbar = () => {
               <span>+1 (347) 848-7765</span>
             </a>
             
-            <Link 
-              to="/booking"
+            <a 
+              href="https://customer.moovs.app/az-transfer/new/info?moovs_source=widget" 
+              target="_blank" 
+              rel="noopener noreferrer"
               className="block mt-4" 
               onClick={() => setIsOpen(false)}
             >
@@ -181,7 +188,7 @@ const Navbar = () => {
                 Book Now
                 <ArrowRight size={16} />
               </Button>
-            </Link>
+            </a>
           </div>
         </div>
       )}
