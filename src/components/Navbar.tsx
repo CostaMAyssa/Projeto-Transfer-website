@@ -86,7 +86,7 @@ const Navbar = () => {
               <Button 
                 variant="default"
                 size="sm"
-                className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-2"
+                className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-1 rounded-[6px]"
               >
                 Book Now
                 <ArrowRight size={16} />
@@ -176,7 +176,7 @@ const Navbar = () => {
               <Button 
                 variant="default"
                 size="sm"
-                className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-2 w-full"
+                className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-1 w-full rounded-[6px]"
               >
                 Book Now
                 <ArrowRight size={16} />
