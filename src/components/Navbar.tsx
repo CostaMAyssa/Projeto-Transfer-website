@@ -73,6 +73,9 @@ const Navbar = () => {
             <Link to="/contact" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
               Contact
             </Link>
+            <Link to="/azbooking" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
+              Book
+            </Link>
           </div>
 
           {/* Phone Number, Book Now Button, and Mobile Menu Button */}
@@ -162,6 +165,13 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Contact
+            </Link>
+            <Link 
+              to="/azbooking" 
+              className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
+              onClick={() => setIsOpen(false)}
+            >
+              Book
             </Link>
             
             <a 
