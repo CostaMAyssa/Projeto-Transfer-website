@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
@@ -205,6 +204,7 @@ const Index = () => {
                     <div className="relative h-96 group rounded-lg overflow-hidden">
                       <img src={slide.image} alt={slide.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/30 flex flex-col justify-end p-6 opacity-100 group-hover:opacity-100 transition-opacity duration-300">
+                        {/* Moved the title to a fixed position at the bottom instead of making it visible only on hover */}
                         <h3 className="text-2xl text-white font-normal mb-2">{slide.title}</h3>
                         <p className="text-white/80 font-light mb-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
                           {slide.description}
