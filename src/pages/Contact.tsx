@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -288,8 +287,8 @@ const Contact = () => {
         </div>
       </div>
 
-      {/* Map Section - Full width outside container */}
-      <div className="w-full bg-[#EDECE6] py-16">
+      {/* Map Section - Changed from bg-[#EDECE6] to bg-white */}
+      <div className="w-full bg-white py-16">
         <h2 className="text-2xl font-light mb-8 text-center">Find Us</h2>
         <div className="h-[500px] w-full" ref={mapContainerRef}></div>
       </div>
