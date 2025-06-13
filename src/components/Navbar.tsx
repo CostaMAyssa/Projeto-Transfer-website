@@ -1,13 +1,15 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Phone, ArrowRight } from "lucide-react";
+import LanguageSelector from "./LanguageSelector";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const [scrolled, setScrolled] = useState(false);
+  const { t } = useTranslation();
   
   // Check if we're on the home page
   const isHomePage = location.pathname === "/";
@@ -53,33 +55,33 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
-              Home
+              {t('nav.home')}
             </Link>
             <Link to="/services" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
-              Services
+              {t('nav.services')}
             </Link>
             <Link to="/fleet" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
-              Our Fleet
+              {t('nav.fleet')}
             </Link>
             <Link to="/partners" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
-              Partners
+              {t('nav.partners')}
             </Link>
             <Link to="/blog" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
-              Blog
+              {t('nav.blog')}
             </Link>
             <Link to="/about" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
-              About Us
+              {t('nav.about')}
             </Link>
             <Link to="/contact" className="text-white hover:text-brand-500 transition-colors text-sm font-light">
-              Contact
+              {t('nav.contact')}
             </Link>
           </div>
 
-          {/* Phone Number, Book Now Button, and Mobile Menu Button */}
+          {/* Phone Number, Book Now Button, Language Selector, and Mobile Menu Button */}
           <div className="flex items-center space-x-4">
             <a href="tel:+13478487765" className="hidden md:flex items-center text-white hover:text-brand-500">
               <Phone size={16} className="mr-2" />
-              <span>+1 (347) 848-7765</span>
+              <span>{t('nav.phone')}</span>
             </a>
             
             <a 
@@ -93,10 +95,15 @@ const Navbar = () => {
                 size="sm"
                 className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-1 rounded-[6px]"
               >
-                Book Now
+                {t('nav.bookNow')}
                 <ArrowRight size={16} />
               </Button>
             </a>
+            
+            {/* Language Selector - Desktop */}
+            <div className="hidden md:block">
+              <LanguageSelector variant="desktop" />
+            </div>
             
             <Button 
               variant="ghost" 
@@ -119,49 +126,49 @@ const Navbar = () => {
               className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              Home
+              {t('nav.home')}
             </Link>
             <Link 
               to="/services" 
               className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              Services
+              {t('nav.services')}
             </Link>
             <Link 
               to="/fleet" 
               className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              Our Fleet
+              {t('nav.fleet')}
             </Link>
             <Link 
               to="/partners" 
               className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              Partners
+              {t('nav.partners')}
             </Link>
             <Link 
               to="/blog" 
               className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              Blog
+              {t('nav.blog')}
             </Link>
             <Link 
               to="/about" 
               className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              About Us
+              {t('nav.about')}
             </Link>
             <Link 
               to="/contact" 
               className="block text-white hover:text-brand-500 transition-colors text-sm font-light"
               onClick={() => setIsOpen(false)}
             >
-              Contact
+              {t('nav.contact')}
             </Link>
             
             <a 
@@ -170,7 +177,7 @@ const Navbar = () => {
               onClick={() => setIsOpen(false)}
             >
               <Phone size={16} className="mr-2" />
-              <span>+1 (347) 848-7765</span>
+              <span>{t('nav.phone')}</span>
             </a>
             
             <a 
@@ -185,10 +192,15 @@ const Navbar = () => {
                 size="sm"
                 className="bg-brand-500 hover:bg-brand-600 text-white flex items-center gap-1 w-full rounded-[6px]"
               >
-                Book Now
+                {t('nav.bookNow')}
                 <ArrowRight size={16} />
               </Button>
             </a>
+
+            {/* Language Selector - Mobile */}
+            <div className="pt-4 border-t border-white/20">
+              <LanguageSelector variant="mobile" />
+            </div>
           </div>
         </div>
       )}

@@ -1,0 +1,104 @@
+{
+  "nav": {
+    "home": "Home",
+    "services": "Services",
+    "fleet": "Our Fleet",
+    "partners": "Partners",
+    "blog": "Blog",
+    "about": "About Us",
+    "contact": "Contact",
+    "phone": "+1 (347) 848-7765",
+    "bookNow": "Book Now"
+  },
+  "hero": {
+    "title": "The Nation's #1 Largest Personal Driver Service",
+    "subtitle": "Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism for all your travel needs."
+  },
+  "booking": {
+    "oneWay": "One-way",
+    "roundTrip": "Round-trip",
+    "hourly": "Hourly",
+    "cityTour": "City Tour",
+    "pickupLocation": "Pick-up Location",
+    "dropoffLocation": "Drop-off Location",
+    "pickupDate": "Pick-up Date",
+    "pickupTime": "Pick-up Time",
+    "passengers": "Passengers",
+    "luggage10kg": "10kg Luggage",
+    "luggage23kg": "23kg Luggage",
+    "findMyTransfer": "Find My Transfer",
+    "enterPickupLocation": "Enter pick-up location",
+    "enterDropoffLocation": "Enter drop-off location"
+  },
+  "benefits": {
+    "safetyFirst": "Safety First",
+    "safetyDescription": "Both you and your shipments will travel with professional drivers. Always with the highest quality standards.",
+    "pricesNoSurprises": "Prices With No Surprises", 
+    "pricesDescription": "Both you and your shipments will travel with professional drivers. Always with the highest quality standards.",
+    "privateSolutions": "Private Travel Solutions",
+    "privateDescription": "Both you and your shipments will travel with professional drivers. Always with the highest quality standards."
+  },
+  "fleet": {
+    "title": "Our Fleet",
+    "moreFleet": "More Fleet",
+    "passengers": "Passengers",
+    "luggage": "Luggage",
+    "checkedBaggage": "checked baggage",
+    "carryOnBaggage": "carry-on baggage"
+  },
+  "services": {
+    "title": "Our Services",
+    "moreServices": "More Services"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "subtitle": "Our team is available to help you with any information or service 24/7.",
+    "phone": "Phone",
+    "phoneDescription": "Speak with our team",
+    "email": "Email",
+    "emailDescription": "We'll respond as soon as possible",
+    "location": "Location",
+    "locationDescription": "Visit our office",
+    "hours": "Hours",
+    "hoursDescription": "We're available for you",
+    "hoursText": "24/7 - Always at your service",
+    "sendMessage": "Send a Message",
+    "formDescription": "Fill out the form below and our team will get back to you as soon as possible.",
+    "name": "Name",
+    "emailLabel": "Email",
+    "phone": "Phone (Optional)",
+    "subject": "Subject", 
+    "message": "Your Message",
+    "sending": "Sending...",
+    "send": "Send Message"
+  },
+  "extras": {
+    "childSeat": "Child Seat",
+    "childSeatDesc": "Suitable for toddlers weighing 0-18 kg (approx 0 to 4 years).",
+    "boosterSeat": "Booster seat",
+    "boosterSeatDesc": "Suitable for children weighing 15-36 kg (approx 4 to 10 years).",
+    "vodkaBottle": "Vodka Bottle",
+    "vodkaBottleDesc": "Absolut Vodka 0.7l Bottle",
+    "flowers": "Bouquet of Flowers",
+    "flowersDesc": "A bouquet of seasonal flowers prepared by a local florist",
+    "alcoholPackage": "Alcohol Package",
+    "alcoholPackageDesc": "A selection of premium alcoholic beverages",
+    "airportAssistance": "Airport Assistance and Hostess Service",
+    "airportAssistanceDesc": "Professional assistance at the airport and hostess service",
+    "bodyguard": "Bodyguard Service",
+    "bodyguardDesc": "Professional security personnel for your safety"
+  },
+  "vehicles": {
+    "suv": "SUV",
+    "sedan": "Sedan", 
+    "minivan": "Minivan",
+    "suvDesc": "Spacious vehicle for groups and larger luggage needs",
+    "sedanDesc": "Comfortable and elegant transport for business travelers",
+    "minivanDesc": "Spacious transport for families and groups"
+  },
+  "languages": {
+    "en": "EN",
+    "pt": "PT", 
+    "es": "ES"
+  }
+} 

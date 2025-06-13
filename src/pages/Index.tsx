@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "react-i18next";
 import BookingWidget from "@/components/BookingWidget";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -35,6 +36,7 @@ const serviceSlides = [{
 
 const Index = () => {
   const [api, setApi] = useState<any>();
+  const { t } = useTranslation();
 
   // Auto-play functionality for carousel
   useEffect(() => {
@@ -48,6 +50,7 @@ const Index = () => {
     // Clear interval on component unmount
     return () => clearInterval(interval);
   }, [api]);
+  
   return <div className="min-h-screen flex flex-col">
       <Navbar />
       
@@ -69,10 +72,10 @@ const Index = () => {
           <div className="w-full md:w-3/5 flex flex-col justify-center h-full pt-16">
             <div className="text-white max-w-xl">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
-                The Nation's #1 Largest Personal Driver Service
+                {t('hero.title')}
               </h1>
               <p className="text-xl mb-8 font-light max-w-2xl">
-                Luxury chauffeur service providing premium transportation solutions with comfort, safety, and professionalism for all your travel needs.
+                {t('hero.subtitle')}
               </p>
             </div>
           </div>
@@ -100,9 +103,9 @@ const Index = () => {
               <div className="mb-6">
                 <img src="/lovable-uploads/317b73c6-d260-46bf-a54a-8f509814815a.png" alt="Safety First" className="w-16 h-16 object-contain" />
               </div>
-              <h3 className="text-2xl font-normal mb-4">Safety First</h3>
+              <h3 className="text-2xl font-normal mb-4">{t('benefits.safetyFirst')}</h3>
               <p className="text-gray-600 font-light">
-                Both you and your shipments will travel with professional drivers. Always with the highest quality standards.
+                {t('benefits.safetyDescription')}
               </p>
             </div>
             
@@ -111,9 +114,9 @@ const Index = () => {
               <div className="mb-6">
                 <img src="/lovable-uploads/acddb1ee-40ba-410e-a859-767186f56f96.png" alt="Prices With No Surprises" className="w-16 h-16 object-contain" />
               </div>
-              <h3 className="text-2xl font-normal mb-4">Prices With No Surprises</h3>
+              <h3 className="text-2xl font-normal mb-4">{t('benefits.pricesNoSurprises')}</h3>
               <p className="text-gray-600 font-light">
-                Both you and your shipments will travel with professional drivers. Always with the highest quality standards.
+                {t('benefits.pricesDescription')}
               </p>
             </div>
             
@@ -122,9 +125,9 @@ const Index = () => {
               <div className="mb-6">
                 <img src="/lovable-uploads/9dffe454-d17e-4393-b086-9b697da7c149.png" alt="Private Travel Solutions" className="w-16 h-16 object-contain" />
               </div>
-              <h3 className="text-2xl font-normal mb-4">Private Travel Solutions</h3>
+              <h3 className="text-2xl font-normal mb-4">{t('benefits.privateSolutions')}</h3>
               <p className="text-gray-600 font-light">
-                Both you and your shipments will travel with professional drivers. Always with the highest quality standards.
+                {t('benefits.privateDescription')}
               </p>
             </div>
           </div>
@@ -134,9 +137,9 @@ const Index = () => {
       {/* Fleet Section */}
       <section className="py-20 container mx-auto px-4">
         <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl font-normal">Our Fleet</h2>
+          <h2 className="text-3xl font-normal">{t('fleet.title')}</h2>
           <Link to="/fleet" className="flex items-center text-brand hover:text-brand-700">
-            More Fleet <ArrowRight size={16} className="ml-2" />
+            {t('fleet.moreFleet')} <ArrowRight size={16} className="ml-2" />
           </Link>
         </div>
         
@@ -157,14 +160,14 @@ const Index = () => {
                       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mr-1 text-gray-500">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
-                      <span className="text-sm text-gray-500">Passengers: {vehicle.capacity}</span>
+                      <span className="text-sm text-gray-500">{t('fleet.passengers')}: {vehicle.capacity}</span>
                     </div>
                   </div>
                   <div className="flex flex-col space-y-2">
-                    <span className="text-sm text-gray-500">Luggage:</span>
-                    {vehicle.id === "suv" && <p className="text-xs text-gray-600">6 of 23kg (checked baggage) and 5 of 10kg (carry-on baggage)</p>}
-                    {vehicle.id === "sedan" && <p className="text-xs text-gray-600">3 of 23kg (checked baggage) and 2 of 10kg (carry-on baggage)</p>}
-                    {vehicle.id === "minivan" && <p className="text-xs text-gray-600">4 of 23kg (checked baggage) and 4 of 10kg (carry-on baggage)</p>}
+                    <span className="text-sm text-gray-500">{t('fleet.luggage')}:</span>
+                    {vehicle.id === "suv" && <p className="text-xs text-gray-600">6 of 23kg ({t('fleet.checkedBaggage')}) and 5 of 10kg ({t('fleet.carryOnBaggage')})</p>}
+                    {vehicle.id === "sedan" && <p className="text-xs text-gray-600">3 of 23kg ({t('fleet.checkedBaggage')}) and 2 of 10kg ({t('fleet.carryOnBaggage')})</p>}
+                    {vehicle.id === "minivan" && <p className="text-xs text-gray-600">4 of 23kg ({t('fleet.checkedBaggage')}) and 4 of 10kg ({t('fleet.carryOnBaggage')})</p>}
                   </div>
                 </div>
               </div>
@@ -188,9 +191,9 @@ const Index = () => {
         
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex justify-between items-center mb-10">
-            <h2 className="text-3xl font-normal">Our Services</h2>
+            <h2 className="text-3xl font-normal">{t('services.title')}</h2>
             <Link to="/services" className="flex items-center text-brand hover:text-brand-700">
-              More Services <ArrowRight size={16} className="ml-2" />
+              {t('services.moreServices')} <ArrowRight size={16} className="ml-2" />
             </Link>
           </div>
           
@@ -199,41 +202,34 @@ const Index = () => {
             align: "start",
             loop: true
           }}>
-              <CarouselContent className="-ml-4 md:ml-0">
-                {serviceSlides.map(slide => <CarouselItem key={slide.id} className="pl-4 md:pl-0 md:basis-1/2 lg:basis-1/4 px-3">
-                    <div className="relative h-96 group rounded-lg overflow-hidden">
-                      <img src={slide.image} alt={slide.title} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-black/30 flex flex-col justify-end p-6 opacity-100 group-hover:opacity-100 transition-opacity duration-300">
-                        {/* Moved the title to a fixed position at the bottom instead of making it visible only on hover */}
-                        <h3 className="text-2xl text-white font-normal mb-2">{slide.title}</h3>
-                        <p className="text-white/80 font-light mb-4 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-in-out">
-                          {slide.description}
-                        </p>
-                        <div className="w-12 h-12 rounded-full flex items-center justify-center border border-white/50 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300 ease-in-out delay-100">
-                          <ArrowRight size={18} className="text-white" />
+              <CarouselContent>
+                {serviceSlides.map(slide => <CarouselItem key={slide.id} className="md:basis-1/2 lg:basis-1/3">
+                    <div className="p-4">
+                      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                        <img src={slide.image} alt={slide.title} className="w-full h-48 object-cover" />
+                        <div className="p-6">
+                          <h3 className="text-xl font-normal mb-2">{slide.title}</h3>
+                          <p className="text-gray-600 text-sm">{slide.description}</p>
                         </div>
                       </div>
                     </div>
                   </CarouselItem>)}
               </CarouselContent>
-              
-              <div className="mt-8 flex items-center justify-start gap-2">
-                <CarouselPrevious className="position-static relative left-0 right-auto translate-y-0 hover:bg-brand hover:text-white" />
-                <CarouselNext className="position-static relative right-0 left-auto translate-y-0 hover:bg-brand hover:text-white" />
-              </div>
+              <CarouselPrevious />
+              <CarouselNext />
             </Carousel>
           </div>
         </div>
       </section>
 
-      {/* City Tour Section */}
+      {/* City Tours Section */}
       <CityTourSection />
 
       {/* FAQ Section */}
       <FAQ />
 
-      {/* Footer */}
       <Footer />
     </div>;
 };
+
 export default Index;

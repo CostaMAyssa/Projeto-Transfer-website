@@ -1,0 +1,104 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "services": "Servicios",
+    "fleet": "Nuestra Flota",
+    "partners": "Socios",
+    "blog": "Blog",
+    "about": "Acerca de",
+    "contact": "Contacto",
+    "phone": "+1 (347) 848-7765",
+    "bookNow": "Reservar Ahora"
+  },
+  "hero": {
+    "title": "El Servicio de Conductor Personal Más Grande del País",
+    "subtitle": "Servicio de chofer de lujo que brinda soluciones de transporte premium con comodidad, seguridad y profesionalismo para todas sus necesidades de viaje."
+  },
+  "booking": {
+    "oneWay": "Solo ida",
+    "roundTrip": "Ida y vuelta",
+    "hourly": "Por hora",
+    "cityTour": "City Tour",
+    "pickupLocation": "Lugar de Recogida",
+    "dropoffLocation": "Lugar de Destino",
+    "pickupDate": "Fecha de Recogida",
+    "pickupTime": "Hora de Recogida",
+    "passengers": "Pasajeros",
+    "luggage10kg": "Equipaje 10kg",
+    "luggage23kg": "Equipaje 23kg",
+    "findMyTransfer": "Encontrar Mi Transfer",
+    "enterPickupLocation": "Ingrese el lugar de recogida",
+    "enterDropoffLocation": "Ingrese el lugar de destino"
+  },
+  "benefits": {
+    "safetyFirst": "Seguridad Primero",
+    "safetyDescription": "Tanto usted como sus envíos viajarán con conductores profesionales. Siempre con los más altos estándares de calidad.",
+    "pricesNoSurprises": "Precios Sin Sorpresas",
+    "pricesDescription": "Tanto usted como sus envíos viajarán con conductores profesionales. Siempre con los más altos estándares de calidad.",
+    "privateSolutions": "Soluciones de Viaje Privadas",
+    "privateDescription": "Tanto usted como sus envíos viajarán con conductores profesionales. Siempre con los más altos estándares de calidad."
+  },
+  "fleet": {
+    "title": "Nuestra Flota",
+    "moreFleet": "Más de la Flota",
+    "passengers": "Pasajeros",
+    "luggage": "Equipaje",
+    "checkedBaggage": "equipaje facturado",
+    "carryOnBaggage": "equipaje de mano"
+  },
+  "services": {
+    "title": "Nuestros Servicios",
+    "moreServices": "Más Servicios"
+  },
+  "contact": {
+    "title": "Contáctanos",
+    "subtitle": "Nuestro equipo está disponible para ayudarte con cualquier información o servicio 24/7.",
+    "phone": "Teléfono",
+    "phoneDescription": "Habla con nuestro equipo",
+    "email": "Correo",
+    "emailDescription": "Responderemos lo antes posible",
+    "location": "Ubicación",
+    "locationDescription": "Visita nuestra oficina",
+    "hours": "Horario",
+    "hoursDescription": "Estamos disponibles para ti",
+    "hoursText": "24/7 - Siempre a tu servicio",
+    "sendMessage": "Enviar Mensaje",
+    "formDescription": "Complete el formulario a continuación y nuestro equipo se pondrá en contacto lo antes posible.",
+    "name": "Nombre",
+    "emailLabel": "Correo",
+    "phone": "Teléfono (Opcional)",
+    "subject": "Asunto",
+    "message": "Tu Mensaje",
+    "sending": "Enviando...",
+    "send": "Enviar Mensaje"
+  },
+  "extras": {
+    "childSeat": "Asiento Infantil",
+    "childSeatDesc": "Adecuado para niños de 0-18 kg (aproximadamente 0 a 4 años).",
+    "boosterSeat": "Asiento Elevado",
+    "boosterSeatDesc": "Adecuado para niños de 15-36 kg (aproximadamente 4 a 10 años).",
+    "vodkaBottle": "Botella de Vodka",
+    "vodkaBottleDesc": "Botella Absolut Vodka 0.7l",
+    "flowers": "Ramo de Flores",
+    "flowersDesc": "Un ramo de flores de temporada preparado por un florista local",
+    "alcoholPackage": "Paquete de Alcohol",
+    "alcoholPackageDesc": "Una selección de bebidas alcohólicas premium",
+    "airportAssistance": "Asistencia en el Aeropuerto y Servicio de Azafata",
+    "airportAssistanceDesc": "Asistencia profesional en el aeropuerto y servicio de azafata",
+    "bodyguard": "Servicio de Seguridad",
+    "bodyguardDesc": "Personal de seguridad profesional para su protección"
+  },
+  "vehicles": {
+    "suv": "SUV",
+    "sedan": "Sedan",
+    "minivan": "Minivan",
+    "suvDesc": "Vehículo espacioso para grupos y mayores necesidades de equipaje",
+    "sedanDesc": "Transporte cómodo y elegante para viajeros de negocios",
+    "minivanDesc": "Transporte espacioso para familias y grupos"
+  },
+  "languages": {
+    "en": "EN",
+    "pt": "PT",
+    "es": "ES"
+  }
+} 
