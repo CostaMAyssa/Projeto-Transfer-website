@@ -16,7 +16,7 @@ import { useTranslation } from "react-i18next";
 
 const PassengerDetails = () => {
   const { t } = useTranslation();
-  const { nextStep, bookingData, setPassengerDetails } = useBooking();
+  const { nextStep, bookingData, setPassengerDetails, setPassengers, setLuggage } = useBooking();
   const [formData, setFormData] = useState({
     firstName: bookingData.passengerDetails.firstName,
     lastName: bookingData.passengerDetails.lastName,
@@ -30,6 +30,19 @@ const PassengerDetails = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+  };
+
+  const handlePassengersChange = (value: string) => {
+    setPassengers(parseInt(value));
+  };
+
+  const handleLuggageChange = (value: string) => {
+    const luggageCount = parseInt(value);
+    // Assumindo que a bagagem será dividida entre small e large
+    // Para simplificar, vamos colocar metade em cada ou ajustar conforme necessário
+    const smallLuggage = Math.floor(luggageCount / 2);
+    const largeLuggage = luggageCount - smallLuggage;
+    setLuggage(smallLuggage, largeLuggage);
   };
 
   const handleContinue = () => {
@@ -89,7 +102,7 @@ const PassengerDetails = () => {
             <h3 className="text-xl font-normal pt-4">{t('booking.options')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <Select defaultValue="2">
+              <Select value={bookingData.passengers.toString()} onValueChange={handlePassengersChange}>
                 <SelectTrigger className="p-3 bg-gray-50">
                   <SelectValue placeholder={t('booking.passengers')} />
                 </SelectTrigger>
@@ -107,7 +120,10 @@ const PassengerDetails = () => {
                 </SelectContent>
               </Select>
 
-              <Select defaultValue="2">
+              <Select 
+                value={(bookingData.luggage.small + bookingData.luggage.large).toString()} 
+                onValueChange={handleLuggageChange}
+              >
                 <SelectTrigger className="p-3 bg-gray-50">
                   <SelectValue placeholder={t('booking.luggage')} />
                 </SelectTrigger>

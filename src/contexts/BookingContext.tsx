@@ -1,7 +1,7 @@
-
 import React, { createContext, useContext, useState } from 'react';
 import { BookingFormData, ExtraType, VehicleType } from '@/types/booking';
 import { useToast } from "@/hooks/use-toast";
+import { vehicles, extras as mockExtras } from '@/data/mockData';
 
 // Initialize with default data
 const defaultBookingData: BookingFormData = {
@@ -12,8 +12,8 @@ const defaultBookingData: BookingFormData = {
   pickupTime: '12:00',
   passengers: 1,
   luggage: {
-    small: 0,
-    large: 0,
+    small: 2,
+    large: 4,
   },
   extras: [],
   passengerDetails: {
@@ -56,6 +56,7 @@ type BookingContextType = {
   goToStep: (step: number) => void;
   calculateTotal: () => { vehiclePrice: number; extrasPrice: number; total: number };
   completeBooking: () => void;
+  populateDemoData: () => void;
   bookingComplete: boolean;
   reservationId: string | null;
 };
@@ -123,12 +124,20 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
 
   const updateExtraQuantity = (extraId: string, quantity: number) => {
     setBookingData((prev) => {
-      const updatedExtras = prev.extras.map((extra) =>
-        extra.id === extraId ? { ...extra, quantity } : extra
-      );
-      // Remove extras with quantity 0
-      const filteredExtras = updatedExtras.filter((extra) => extra.quantity > 0);
-      return { ...prev, extras: filteredExtras };
+      // Encontrar o extra nos dados mock
+      const extraFromMock = mockExtras.find((e: ExtraType) => e.id === extraId);
+      
+      if (!extraFromMock) return prev;
+      
+      const updatedExtras = prev.extras.filter((extra) => extra.id !== extraId);
+      
+      // Se quantity > 0, adicionar o extra com a nova quantidade
+      if (quantity > 0) {
+        const newExtra = { ...extraFromMock, quantity };
+        updatedExtras.push(newExtra);
+      }
+      
+      return { ...prev, extras: updatedExtras };
     });
   };
 
@@ -182,6 +191,16 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     });
   };
 
+  // Função para popular dados de demonstração
+  const populateDemoData = () => {
+    setBookingData(prev => ({
+      ...prev,
+      pickupLocation: { address: 'Aero Road, Bohemia, New York 11716, United States' },
+      dropoffLocation: { address: 'Bohemia, New York 11716, United States' },
+      vehicle: vehicles[1], // Sedan
+    }));
+  };
+
   const value = {
     bookingData,
     currentStep,
@@ -204,6 +223,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     goToStep,
     calculateTotal,
     completeBooking,
+    populateDemoData,
     bookingComplete,
     reservationId,
   };
