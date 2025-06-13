@@ -1,73 +1,81 @@
-# Welcome to your Lovable project
+# 🚗 Projeto Transfer Website
 
-## Project info
+Sistema de website para empresa de transfers e reservas de veículos.
 
-**URL**: https://lovable.dev/projects/d639d7cf-3f09-4fc4-85d2-38d1c6bc0b9a
+## 📋 Sobre o Projeto
 
-## How can I edit this code?
+Este é um website moderno e responsivo desenvolvido para gerenciar reservas e transfers de veículos, oferecendo uma experiência de usuário intuitiva e profissional.
 
-There are several ways of editing your application.
+## 🚀 Tecnologias Utilizadas
 
-**Use Lovable**
+- **React** - Biblioteca JavaScript para construção de interfaces
+- **TypeScript** - Superset do JavaScript com tipagem estática
+- **Vite** - Build tool e bundler moderno
+- **Tailwind CSS** - Framework CSS utility-first
+- **shadcn/ui** - Biblioteca de componentes UI
+- **Supabase** - Backend as a Service
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/d639d7cf-3f09-4fc4-85d2-38d1c6bc0b9a) and start prompting.
+## 🔧 Instalação e Execução
 
-Changes made via Lovable will be committed automatically to this repo.
+### Pré-requisitos
+- Node.js (versão 16 ou superior)
+- npm ou yarn
 
-**Use your preferred IDE**
+### Passos para instalação
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+```bash
+# Clone o repositório
+git clone https://github.com/startupstart30/Projeto-Trabsfer-website.git
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+# Navegue até o diretório do projeto
+cd Projeto-Trabsfer-website
 
-Follow these steps:
+# Instale as dependências
+npm install
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+# Execute o projeto em modo de desenvolvimento
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+O projeto estará disponível em `http://localhost:5173`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## 📁 Estrutura do Projeto
 
-**Use GitHub Codespaces**
+```
+src/
+├── components/     # Componentes reutilizáveis
+├── pages/         # Páginas da aplicação
+├── hooks/         # Custom hooks
+├── utils/         # Funções utilitárias
+├── types/         # Definições de tipos TypeScript
+└── styles/        # Arquivos de estilo
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+public/            # Arquivos estáticos
+```
 
-## What technologies are used for this project?
+## 🎯 Funcionalidades
 
-This project is built with:
+- ✅ Interface responsiva e moderna
+- ✅ Sistema de reservas
+- ✅ Gerenciamento de transfers
+- ✅ Integração com backend
+- ✅ Componentes reutilizáveis
+- ✅ Tipagem TypeScript
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🤝 Contribuição
 
-## How can I deploy this project?
+Sinta-se à vontade para contribuir com o projeto:
 
-Simply open [Lovable](https://lovable.dev/projects/d639d7cf-3f09-4fc4-85d2-38d1c6bc0b9a) and click on Share -> Publish.
+1. Faça um fork do projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/nova-feature`)
+3. Commit suas mudanças (`git commit -m 'Adiciona nova feature'`)
+4. Push para a branch (`git push origin feature/nova-feature`)
+5. Abra um Pull Request
 
-## Can I connect a custom domain to my Lovable project?
+## 📄 Licença
 
-Yes, you can!
+Este projeto está sob a licença MIT.
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## 📞 Contato
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+Para mais informações sobre o projeto, entre em contato através do GitHub.
