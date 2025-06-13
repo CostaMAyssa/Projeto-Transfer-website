@@ -1,12 +1,13 @@
-
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import { ArrowRight, Map } from "lucide-react";
 import { cityTours, createCityTours } from "@/data/cityTours";
 import { useEffect, useState } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
+import { useTranslation } from "react-i18next";
 
 const CityTourSection = () => {
+  const { t } = useTranslation();
   const [tours, setTours] = useState([]);
 
   // Initialize the city tours with icons on component mount
@@ -27,9 +28,9 @@ const CityTourSection = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-normal text-white mb-4">City Tour Packages</h2>
+          <h2 className="text-4xl font-normal text-white mb-4">{t('cityTours.title')}</h2>
           <p className="text-white/80 max-w-3xl mx-auto text-lg">
-            Experience the beauty and history of America's most iconic cities with our premium chauffeur-guided tours
+            {t('cityTours.subtitle')}
           </p>
         </div>
 
@@ -51,9 +52,9 @@ const CityTourSection = () => {
                   {/* Title - Themed Title - smaller eyebrow with lighter red */}
                   <div className="mb-2">
                     <span className="text-[#FCD6D8] text-xs font-medium">
-                      {tour.id === "washington" && "Experiência Histórica"}
-                      {tour.id === "new-york" && "Mais Popular"}
-                      {tour.id === "philadelphia" && "Cultura Americana"}
+                      {tour.id === "washington" && t('cityTours.categories.historical')}
+                      {tour.id === "new-york" && t('cityTours.categories.popular')}
+                      {tour.id === "philadelphia" && t('cityTours.categories.cultural')}
                     </span>
                   </div>
                   
@@ -64,9 +65,9 @@ const CityTourSection = () => {
                   
                   {/* Description */}
                   <p className="text-white/90 text-sm mb-4 line-clamp-3">
-                    {tour.id === "washington" && "Descubra a capital americana com visitas à Casa Branca, ao Capitólio e aos monumentos históricos do National Mall."}
-                    {tour.id === "new-york" && "Explore a Grande Maçã com nosso tour abrangente pelos pontos turísticos icônicos, incluindo Times Square, Central Park e a Estátua da Liberdade."}
-                    {tour.id === "philadelphia" && "Conheça o berço da democracia americana com passeios pelo Independence Hall, o Sino da Liberdade e os vibrantes distritos culturais."}
+                    {tour.id === "washington" && t('cityTours.descriptions.washington')}
+                    {tour.id === "new-york" && t('cityTours.descriptions.newYork')}
+                    {tour.id === "philadelphia" && t('cityTours.descriptions.philadelphia')}
                   </p>
                   
                   {/* Tags */}
@@ -75,15 +76,15 @@ const CityTourSection = () => {
                       <>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Casa Branca
+                          {t('cityTours.landmarks.whiteHouse')}
                         </span>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Capitólio
+                          {t('cityTours.landmarks.capitol')}
                         </span>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Memorial Lincoln
+                          {t('cityTours.landmarks.lincolnMemorial')}
                         </span>
                       </>
                     )}
@@ -92,15 +93,15 @@ const CityTourSection = () => {
                       <>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Times Square
+                          {t('cityTours.landmarks.timesSquare')}
                         </span>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Central Park
+                          {t('cityTours.landmarks.centralPark')}
                         </span>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Estátua da Liberdade
+                          {t('cityTours.landmarks.statueOfLiberty')}
                         </span>
                       </>
                     )}
@@ -109,15 +110,15 @@ const CityTourSection = () => {
                       <>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Independence Hall
+                          {t('cityTours.landmarks.independenceHall')}
                         </span>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Sino da Liberdade
+                          {t('cityTours.landmarks.libertyBell')}
                         </span>
                         <span className="bg-white/10 text-xs px-3 py-1 text-white flex items-center">
                           <Map className="h-3 w-3 mr-1" />
-                          Museu de Arte
+                          {t('cityTours.landmarks.artMuseum')}
                         </span>
                       </>
                     )}
@@ -128,7 +129,7 @@ const CityTourSection = () => {
                     className="bg-brand-500 text-white hover:bg-brand-600 transition-colors"
                     size="sm"
                   >
-                    Book Tour <ArrowRight className="ml-1 h-3 w-3" />
+                    {t('cityTours.bookTour')} <ArrowRight className="ml-1 h-3 w-3" />
                   </Button>
                 </div>
               </div>
@@ -138,7 +139,7 @@ const CityTourSection = () => {
         
         <div className="text-center mt-12">
           <Link to="/services" className="inline-flex items-center text-white hover:text-white/80 group">
-            View All City Tours <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1 text-white" />
+            {t('cityTours.viewAllTours')} <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1 text-white" />
           </Link>
         </div>
       </div>

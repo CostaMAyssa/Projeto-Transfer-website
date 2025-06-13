@@ -1,10 +1,11 @@
-
 import { useBooking } from "@/contexts/BookingContext";
 import { format } from "date-fns";
 import { MapPin, Calendar, Clock, Users, Briefcase } from "lucide-react";
 import RideMap from "./RideMap";
+import { useTranslation } from "react-i18next";
 
 const RideSummary = () => {
+  const { t } = useTranslation();
   const { bookingData, calculateTotal } = useBooking();
   const { pickupLocation, dropoffLocation, pickupDate, pickupTime, passengers, luggage, vehicle, extras } = bookingData;
   
@@ -14,7 +15,7 @@ const RideSummary = () => {
   return (
     <div className="bg-white border rounded-lg overflow-hidden">
       <div className="p-6 border-b">
-        <h3 className="text-xl font-normal mb-6">Your Ride</h3>
+        <h3 className="text-xl font-normal mb-6">{t('booking.yourRide')}</h3>
         
         {/* Map View */}
         <RideMap className="mb-6" />
@@ -24,20 +25,20 @@ const RideSummary = () => {
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <MapPin size={16} className="text-brand mr-1" />
-              <span>Pickup</span>
+              <span>{t('booking.pickup')}</span>
             </div>
             <div className="font-normal">
-              {pickupLocation.address || "Not specified yet"}
+              {pickupLocation.address || t('booking.notSpecifiedYet')}
             </div>
           </div>
 
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <MapPin size={16} className="text-brand mr-1" />
-              <span>Dropoff</span>
+              <span>{t('booking.dropoff')}</span>
             </div>
             <div className="font-normal">
-              {dropoffLocation.address || "Not specified yet"}
+              {dropoffLocation.address || t('booking.notSpecifiedYet')}
             </div>
           </div>
         </div>
@@ -47,7 +48,7 @@ const RideSummary = () => {
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <Calendar size={16} className="text-brand mr-1" />
-              <span>Date</span>
+              <span>{t('booking.date')}</span>
             </div>
             <div className="font-normal">{formattedDate}</div>
           </div>
@@ -55,19 +56,19 @@ const RideSummary = () => {
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <Clock size={16} className="text-brand mr-1" />
-              <span>Time</span>
+              <span>{t('booking.time')}</span>
             </div>
             <div className="font-normal">
               {pickupTime ? 
                 new Date(`2000-01-01T${pickupTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
-                : "Not specified yet"}
+                : t('booking.notSpecifiedYet')}
             </div>
           </div>
 
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <Users size={16} className="text-brand mr-1" />
-              <span>Passengers</span>
+              <span>{t('booking.passengers')}</span>
             </div>
             <div className="font-normal">{passengers}</div>
           </div>
@@ -75,10 +76,10 @@ const RideSummary = () => {
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <Briefcase size={16} className="text-brand mr-1" />
-              <span>Luggage</span>
+              <span>{t('booking.luggage')}</span>
             </div>
             <div className="font-normal">
-              {luggage.small} small, {luggage.large} large
+              {luggage.small} {t('booking.small')}, {luggage.large} {t('booking.large')}
             </div>
           </div>
         </div>
@@ -87,7 +88,7 @@ const RideSummary = () => {
       {/* Vehicle */}
       {vehicle && (
         <div className="p-6 border-b">
-          <h4 className="text-md font-medium mb-4">Selected Vehicle</h4>
+          <h4 className="text-md font-medium mb-4">{t('booking.selectedVehicle')}</h4>
           <div className="flex items-center">
             <div className="w-20 h-20 bg-gray-100 rounded-lg mr-3 flex items-center justify-center overflow-hidden">
               <img src={vehicle.image} alt={vehicle.name} className="max-w-full max-h-full object-contain" />
@@ -103,7 +104,7 @@ const RideSummary = () => {
       {/* Extras */}
       {extras.length > 0 && (
         <div className="p-6 border-b">
-          <h4 className="text-md font-medium mb-4">Selected Extras</h4>
+          <h4 className="text-md font-medium mb-4">{t('booking.selectedExtras')}</h4>
           <ul className="space-y-2">
             {extras.map(extra => (
               <li key={extra.id} className="flex justify-between">
@@ -118,15 +119,15 @@ const RideSummary = () => {
       {/* Total */}
       <div className="p-6 bg-gray-50">
         <div className="flex justify-between mb-2">
-          <span>Vehicle Price</span>
+          <span>{t('booking.vehiclePrice')}</span>
           <span>${vehiclePrice.toFixed(2)}</span>
         </div>
         <div className="flex justify-between mb-4">
-          <span>Extras</span>
+          <span>{t('booking.extras')}</span>
           <span>${extrasPrice.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-lg font-medium">
-          <span>Total</span>
+          <span>{t('booking.total')}</span>
           <span>${total.toFixed(2)}</span>
         </div>
       </div>

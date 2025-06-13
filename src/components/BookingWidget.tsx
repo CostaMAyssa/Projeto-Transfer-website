@@ -66,6 +66,13 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [hourlyTime, setHourlyTime] = useState("12:00");
   const [hourlyPassengers, setHourlyPassengers] = useState(1);
   
+  // Hourly specific fields
+  const [orderType, setOrderType] = useState("airport-dropoff"); // airport-dropoff or pickup
+  const [departureAirport, setDepartureAirport] = useState("");
+  const [airline, setAirline] = useState("");
+  const [flightNumber, setFlightNumber] = useState("");
+  const [noFlightInfo, setNoFlightInfo] = useState(false);
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -87,7 +94,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
       setPassengers(outboundPassengers);
     } else if (bookingType === "hourly") {
       setPickupLocation({ address: hourlyPickupAddress });
-      setDropoffLocation({ address: hourlyDropAddress });
+      setDropoffLocation({ address: departureAirport });
       setPickupDate(hourlyDate);
       setPickupTime(hourlyTime);
       setPassengers(hourlyPassengers);
@@ -109,7 +116,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   // Generate duration hours options (1-12)
   const durationHoursOptions = Array.from({ length: 12 }, (_, i) => ({
     value: i + 1,
-    label: `${i + 1} ${i === 0 ? 'hora' : 'horas'}`
+    label: `${i + 1} ${i === 0 ? t('booking.hour') : t('booking.hours')}`
   }));
   
   return (
@@ -121,7 +128,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
     )}>
       <Tabs defaultValue="one-way" className={cn("mb-4", vertical && "flex flex-col h-full min-h-0")}>
         <TabsList className={cn(
-          vertical ? "grid grid-cols-2 mb-3 flex-shrink-0" : "grid grid-cols-4 mb-8"
+          vertical ? "grid grid-cols-3 mb-3 flex-shrink-0" : "grid grid-cols-4 mb-8"
         )}>
           <TabsTrigger value="one-way" onClick={() => setWidgetBookingType("one-way")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             {t('booking.oneWay')}
@@ -129,15 +136,13 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
           <TabsTrigger value="round-trip" onClick={() => setWidgetBookingType("round-trip")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
             {t('booking.roundTrip')}
           </TabsTrigger>
+          <TabsTrigger value="hourly" onClick={() => setWidgetBookingType("hourly")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
+            {t('booking.hourly')}
+          </TabsTrigger>
           {!vertical && (
-            <>
-              <TabsTrigger value="hourly" onClick={() => setWidgetBookingType("hourly")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
-                {t('booking.hourly')}
-              </TabsTrigger>
-              <TabsTrigger value="city-tour" onClick={() => setWidgetBookingType("city-tour")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
-                {t('booking.cityTour')}
-              </TabsTrigger>
-            </>
+            <TabsTrigger value="city-tour" onClick={() => setWidgetBookingType("city-tour")} className="data-[state=active]:bg-brand data-[state=active]:text-white">
+              {t('booking.cityTour')}
+            </TabsTrigger>
           )}
         </TabsList>
 
@@ -189,7 +194,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-2">
                       <div className="flex items-center mb-1">
                         <CalendarIcon size={14} className="text-brand mr-1" />
-                        <span className="text-xs font-medium">Data & Hora</span>
+                        <span className="text-xs font-medium">{t('booking.dateTime')}</span>
                       </div>
                       <div className="space-y-1">
                         <Popover>
@@ -203,7 +208,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                               )}
                             >
                               <CalendarIcon className="mr-1 h-3 w-3" />
-                              {date ? format(date, "dd/MM/yyyy") : "Data"}
+                              {date ? format(date, "dd/MM/yyyy") : t('booking.pickADate')}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
@@ -239,12 +244,12 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       </div>
                       <Select value={passengers.toString()} onValueChange={(value) => setPassengerCount(parseInt(value))}>
                         <SelectTrigger className="h-8">
-                          <SelectValue placeholder="1 Passenger" />
+                          <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from({ length: 10 }, (_, i) => (
                             <SelectItem key={i + 1} value={(i + 1).toString()}>
-                              {i + 1} Passenger{i > 0 ? 's' : ''}
+                              {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -359,7 +364,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                           )}
                         >
                           <CalendarIcon className="mr-2 h-4 w-4" />
-                          {date ? format(date, "PPP") : <span>Pick a date</span>}
+                          {date ? format(date, "PPP") : <span>{t('booking.pickADate')}</span>}
                         </Button>
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-0" align="start">
@@ -405,12 +410,12 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     </div>
                     <Select value={passengers.toString()} onValueChange={(value) => setPassengerCount(parseInt(value))}>
                       <SelectTrigger>
-                        <SelectValue placeholder="1 Passenger" />
+                        <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 10 }, (_, i) => (
                           <SelectItem key={i + 1} value={(i + 1).toString()}>
-                            {i + 1} Passenger{i > 0 ? 's' : ''}
+                            {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -481,13 +486,13 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                   <div className="flex flex-col space-y-2">
                     {/* Pick-Up (Outbound) Section */}
                     <div className="space-y-2">
-                      <div className="text-xs font-medium text-brand mb-1">Pick-Up (Outbound)</div>
+                      <div className="text-xs font-medium text-brand mb-1">{t('booking.pickupOutbound')}</div>
                       
                       {/* Outbound Date & Time */}
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <CalendarIcon size={14} className="text-brand mr-1" />
-                          <span className="text-xs font-medium">Data & Hora</span>
+                          <span className="text-xs font-medium">{t('booking.dateTime')}</span>
                         </div>
                         <div className="space-y-1">
                           <Popover>
@@ -501,7 +506,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                                 )}
                               >
                                 <CalendarIcon className="mr-1 h-3 w-3" />
-                                {outboundDate ? format(outboundDate, "dd/MM") : "Data"}
+                                {outboundDate ? format(outboundDate, "dd/MM") : t('booking.date')}
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
@@ -533,10 +538,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <MapPin size={14} className="text-brand mr-1" />
-                          <span className="text-xs font-medium">Local de Embarque</span>
+                          <span className="text-xs font-medium">{t('booking.pickupLocation')}</span>
                         </div>
                         <AddressAutocomplete
-                          placeholder="Digite o local de embarque"
+                          placeholder={t('booking.enterPickupLocation')}
                           value={outboundPickupAddress}
                           onChange={setOutboundPickupAddress}
                           onAddressSelect={(location) => setOutboundPickupAddress(location.address)}
@@ -548,10 +553,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <MapPin size={14} className="text-gray-500 mr-1" />
-                          <span className="text-xs font-medium">Local de Destino</span>
+                          <span className="text-xs font-medium">{t('booking.dropLocation')}</span>
                         </div>
                         <AddressAutocomplete
-                          placeholder="Digite o local de destino"
+                          placeholder={t('booking.enterDropLocation')}
                           value={outboundDropAddress}
                           onChange={setOutboundDropAddress}
                           onAddressSelect={(location) => setOutboundDropAddress(location.address)}
@@ -563,16 +568,16 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <Users size={14} className="text-brand mr-1" />
-                          <span className="text-xs font-medium">Passageiros</span>
+                          <span className="text-xs font-medium">{t('booking.passengers')}</span>
                         </div>
                         <Select value={outboundPassengers.toString()} onValueChange={(value) => setOutboundPassengers(parseInt(value))}>
                           <SelectTrigger className="h-8">
-                            <SelectValue placeholder="1 Passageiro" />
+                            <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
                           </SelectTrigger>
                           <SelectContent>
                             {Array.from({ length: 10 }, (_, i) => (
                               <SelectItem key={i + 1} value={(i + 1).toString()}>
-                                {i + 1} Passageiro{i > 0 ? 's' : ''}
+                                {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -582,13 +587,13 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
 
                     {/* Return Section */}
                     <div className="space-y-2">
-                      <div className="text-xs font-medium text-green-600 mb-1">Return</div>
+                      <div className="text-xs font-medium text-green-600 mb-1">{t('booking.return')}</div>
                       
                       {/* Return Date & Time */}
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <CalendarIcon size={14} className="text-green-600 mr-1" />
-                          <span className="text-xs font-medium">Data & Hora</span>
+                          <span className="text-xs font-medium">{t('booking.dateTime')}</span>
                         </div>
                         <div className="space-y-1">
                           <Popover>
@@ -602,7 +607,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                                 )}
                               >
                                 <CalendarIcon className="mr-1 h-3 w-3" />
-                                {returnDate ? format(returnDate, "dd/MM") : "Data"}
+                                {returnDate ? format(returnDate, "dd/MM") : t('booking.date')}
                               </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-0" align="start">
@@ -634,10 +639,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <MapPin size={14} className="text-green-600 mr-1" />
-                          <span className="text-xs font-medium">Local de Embarque</span>
+                          <span className="text-xs font-medium">{t('booking.pickupLocation')}</span>
                         </div>
                         <AddressAutocomplete
-                          placeholder="Digite o local de embarque"
+                          placeholder={t('booking.enterPickupLocation')}
                           value={returnPickupAddress}
                           onChange={setReturnPickupAddress}
                           onAddressSelect={(location) => setReturnPickupAddress(location.address)}
@@ -649,10 +654,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <MapPin size={14} className="text-gray-500 mr-1" />
-                          <span className="text-xs font-medium">Local de Destino</span>
+                          <span className="text-xs font-medium">{t('booking.dropLocation')}</span>
                         </div>
                         <AddressAutocomplete
-                          placeholder="Digite o local de destino"
+                          placeholder={t('booking.enterDropLocation')}
                           value={returnDropAddress}
                           onChange={setReturnDropAddress}
                           onAddressSelect={(location) => setReturnDropAddress(location.address)}
@@ -664,16 +669,16 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <Users size={14} className="text-green-600 mr-1" />
-                          <span className="text-xs font-medium">Passageiros</span>
+                          <span className="text-xs font-medium">{t('booking.passengers')}</span>
                         </div>
                         <Select value={returnPassengers.toString()} onValueChange={(value) => setReturnPassengers(parseInt(value))}>
                           <SelectTrigger className="h-8">
-                            <SelectValue placeholder="1 Passageiro" />
+                            <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
                           </SelectTrigger>
                           <SelectContent>
                             {Array.from({ length: 10 }, (_, i) => (
                               <SelectItem key={i + 1} value={(i + 1).toString()}>
-                                {i + 1} Passageiro{i > 0 ? 's' : ''}
+                                {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -685,14 +690,14 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <Clock size={14} className="text-blue-600 mr-1" />
-                        <span className="text-xs font-medium">Duração (dias)</span>
+                        <span className="text-xs font-medium">{t('booking.durationDays')}</span>
                       </div>
                       <Input
                         type="number"
                         min="0"
                         value={durationDays}
                         onChange={(e) => setDurationDays(parseInt(e.target.value) || 0)}
-                        placeholder="0 = bate-volta"
+                        placeholder={t('booking.roundTripPlaceholder')}
                         className="w-full h-8"
                       />
                     </div>
@@ -716,14 +721,14 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                 <div className="border-b border-gray-200 pb-6">
                   <h3 className="text-lg font-medium mb-4 flex items-center">
                     <MapPin size={18} className="text-brand mr-2" />
-                    Pick-Up (Outbound)
+                    {t('booking.pickupOutbound')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Outbound Date & Time */}
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <CalendarIcon size={14} className="text-brand mr-1" />
-                        <span className="text-sm font-medium">Data & Hora</span>
+                        <span className="text-sm font-medium">{t('booking.dateTime')}</span>
                       </div>
                       <div className="flex gap-2">
                         <Popover>
@@ -736,7 +741,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                               )}
                             >
                               <CalendarIcon className="mr-1 h-4 w-4" />
-                              {outboundDate ? format(outboundDate, "dd/MM") : "Data"}
+                              {outboundDate ? format(outboundDate, "dd/MM") : t('booking.date')}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
@@ -768,10 +773,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <MapPin size={14} className="text-brand mr-1" />
-                        <span className="text-sm font-medium">Local de Embarque</span>
+                        <span className="text-sm font-medium">{t('booking.pickupLocation')}</span>
                       </div>
                       <AddressAutocomplete
-                        placeholder="Digite o local de embarque"
+                        placeholder={t('booking.enterPickupLocation')}
                         value={outboundPickupAddress}
                         onChange={setOutboundPickupAddress}
                         onAddressSelect={(location) => setOutboundPickupAddress(location.address)}
@@ -783,10 +788,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <MapPin size={14} className="text-gray-500 mr-1" />
-                        <span className="text-sm font-medium">Local de Destino</span>
+                        <span className="text-sm font-medium">{t('booking.dropLocation')}</span>
                       </div>
                       <AddressAutocomplete
-                        placeholder="Digite o local de destino"
+                        placeholder={t('booking.enterDropLocation')}
                         value={outboundDropAddress}
                         onChange={setOutboundDropAddress}
                         onAddressSelect={(location) => setOutboundDropAddress(location.address)}
@@ -798,16 +803,16 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <Users size={14} className="text-brand mr-1" />
-                        <span className="text-sm font-medium">Passageiros</span>
+                        <span className="text-sm font-medium">{t('booking.passengers')}</span>
                       </div>
                       <Select value={outboundPassengers.toString()} onValueChange={(value) => setOutboundPassengers(parseInt(value))}>
                         <SelectTrigger>
-                          <SelectValue placeholder="1 Passageiro" />
+                          <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from({ length: 10 }, (_, i) => (
                             <SelectItem key={i + 1} value={(i + 1).toString()}>
-                              {i + 1} Passageiro{i > 0 ? 's' : ''}
+                              {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -820,14 +825,14 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                 <div className="border-b border-gray-200 pb-6">
                   <h3 className="text-lg font-medium mb-4 flex items-center">
                     <MapPin size={18} className="text-green-600 mr-2" />
-                    Return
+                    {t('booking.return')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Return Date & Time */}
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <CalendarIcon size={14} className="text-green-600 mr-1" />
-                        <span className="text-sm font-medium">Data & Hora</span>
+                        <span className="text-sm font-medium">{t('booking.dateTime')}</span>
                       </div>
                       <div className="flex gap-2">
                         <Popover>
@@ -840,7 +845,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                               )}
                             >
                               <CalendarIcon className="mr-1 h-3 w-3" />
-                              {returnDate ? format(returnDate, "dd/MM") : "Data"}
+                              {returnDate ? format(returnDate, "dd/MM") : t('booking.date')}
                             </Button>
                           </PopoverTrigger>
                           <PopoverContent className="w-auto p-0" align="start">
@@ -872,10 +877,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <MapPin size={14} className="text-green-600 mr-1" />
-                        <span className="text-sm font-medium">Local de Embarque</span>
+                        <span className="text-sm font-medium">{t('booking.pickupLocation')}</span>
                       </div>
                       <AddressAutocomplete
-                        placeholder="Digite o local de embarque"
+                        placeholder={t('booking.enterPickupLocation')}
                         value={returnPickupAddress}
                         onChange={setReturnPickupAddress}
                         onAddressSelect={(location) => setReturnPickupAddress(location.address)}
@@ -887,10 +892,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <MapPin size={14} className="text-gray-500 mr-1" />
-                        <span className="text-sm font-medium">Local de Destino</span>
+                        <span className="text-sm font-medium">{t('booking.dropLocation')}</span>
                       </div>
                       <AddressAutocomplete
-                        placeholder="Digite o local de destino"
+                        placeholder={t('booking.enterDropLocation')}
                         value={returnDropAddress}
                         onChange={setReturnDropAddress}
                         onAddressSelect={(location) => setReturnDropAddress(location.address)}
@@ -902,16 +907,16 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <Users size={14} className="text-green-600 mr-1" />
-                        <span className="text-sm font-medium">Passageiros</span>
+                        <span className="text-sm font-medium">{t('booking.passengers')}</span>
                       </div>
                       <Select value={returnPassengers.toString()} onValueChange={(value) => setReturnPassengers(parseInt(value))}>
                         <SelectTrigger>
-                          <SelectValue placeholder="1 Passageiro" />
+                          <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
                         </SelectTrigger>
                         <SelectContent>
                           {Array.from({ length: 10 }, (_, i) => (
                             <SelectItem key={i + 1} value={(i + 1).toString()}>
-                              {i + 1} Passageiro{i > 0 ? 's' : ''}
+                              {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
                             </SelectItem>
                           ))}
                         </SelectContent>
@@ -924,14 +929,14 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                 <div className="space-y-1">
                   <div className="flex items-center mb-1">
                     <Clock size={14} className="text-blue-600 mr-1" />
-                    <span className="text-sm font-medium">Duração (dias)</span>
+                    <span className="text-xs font-medium">{t('booking.durationDays')}</span>
                   </div>
                   <Input
                     type="number"
                     min="0"
                     value={durationDays}
                     onChange={(e) => setDurationDays(parseInt(e.target.value) || 0)}
-                    placeholder="0 = bate-volta"
+                    placeholder={t('booking.roundTripPlaceholder')}
                     className="w-full"
                   />
                 </div>
@@ -950,142 +955,416 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
         </TabsContent>
 
         {/* HOURLY TAB */}
-        <TabsContent value="hourly" className="mt-0">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className={cn(
-              vertical 
-                ? "flex flex-col gap-3" 
-                : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
-            )}>
-              {/* Duration Hours */}
-              <div className="space-y-2">
-                <div className="flex items-center mb-1">
-                  <Clock size={16} className="text-brand mr-1" />
-                  <span className="text-sm font-medium">Duração (horas)</span>
-                </div>
-                <Select value={durationHours.toString()} onValueChange={(value) => setDurationHours(parseInt(value))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="1 hora" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {durationHoursOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value.toString()}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        <TabsContent value="hourly" className={cn("mt-0", vertical && "flex flex-col flex-1 min-h-0")}>
+          <form onSubmit={handleSubmit} className={vertical ? "flex flex-col flex-1 min-h-0" : "space-y-6"}>
+            {vertical ? (
+              <>
+                {/* Scrollable content area */}
+                <div className="flex-1 overflow-auto pr-2 -mr-2 pb-2">
+                  <div className="flex flex-col space-y-2">
+                    {/* Duration */}
+                    <div className="space-y-2">
+                      <div className="flex items-center mb-1">
+                        <Clock size={16} className="text-brand mr-1" />
+                        <span className="text-sm font-medium">{t('booking.duration')} *</span>
+                      </div>
+                      <Select value={durationHours.toString()} onValueChange={(value) => setDurationHours(parseInt(value))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={`1 ${t('booking.hour')}`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {durationHoursOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value.toString()}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-              {/* Pickup Date & Time */}
-              <div className="space-y-2">
-                <div className="flex items-center mb-1">
-                  <CalendarIcon size={16} className="text-brand mr-1" />
-                  <span className="text-sm font-medium">Data & Hora</span>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Popover>
-                    <PopoverTrigger asChild>
-                      <Button
-                        variant="outline"
-                        className={cn(
-                          "justify-start text-left font-normal",
-                          !hourlyDate && "text-muted-foreground"
-                        )}
-                      >
-                        <CalendarIcon className="mr-1 h-4 w-4" />
-                        {hourlyDate ? format(hourlyDate, "dd/MM") : "Data"}
-                      </Button>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-auto p-0" align="start">
-                      <Calendar
-                        mode="single"
-                        selected={hourlyDate}
-                        onSelect={(selectedDate) => selectedDate && setHourlyDate(selectedDate)}
-                        disabled={(date) => date < new Date()}
-                        initialFocus
+                    {/* Order Type */}
+                    <div className="space-y-2">
+                      <div className="flex items-center mb-1">
+                        <MapPin size={16} className="text-brand mr-1" />
+                        <span className="text-sm font-medium">{t('booking.orderType')} *</span>
+                      </div>
+                      <Select value={orderType} onValueChange={setOrderType}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t('booking.selectServiceType')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="airport-dropoff">{t('booking.airportDropOff')}</SelectItem>
+                          <SelectItem value="airport-pickup">{t('booking.airportPickup')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    {/* Pick-up Date & Time */}
+                    <div className="space-y-2">
+                      <div className="flex items-center mb-1">
+                        <CalendarIcon size={16} className="text-brand mr-1" />
+                        <span className="text-sm font-medium">{t('booking.dateTime')} *</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "flex-1 justify-start text-left font-normal",
+                                !hourlyDate && "text-muted-foreground"
+                              )}
+                            >
+                              <CalendarIcon className="mr-1 h-4 w-4" />
+                              {hourlyDate ? format(hourlyDate, "dd/MM") : t('booking.date')}
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                              mode="single"
+                              selected={hourlyDate}
+                              onSelect={(selectedDate) => selectedDate && setHourlyDate(selectedDate)}
+                              disabled={(date) => date < new Date()}
+                              initialFocus
+                            />
+                          </PopoverContent>
+                        </Popover>
+                        <Select value={hourlyTime} onValueChange={setHourlyTime}>
+                          <SelectTrigger className="flex-1">
+                            <SelectValue placeholder="12:00" />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-[200px] overflow-y-auto">
+                            {timeOptions.map((timeOption) => (
+                              <SelectItem key={timeOption} value={timeOption}>
+                                {timeOption}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    {/* Pick-up Address */}
+                    <div className="space-y-1">
+                      <div className="flex items-center mb-1">
+                        <MapPin size={16} className="text-brand mr-1" />
+                        <span className="text-sm font-medium">{t('booking.pickupAddress')} *</span>
+                      </div>
+                      <AddressAutocomplete
+                        placeholder={t('booking.enterPickupAddress')}
+                        value={hourlyPickupAddress}
+                        onChange={setHourlyPickupAddress}
+                        onAddressSelect={(location) => setHourlyPickupAddress(location.address)}
+                        required
                       />
-                    </PopoverContent>
-                  </Popover>
-                  <Select value={hourlyTime} onValueChange={setHourlyTime}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="12:00" />
-                    </SelectTrigger>
-                    <SelectContent className="max-h-[200px] overflow-y-auto">
-                      {timeOptions.map((timeOption) => (
-                        <SelectItem key={timeOption} value={timeOption}>
-                          {timeOption}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+                    </div>
 
-              {/* Pickup Address */}
-              <div className="space-y-2">
-                <div className="flex items-center mb-1">
-                  <MapPin size={16} className="text-brand mr-1" />
-                  <span className="text-sm font-medium">Local de Embarque</span>
-                </div>
-                <AddressAutocomplete
-                  placeholder="Digite o local de embarque"
-                  value={hourlyPickupAddress}
-                  onChange={setHourlyPickupAddress}
-                  onAddressSelect={(location) => setHourlyPickupAddress(location.address)}
-                  required
-                />
-              </div>
+                    {/* Departure Airport */}
+                    <div className="space-y-1">
+                      <div className="flex items-center mb-1">
+                        <MapPin size={16} className="text-gray-500 mr-1" />
+                        <span className="text-sm font-medium">{t('booking.departureAirport')} *</span>
+                      </div>
+                      <AddressAutocomplete
+                        placeholder={t('booking.enterDepartureAirport')}
+                        value={departureAirport}
+                        onChange={setDepartureAirport}
+                        onAddressSelect={(location) => setDepartureAirport(location.address)}
+                        required
+                      />
+                    </div>
 
-              {/* Drop Address (Optional) */}
-              <div className="space-y-2">
-                <div className="flex items-center mb-1">
-                  <MapPin size={16} className="text-gray-500 mr-1" />
-                  <span className="text-sm font-medium">Local de Destino (opcional)</span>
-                </div>
-                <AddressAutocomplete
-                  placeholder="Digite o local de destino (opcional)"
-                  value={hourlyDropAddress}
-                  onChange={setHourlyDropAddress}
-                  onAddressSelect={(location) => setHourlyDropAddress(location.address)}
-                />
-              </div>
+                    {/* Airline */}
+                    <div className="space-y-1">
+                      <div className="flex items-center mb-1">
+                        <span className="text-sm font-medium">{t('booking.airline')}</span>
+                      </div>
+                      <Input
+                        type="text"
+                        value={airline}
+                        onChange={(e) => setAirline(e.target.value)}
+                        placeholder={t('booking.airlineExample')}
+                        className="w-full h-8"
+                        disabled={noFlightInfo}
+                      />
+                    </div>
 
-              {/* Passengers */}
-              <div className="space-y-2">
-                <div className="flex items-center mb-1">
-                  <Users size={16} className="text-brand mr-1" />
-                  <span className="text-sm font-medium">Passageiros</span>
-                </div>
-                <Select value={hourlyPassengers.toString()} onValueChange={(value) => setHourlyPassengers(parseInt(value))}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="1 Passageiro" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 10 }, (_, i) => (
-                      <SelectItem key={i + 1} value={(i + 1).toString()}>
-                        {i + 1} Passageiro{i > 0 ? 's' : ''}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
+                    {/* Flight Number */}
+                    <div className="space-y-1">
+                      <div className="flex items-center mb-1">
+                        <span className="text-sm font-medium">{t('booking.flightNumber')}</span>
+                      </div>
+                      <Input
+                        type="text"
+                        value={flightNumber}
+                        onChange={(e) => setFlightNumber(e.target.value)}
+                        placeholder={t('booking.flightExample')}
+                        className="w-full h-8"
+                        disabled={noFlightInfo}
+                      />
+                    </div>
 
-            {/* Submit Button */}
-            <Button 
-              type="submit"
-              className="bg-brand hover:bg-brand-600 text-white mt-6 w-full py-3 rounded-lg font-medium"
-            >
-              <Search className="mr-2 h-4 w-4" />
-              {t('booking.findMyTransfer')}
-            </Button>
+                    {/* No Flight Info Checkbox */}
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="noFlightInfo"
+                        checked={noFlightInfo}
+                        onChange={(e) => {
+                          setNoFlightInfo(e.target.checked);
+                          if (e.target.checked) {
+                            setAirline("");
+                            setFlightNumber("");
+                          }
+                        }}
+                        className="rounded border-gray-300"
+                      />
+                      <label htmlFor="noFlightInfo" className="text-sm text-gray-600">
+                        {t('booking.noFlightInfo')}
+                      </label>
+                    </div>
+
+                    {/* Passenger Count */}
+                    <div className="space-y-1">
+                      <div className="flex items-center mb-1">
+                        <Users size={16} className="text-brand mr-1" />
+                        <span className="text-sm font-medium">{t('booking.passengerCount')} *</span>
+                      </div>
+                      <Select value={hourlyPassengers.toString()} onValueChange={(value) => setHourlyPassengers(parseInt(value))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 10 }, (_, i) => (
+                            <SelectItem key={i + 1} value={(i + 1).toString()}>
+                              {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+                
+                {/* Fixed Submit Button */}
+                <div className="flex-shrink-0 pt-3 border-t border-gray-100">
+                  <Button 
+                    type="submit"
+                    className="bg-brand hover:bg-brand-600 text-white w-full h-8 rounded-lg font-medium text-sm"
+                  >
+                    <Search className="mr-2 h-3 w-3" />
+                    {t('booking.findMyTransfer')}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {/* Duration */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <Clock size={16} className="text-brand mr-1" />
+                      <span className="text-sm font-medium">{t('booking.duration')} *</span>
+                    </div>
+                    <Select value={durationHours.toString()} onValueChange={(value) => setDurationHours(parseInt(value))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={`1 ${t('booking.hour')}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {durationHoursOptions.map((option) => (
+                          <SelectItem key={option.value} value={option.value.toString()}>
+                            {option.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Order Type */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <MapPin size={16} className="text-brand mr-1" />
+                      <span className="text-sm font-medium">{t('booking.orderType')} *</span>
+                    </div>
+                    <Select value={orderType} onValueChange={setOrderType}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={t('booking.selectServiceType')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="airport-dropoff">{t('booking.airportDropOff')}</SelectItem>
+                        <SelectItem value="airport-pickup">{t('booking.airportPickup')}</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Pick-up Date & Time */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <CalendarIcon size={16} className="text-brand mr-1" />
+                      <span className="text-sm font-medium">{t('booking.dateTime')} *</span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button
+                            variant="outline"
+                            className={cn(
+                              "flex-1 justify-start text-left font-normal",
+                              !hourlyDate && "text-muted-foreground"
+                            )}
+                          >
+                            <CalendarIcon className="mr-1 h-4 w-4" />
+                            {hourlyDate ? format(hourlyDate, "dd/MM") : t('booking.date')}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={hourlyDate}
+                            onSelect={(selectedDate) => selectedDate && setHourlyDate(selectedDate)}
+                            disabled={(date) => date < new Date()}
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <Select value={hourlyTime} onValueChange={setHourlyTime}>
+                        <SelectTrigger className="flex-1">
+                          <SelectValue placeholder="12:00" />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-[200px] overflow-y-auto">
+                          {timeOptions.map((timeOption) => (
+                            <SelectItem key={timeOption} value={timeOption}>
+                              {timeOption}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Second Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Pick-up Address */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <MapPin size={16} className="text-brand mr-1" />
+                      <span className="text-sm font-medium">{t('booking.pickupAddress')} *</span>
+                    </div>
+                    <AddressAutocomplete
+                      placeholder={t('booking.enterPickupAddress')}
+                      value={hourlyPickupAddress}
+                      onChange={setHourlyPickupAddress}
+                      onAddressSelect={(location) => setHourlyPickupAddress(location.address)}
+                      required
+                    />
+                  </div>
+
+                  {/* Departure Airport */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <MapPin size={16} className="text-gray-500 mr-1" />
+                      <span className="text-sm font-medium">{t('booking.departureAirport')} *</span>
+                    </div>
+                    <AddressAutocomplete
+                      placeholder={t('booking.enterDepartureAirport')}
+                      value={departureAirport}
+                      onChange={setDepartureAirport}
+                      onAddressSelect={(location) => setDepartureAirport(location.address)}
+                      required
+                    />
+                  </div>
+                </div>
+
+                {/* Third Row */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Airline */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <span className="text-sm font-medium">{t('booking.airline')}</span>
+                    </div>
+                    <Input
+                      type="text"
+                      value={airline}
+                      onChange={(e) => setAirline(e.target.value)}
+                      placeholder={t('booking.airlineExample')}
+                      className="w-full"
+                      disabled={noFlightInfo}
+                    />
+                  </div>
+
+                  {/* Flight Number */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <span className="text-sm font-medium">{t('booking.flightNumber')}</span>
+                    </div>
+                    <Input
+                      type="text"
+                      value={flightNumber}
+                      onChange={(e) => setFlightNumber(e.target.value)}
+                      placeholder={t('booking.flightExample')}
+                      className="w-full"
+                      disabled={noFlightInfo}
+                    />
+                  </div>
+
+                  {/* Passenger Count */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <Users size={16} className="text-brand mr-1" />
+                      <span className="text-sm font-medium">{t('booking.passengerCount')} *</span>
+                    </div>
+                    <Select value={hourlyPassengers.toString()} onValueChange={(value) => setHourlyPassengers(parseInt(value))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 10 }, (_, i) => (
+                          <SelectItem key={i + 1} value={(i + 1).toString()}>
+                            {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+
+                {/* No Flight Info Checkbox */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="noFlightInfo"
+                    checked={noFlightInfo}
+                    onChange={(e) => {
+                      setNoFlightInfo(e.target.checked);
+                      if (e.target.checked) {
+                        setAirline("");
+                        setFlightNumber("");
+                      }
+                    }}
+                    className="rounded border-gray-300"
+                  />
+                  <label htmlFor="noFlightInfo" className="text-sm text-gray-600">
+                    {t('booking.noFlightInfo')}
+                  </label>
+                </div>
+
+                {/* Submit Button */}
+                <Button 
+                  type="submit"
+                  className="bg-brand hover:bg-brand-600 text-white w-full py-3 rounded-lg font-medium"
+                >
+                  <Search className="mr-2 h-4 w-4" />
+                  {t('booking.findMyTransfer')}
+                </Button>
+              </>
+            )}
           </form>
         </TabsContent>
         
         <TabsContent value="city-tour" className="mt-0">
           <div className="text-center p-8">
-            <p className="text-gray-600">City tour booking form will be available soon.</p>
+            <p className="text-gray-600">{t('booking.cityTourComingSoon')}</p>
           </div>
         </TabsContent>
       </Tabs>

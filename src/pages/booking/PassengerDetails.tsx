@@ -1,4 +1,3 @@
-
 import { useBooking } from "@/contexts/BookingContext";
 import RideSummary from "@/components/RideSummary";
 import { Button } from "@/components/ui/button";
@@ -13,8 +12,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PassengerDetails = () => {
+  const { t } = useTranslation();
   const { nextStep, bookingData, setPassengerDetails } = useBooking();
   const [formData, setFormData] = useState({
     firstName: bookingData.passengerDetails.firstName,
@@ -38,7 +39,7 @@ const PassengerDetails = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-normal mb-6">Passenger Details</h2>
+      <h2 className="text-2xl font-normal mb-6">{t('booking.passengerDetails')}</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
@@ -47,14 +48,14 @@ const PassengerDetails = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Input
                 name="firstName"
-                placeholder="Name"
+                placeholder={t('booking.name')}
                 value={formData.firstName}
                 onChange={handleChange}
                 className="p-3 bg-gray-50"
               />
               <Input
                 name="lastName"
-                placeholder="Last Name"
+                placeholder={t('booking.lastName')}
                 value={formData.lastName}
                 onChange={handleChange}
                 className="p-3 bg-gray-50"
@@ -67,7 +68,7 @@ const PassengerDetails = () => {
                 <Input
                   name="email"
                   type="email"
-                  placeholder="Email Address"
+                  placeholder={t('booking.emailAddress')}
                   value={formData.email}
                   onChange={handleChange}
                   className="p-3"
@@ -76,7 +77,7 @@ const PassengerDetails = () => {
               <div>
                 <Input
                   name="phone"
-                  placeholder="Phone Number"
+                  placeholder={t('booking.phoneNumber')}
                   value={formData.phone}
                   onChange={handleChange}
                   className="p-3"
@@ -85,43 +86,43 @@ const PassengerDetails = () => {
             </div>
 
             {/* Options */}
-            <h3 className="text-xl font-normal pt-4">Options</h3>
+            <h3 className="text-xl font-normal pt-4">{t('booking.options')}</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <Select defaultValue="2">
                 <SelectTrigger className="p-3 bg-gray-50">
-                  <SelectValue placeholder="Passengers" />
+                  <SelectValue placeholder={t('booking.passengers')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="1">1 Passenger</SelectItem>
-                  <SelectItem value="2">2 Passengers</SelectItem>
-                  <SelectItem value="3">3 Passengers</SelectItem>
-                  <SelectItem value="4">4 Passengers</SelectItem>
-                  <SelectItem value="5">5 Passengers</SelectItem>
-                  <SelectItem value="6">6 Passengers</SelectItem>
-                  <SelectItem value="7">7 Passengers</SelectItem>
-                  <SelectItem value="8">8 Passengers</SelectItem>
-                  <SelectItem value="9">9 Passengers</SelectItem>
-                  <SelectItem value="10">10 Passengers</SelectItem>
+                  <SelectItem value="1">1 {t('booking.passenger')}</SelectItem>
+                  <SelectItem value="2">2 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="3">3 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="4">4 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="5">5 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="6">6 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="7">7 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="8">8 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="9">9 {t('booking.passengers')}</SelectItem>
+                  <SelectItem value="10">10 {t('booking.passengers')}</SelectItem>
                 </SelectContent>
               </Select>
 
               <Select defaultValue="2">
                 <SelectTrigger className="p-3 bg-gray-50">
-                  <SelectValue placeholder="Luggage" />
+                  <SelectValue placeholder={t('booking.luggage')} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="0">No Luggage</SelectItem>
-                  <SelectItem value="1">1 Luggage</SelectItem>
-                  <SelectItem value="2">2 Luggage</SelectItem>
-                  <SelectItem value="3">3 Luggage</SelectItem>
-                  <SelectItem value="4">4 Luggage</SelectItem>
-                  <SelectItem value="5">5 Luggage</SelectItem>
-                  <SelectItem value="6">6 Luggage</SelectItem>
-                  <SelectItem value="7">7 Luggage</SelectItem>
-                  <SelectItem value="8">8 Luggage</SelectItem>
-                  <SelectItem value="9">9 Luggage</SelectItem>
-                  <SelectItem value="10">10 Luggage</SelectItem>
+                  <SelectItem value="0">{t('booking.noLuggage')}</SelectItem>
+                  <SelectItem value="1">1 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="2">2 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="3">3 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="4">4 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="5">5 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="6">6 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="7">7 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="8">8 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="9">9 {t('booking.luggage')}</SelectItem>
+                  <SelectItem value="10">10 {t('booking.luggage')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -130,7 +131,7 @@ const PassengerDetails = () => {
             <div>
               <Textarea
                 name="notes"
-                placeholder="Notes to driver"
+                placeholder={t('booking.notesToDriver')}
                 value={formData.notes}
                 onChange={handleChange}
                 className="w-full h-28 p-3"
@@ -143,7 +144,7 @@ const PassengerDetails = () => {
                 onClick={handleContinue} 
                 className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto font-normal"
               >
-                Continue <ChevronRight size={18} className="ml-1" />
+                {t('booking.continue')} <ChevronRight size={18} className="ml-1" />
               </Button>
             </div>
           </div>
