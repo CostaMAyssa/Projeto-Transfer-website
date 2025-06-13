@@ -25,10 +25,10 @@ Este é um website moderno e responsivo desenvolvido para gerenciar reservas e t
 
 ```bash
 # Clone o repositório
-git clone https://github.com/startupstart30/Projeto-Trabsfer-website.git
+git clone https://github.com/startupstart30/Projeto-Transfer-website.git
 
 # Navegue até o diretório do projeto
-cd Projeto-Trabsfer-website
+cd Projeto-Transfer-website
 
 # Instale as dependências
 npm install
