@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -11,6 +10,9 @@ import BookingLayout from "./pages/booking/BookingLayout";
 import CityTourDetails from "./pages/city-tours/CityTourDetails";
 import Contact from "./pages/Contact";
 import AzBooking from "./pages/AzBooking";
+import InitializeZonePricing from "./pages/InitializeZonePricing";
+import TestZonePricing from "./pages/TestZonePricing";
+import TestZonePricingSimple from "./pages/TestZonePricingSimple";
 
 // Placeholder pages for new routes
 const Partners = () => <div className="pt-24 container mx-auto px-4 min-h-screen">Partners Page Coming Soon</div>;
@@ -33,6 +35,9 @@ const App = () => (
             <Route path="/partners" element={<Partners />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/initialize-zone-pricing" element={<InitializeZonePricing />} />
+            <Route path="/test-zone-pricing" element={<TestZonePricing />} />
+            <Route path="/test-zone-pricing-simple" element={<TestZonePricingSimple />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

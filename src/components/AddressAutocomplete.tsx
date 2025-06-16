@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Input } from "@/components/ui/input";
 import { MapPin, AlertCircle } from "lucide-react";
@@ -14,11 +13,91 @@ interface AddressAutocompleteProps {
   className?: string;
 }
 
-interface Suggestion {
-  id: string;
-  place_name: string;
-  center: [number, number];
+interface MockPlace {
+  place_id: string;
+  description: string;
+  structured_formatting: {
+    main_text: string;
+    secondary_text: string;
+  };
+  coordinates: [number, number];
 }
+
+// Dados mockados para autocomplete
+const MOCK_PLACES: MockPlace[] = [
+  {
+    place_id: "mock_ewr",
+    description: "Newark Airport, Newark, NJ, USA",
+    structured_formatting: {
+      main_text: "Newark Airport",
+      secondary_text: "Newark, NJ, USA"
+    },
+    coordinates: [-74.1745, 40.6895]
+  },
+  {
+    place_id: "mock_jfk", 
+    description: "JFK Airport, Queens, NY, USA",
+    structured_formatting: {
+      main_text: "JFK Airport",
+      secondary_text: "Queens, NY, USA"
+    },
+    coordinates: [-73.7781, 40.6413]
+  },
+  {
+    place_id: "mock_lga",
+    description: "LaGuardia Airport, Queens, NY, USA",
+    structured_formatting: {
+      main_text: "LaGuardia Airport",
+      secondary_text: "Queens, NY, USA"
+    },
+    coordinates: [-73.8740, 40.7769]
+  },
+  {
+    place_id: "mock_times_square",
+    description: "Times Square, New York, NY, USA",
+    structured_formatting: {
+      main_text: "Times Square",
+      secondary_text: "New York, NY, USA"
+    },
+    coordinates: [-73.9857, 40.7589]
+  },
+  {
+    place_id: "mock_manhattan",
+    description: "Manhattan, New York, NY, USA",
+    structured_formatting: {
+      main_text: "Manhattan",
+      secondary_text: "New York, NY, USA"
+    },
+    coordinates: [-73.9712, 40.7831]
+  },
+  {
+    place_id: "mock_brooklyn",
+    description: "Brooklyn Bridge, New York, NY, USA",
+    structured_formatting: {
+      main_text: "Brooklyn Bridge",
+      secondary_text: "New York, NY, USA"
+    },
+    coordinates: [-73.9969, 40.7061]
+  },
+  {
+    place_id: "mock_bronx",
+    description: "Yankee Stadium, Bronx, NY, USA",
+    structured_formatting: {
+      main_text: "Yankee Stadium",
+      secondary_text: "Bronx, NY, USA"
+    },
+    coordinates: [-73.9276, 40.8296]
+  },
+  {
+    place_id: "mock_queens",
+    description: "Flushing Meadows, Queens, NY, USA",
+    structured_formatting: {
+      main_text: "Flushing Meadows",
+      secondary_text: "Queens, NY, USA"
+    },
+    coordinates: [-73.8448, 40.7282]
+  }
+];
 
 const AddressAutocomplete = ({
   placeholder,
@@ -28,7 +107,7 @@ const AddressAutocomplete = ({
   required = false,
   className,
 }: AddressAutocompleteProps) => {
-  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const [suggestions, setSuggestions] = useState<MockPlace[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -38,12 +117,9 @@ const AddressAutocomplete = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedValue = useDebounce(value, 400);
 
-  // Using the updated token
-  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
-
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (debouncedValue.length < 3) {
+      if (debouncedValue.length < 2) {
         setSuggestions([]);
         setIsOpen(false);
         setErrorMessage(null);
@@ -54,54 +130,24 @@ const AddressAutocomplete = ({
       setErrorMessage(null);
       
       try {
-        console.log("Fetching suggestions for:", debouncedValue);
+        console.log("Filtering suggestions for:", debouncedValue);
         
-        // Restrict to specific states: New Jersey, New York, Pennsylvania, and Connecticut
-        // Using bbox (bounding box) parameter to restrict the search area to these states
-        // We also add "poi.landmark" to types to better find landmarks like airports
-        const response = await fetch(
-          `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
-            debouncedValue
-          )}.json?access_token=${mapboxToken}&autocomplete=true&limit=5&country=us&types=address,poi,place,postcode,poi.landmark&bbox=-80.519891,39.719799,-71.856214,45.013027`
+        // Simular delay da API
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        // Filtrar lugares mockados
+        const filtered = MOCK_PLACES.filter(place =>
+          place.description.toLowerCase().includes(debouncedValue.toLowerCase()) ||
+          place.structured_formatting.main_text.toLowerCase().includes(debouncedValue.toLowerCase())
         );
         
-        if (!response.ok) {
-          console.error("Geocoding request failed with status:", response.status);
-          
-          if (response.status === 401) {
-            setErrorMessage("Invalid Mapbox token. Please contact support.");
-          } else {
-            setErrorMessage(`Geocoding request failed with status: ${response.status}`);
-          }
-          
-          throw new Error("Geocoding request failed");
-        }
+        setSuggestions(filtered);
+        setIsOpen(filtered.length > 0);
         
-        const data = await response.json();
-        console.log("Received suggestions:", data.features);
-        
-        // Filter the results to only include the specified states
-        const filteredSuggestions = data.features?.filter((feature: any) => {
-          const context = feature.context || [];
-          const stateRegion = context.find((item: any) => item.id.includes('region'));
-          
-          if (!stateRegion) return false;
-          
-          // Check if the state short code matches any of our target states
-          const stateShortCode = stateRegion.short_code;
-          return stateShortCode === 'US-NY' || 
-                 stateShortCode === 'US-NJ' || 
-                 stateShortCode === 'US-PA' || 
-                 stateShortCode === 'US-CT';
-        }) || [];
-        
-        setSuggestions(filteredSuggestions);
-        
-        // Show suggestions if we have any
-        setIsOpen(filteredSuggestions.length > 0);
       } catch (error) {
-        console.error("Error fetching address suggestions:", error);
+        console.error("Error filtering suggestions:", error);
         setSuggestions([]);
+        setErrorMessage("Erro ao buscar endereços. Tente novamente.");
       } finally {
         setIsLoading(false);
       }
@@ -132,30 +178,26 @@ const AddressAutocomplete = ({
     const newValue = e.target.value;
     onChange(newValue);
     setErrorMessage(null);
-    // Reset selected address when user types
     setSelectedAddress(null);
     
-    if (newValue.length >= 3) {
+    if (newValue.length >= 2) {
       setIsLoading(true);
     } else {
       setIsOpen(false);
     }
   };
 
-  const handleSuggestionClick = (suggestion: Suggestion) => {
-    console.log("Selected suggestion:", suggestion);
-    // Set the full address as the selected value
-    setSelectedAddress(suggestion.place_name);
-    // Update the parent component
-    onChange(suggestion.place_name);
-    // Call the onAddressSelect callback with the complete address data
+  const handleSuggestionClick = (suggestion: MockPlace) => {
+    console.log("Selected address:", suggestion);
+    
+    setSelectedAddress(suggestion.description);
+    onChange(suggestion.description);
     onAddressSelect({
-      address: suggestion.place_name,
-      coordinates: suggestion.center
+      address: suggestion.description,
+      coordinates: suggestion.coordinates
     });
-    // Immediately close the dropdown when an address is selected
     setIsOpen(false);
-    // Set focus on the input to indicate selection has completed
+    
     if (inputRef.current) {
       inputRef.current.focus();
     }
@@ -171,7 +213,7 @@ const AddressAutocomplete = ({
           onChange={handleInputChange}
           onFocus={() => {
             setIsFocused(true);
-            if (value.length >= 3 && suggestions.length > 0) {
+            if (value.length >= 2 && suggestions.length > 0) {
               setIsOpen(true);
             }
           }}
@@ -198,12 +240,15 @@ const AddressAutocomplete = ({
           <div className="absolute z-50 w-full mt-1 bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto">
             {suggestions.map((suggestion) => (
               <div
-                key={suggestion.id}
+                key={suggestion.place_id}
                 className="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start gap-2"
                 onClick={() => handleSuggestionClick(suggestion)}
               >
                 <MapPin size={18} className="text-brand mt-0.5 flex-shrink-0" />
-                <span className="text-sm">{suggestion.place_name}</span>
+                <div className="flex flex-col">
+                  <span className="text-sm font-medium">{suggestion.structured_formatting.main_text}</span>
+                  <span className="text-xs text-gray-500">{suggestion.structured_formatting.secondary_text}</span>
+                </div>
               </div>
             ))}
           </div>
@@ -211,9 +256,9 @@ const AddressAutocomplete = ({
       </div>
 
       {errorMessage && (
-        <Alert variant="destructive" className="py-2">
+        <Alert variant="destructive">
           <AlertCircle className="h-4 w-4" />
-          <AlertDescription className="text-xs">{errorMessage}</AlertDescription>
+          <AlertDescription>{errorMessage}</AlertDescription>
         </Alert>
       )}
     </div>

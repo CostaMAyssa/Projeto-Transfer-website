@@ -221,6 +221,142 @@ export type Database = {
         }
         Relationships: []
       }
+      zones: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          type: 'circular' | 'polygonal'
+          center_lat: number | null
+          center_lng: number | null
+          radius_meters: number | null
+          geojson: Record<string, unknown> | null
+          coverage_area: string
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          name: string
+          description?: string | null
+          type: 'circular' | 'polygonal'
+          center_lat?: number | null
+          center_lng?: number | null
+          radius_meters?: number | null
+          geojson?: Record<string, unknown> | null
+          coverage_area: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          type?: 'circular' | 'polygonal'
+          center_lat?: number | null
+          center_lng?: number | null
+          radius_meters?: number | null
+          geojson?: Record<string, unknown> | null
+          coverage_area?: string
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      vehicle_categories: {
+        Row: {
+          id: string
+          name: string
+          capacity: number
+          base_price: number
+          description: string | null
+          features: Record<string, unknown> | null
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id: string
+          name: string
+          capacity: number
+          base_price: number
+          description?: string | null
+          features?: Record<string, unknown> | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          capacity?: number
+          base_price?: number
+          description?: string | null
+          features?: Record<string, unknown> | null
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      zone_pricing: {
+        Row: {
+          id: string
+          origin_zone_id: string
+          destination_zone_id: string
+          vehicle_category_id: string
+          price: number
+          is_active: boolean
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          origin_zone_id: string
+          destination_zone_id: string
+          vehicle_category_id: string
+          price: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          origin_zone_id?: string
+          destination_zone_id?: string
+          vehicle_category_id?: string
+          price?: number
+          is_active?: boolean
+          created_at?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "zone_pricing_origin_zone_id_fkey"
+            columns: ["origin_zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "zone_pricing_destination_zone_id_fkey"
+            columns: ["destination_zone_id"]
+            isOneToOne: false
+            referencedRelation: "zones"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "zone_pricing_vehicle_category_id_fkey"
+            columns: ["vehicle_category_id"]
+            isOneToOne: false
+            referencedRelation: "vehicle_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
