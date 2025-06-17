@@ -260,8 +260,33 @@ export async function calculateZonePricing(
         whatsapp_contact: true
       };
     }
+
+    // Ambas as zonas detectadas - busca preço específico no banco
+    if (pickupZoneResult.zone && dropoffZoneResult.zone) {
+      // Busca preço específico da rota no banco de dados
+      const { ZonePricingDatabaseService } = await import('./zone-pricing-db');
+      const specificPrice = await ZonePricingDatabaseService.getZonePricing(
+        pickupZoneResult.zone.id,
+        dropoffZoneResult.zone.id,
+        vehicleCat.id
+      );
+
+      if (specificPrice && specificPrice > 0) {
+        // Preço específico encontrado no banco
+        return {
+          success: true,
+          pickup_zone: pickupZoneResult.zone,
+          dropoff_zone: dropoffZoneResult.zone,
+          vehicle_category: vehicleCat,
+          price: specificPrice,
+          base_price: vehicleCat.base_price,
+          out_of_coverage: false,
+          message: `Viagem de ${pickupZoneResult.zone.name} para ${dropoffZoneResult.zone.name} - Preço específico`
+        };
+      }
+    }
     
-    // Por enquanto, usa sempre o preço base até que o banco seja configurado
+    // Fallback para preço base se não encontrar preço específico
     return {
       success: true,
       pickup_zone: pickupZoneResult.zone,
@@ -270,7 +295,7 @@ export async function calculateZonePricing(
       price: vehicleCat.base_price,
       base_price: vehicleCat.base_price,
       out_of_coverage: false,
-      message: `Viagem de ${pickupZoneResult.zone?.name || 'Origem'} para ${dropoffZoneResult.zone?.name || 'Destino'}`
+      message: `Viagem de ${pickupZoneResult.zone?.name || 'Origem'} para ${dropoffZoneResult.zone?.name || 'Destino'} - Usando preço base (preço específico não encontrado)`
     };
     
   } catch (error) {

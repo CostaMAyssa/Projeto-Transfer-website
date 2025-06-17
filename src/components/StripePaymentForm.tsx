@@ -1,391 +1,286 @@
-
-import { useState } from "react";
-import { useBooking } from "@/contexts/BookingContext";
-import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Label } from "@/components/ui/label";
-import { ChevronRight } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import React, { useState, useEffect } from 'react';
 import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+  Elements,
+  CardElement,
+  useStripe,
+  useElements,
+} from '@stripe/react-stripe-js';
+import { stripePromise, formatCurrency, confirmPayment } from '@/lib/stripe';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Loader2, CreditCard, Shield, CheckCircle } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
-const paymentSchema = z.object({
-  firstName: z.string().min(2, "First name is required"),
-  lastName: z.string().min(2, "Last name is required"),
-  company: z.string().optional(),
-  address: z.string().min(5, "Address is required"),
-  country: z.string().min(1, "Country is required"),
-  city: z.string().min(1, "City is required"),
-  postal: z.string().min(1, "Postal code is required"),
-  cardNumber: z.string().min(13, "Valid card number is required"),
-  cardHolder: z.string().min(3, "Cardholder name is required"),
-  expiryMonth: z.string().min(1, "Month is required"),
-  expiryYear: z.string().min(4, "Year is required"),
-  cvv: z.string().min(3, "CVV is required"),
-  termsAccepted: z.boolean().refine(val => val === true, {
-    message: "You must accept the terms and conditions",
-  }),
-  newsletterSubscription: z.boolean().optional(),
-});
+interface PaymentFormProps {
+  amount: number;
+  currency?: string;
+  onSuccess: (paymentIntent: PaymentIntentResult) => void;
+  onError: (error: string) => void;
+  bookingDetails?: {
+    pickup: string;
+    dropoff: string;
+    vehicle: string;
+    date: string;
+    time: string;
+  };
+}
 
-type PaymentFormData = z.infer<typeof paymentSchema>;
+interface PaymentIntentResult {
+  id: string;
+  status: string;
+  receipt_email?: string;
+}
 
-const StripePaymentForm = () => {
-  const { completeBooking, bookingData, setPaymentDetails, calculateTotal } = useBooking();
+const PaymentForm: React.FC<PaymentFormProps> = ({
+  amount,
+  currency = 'usd',
+  onSuccess,
+  onError,
+  bookingDetails,
+}) => {
+  const stripe = useStripe();
+  const elements = useElements();
   const [isProcessing, setIsProcessing] = useState(false);
-  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string>('');
+  const [customerInfo, setCustomerInfo] = useState({
+    name: '',
+    email: '',
+    phone: '',
+  });
 
-  const defaultValues = {
-    firstName: bookingData.paymentDetails.firstName || bookingData.passengerDetails.firstName || "",
-    lastName: bookingData.paymentDetails.lastName || bookingData.passengerDetails.lastName || "",
-    company: bookingData.paymentDetails.company || "",
-    address: bookingData.paymentDetails.address || "",
-    country: bookingData.paymentDetails.country || "US",
-    city: bookingData.paymentDetails.city || "",
-    postal: bookingData.paymentDetails.postal || "",
-    cardHolder: bookingData.paymentDetails.cardHolder || "",
-    cardNumber: bookingData.paymentDetails.cardNumber || "",
-    expiryMonth: bookingData.paymentDetails.expiryMonth || "",
-    expiryYear: bookingData.paymentDetails.expiryYear || "",
-    cvv: bookingData.paymentDetails.cvv || "",
-    termsAccepted: bookingData.paymentDetails.termsAccepted || false,
-    newsletterSubscription: bookingData.paymentDetails.newsletterSubscription || false,
+  // Configuração do CardElement
+  const cardElementOptions = {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#424770',
+        '::placeholder': {
+          color: '#aab7c4',
+        },
+        fontFamily: '"Inter", system-ui, sans-serif',
+        fontSmoothing: 'antialiased',
+      },
+      invalid: {
+        color: '#9e2146',
+      },
+    },
+    hidePostalCode: false,
   };
 
-  const form = useForm<PaymentFormData>({
-    resolver: zodResolver(paymentSchema),
-    defaultValues,
-  });
-  
-  const onSubmit = async (data: PaymentFormData) => {
-    try {
-      setIsProcessing(true);
-      
-      // Create a non-optional version of the payment details to satisfy TypeScript
-      const paymentDetails = {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        company: data.company || "",
-        address: data.address,
-        country: data.country,
-        city: data.city,
-        postal: data.postal,
-        cardHolder: data.cardHolder,
-        cardNumber: data.cardNumber,
-        expiryMonth: data.expiryMonth,
-        expiryYear: data.expiryYear,
-        cvv: data.cvv,
-        termsAccepted: data.termsAccepted,
-        newsletterSubscription: data.newsletterSubscription || false,
-      };
-      
-      // Save details to context
-      setPaymentDetails(paymentDetails);
-      
-      // Call process-payment function
-      const { data: paymentResponse, error } = await supabase.functions.invoke("process-payment", {
-        body: { 
-          paymentDetails: data, 
-          bookingData: {
-            ...bookingData,
-            total: calculateTotal().total,
-          }
+  // Criar Payment Intent quando o componente carrega
+  useEffect(() => {
+    const createPaymentIntent = async () => {
+      try {
+        // Usar Supabase Edge Function
+        const { data, error } = await supabase.functions.invoke('stripe-payment', {
+          body: {
+            amount: Math.round(amount * 100), // Converte para centavos
+            currency,
+            metadata: {
+              pickup: bookingDetails?.pickup || '',
+              dropoff: bookingDetails?.dropoff || '',
+              vehicle: bookingDetails?.vehicle || '',
+              date: bookingDetails?.date || '',
+              time: bookingDetails?.time || '',
+            },
+          },
+        });
+
+        if (error) {
+          throw error;
         }
+
+        setClientSecret(data.client_secret);
+      } catch (error) {
+        console.error('Erro ao criar Payment Intent:', error);
+        setError('Erro ao inicializar pagamento. Tente novamente.');
+      }
+    };
+
+    if (amount > 0) {
+      createPaymentIntent();
+    }
+  }, [amount, currency, bookingDetails]);
+
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!stripe || !elements || !clientSecret) {
+      setError('Stripe não foi carregado corretamente');
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      setError('Elemento do cartão não encontrado');
+      return;
+    }
+
+    // Validar informações do cliente
+    if (!customerInfo.name || !customerInfo.email) {
+      setError('Por favor, preencha nome e email');
+      return;
+    }
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      // Confirmar o pagamento
+      const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: customerInfo.name,
+            email: customerInfo.email,
+            phone: customerInfo.phone,
+          },
+        },
       });
 
       if (error) {
-        console.error("Payment error:", error);
+        console.error('Erro no pagamento:', error);
+        setError(error.message || 'Erro no processamento do pagamento');
+        onError(error.message || 'Erro no pagamento');
+      } else if (paymentIntent.status === 'succeeded') {
+        console.log('Pagamento realizado com sucesso:', paymentIntent);
         toast({
-          title: "Payment Failed",
-          description: error.message || "There was a problem processing your payment",
-          variant: "destructive",
+          title: 'Pagamento Realizado!',
+          description: `Pagamento de ${formatCurrency(amount)} processado com sucesso.`,
         });
-        setIsProcessing(false);
-        return;
+        onSuccess(paymentIntent);
       }
-
-      // Handle successful payment
-      toast({
-        title: "Payment Successful",
-        description: "Your booking has been confirmed",
-      });
-      
-      // Complete the booking
-      completeBooking();
-      
     } catch (error) {
-      console.error("Payment submission error:", error);
-      toast({
-        title: "Payment Error",
-        description: "There was a problem processing your payment",
-        variant: "destructive",
-      });
+      console.error('Erro ao processar pagamento:', error);
+      setError('Erro interno no processamento do pagamento');
+      onError('Erro interno no pagamento');
     } finally {
       setIsProcessing(false);
     }
   };
 
+  const handleInputChange = (field: keyof typeof customerInfo, value: string) => {
+    setCustomerInfo(prev => ({ ...prev, [field]: value }));
+  };
+
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <h2 className="text-2xl font-bold mb-6">Billing Address</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FormField
-            control={form.control}
-            name="firstName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>First Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="First Name" className="p-3 bg-gray-50" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="lastName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Last Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Last Name" className="p-3 bg-gray-50" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+    <Card className="w-full max-w-md mx-auto">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <CreditCard className="h-5 w-5" />
+          Pagamento Seguro
+        </CardTitle>
+        <CardDescription>
+          Total: <span className="font-bold text-lg">{formatCurrency(amount)}</span>
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Informações do Cliente */}
+          <div className="space-y-3">
+            <div>
+              <Label htmlFor="name">Nome Completo *</Label>
+              <Input
+                id="name"
+                type="text"
+                value={customerInfo.name}
+                onChange={(e) => handleInputChange('name', e.target.value)}
+                placeholder="Seu nome completo"
+                required
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="email">Email *</Label>
+              <Input
+                id="email"
+                type="email"
+                value={customerInfo.email}
+                onChange={(e) => handleInputChange('email', e.target.value)}
+                placeholder="seu@email.com"
+                required
+              />
+            </div>
+            
+            <div>
+              <Label htmlFor="phone">Telefone</Label>
+              <Input
+                id="phone"
+                type="tel"
+                value={customerInfo.phone}
+                onChange={(e) => handleInputChange('phone', e.target.value)}
+                placeholder="+1 (555) 123-4567"
+              />
+            </div>
+          </div>
 
-        <FormField
-          control={form.control}
-          name="company"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Company (Optional)</FormLabel>
-              <FormControl>
-                <Input placeholder="Company" className="p-3 bg-gray-50" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          {/* Detalhes da Reserva */}
+          {bookingDetails && (
+            <div className="bg-gray-50 p-3 rounded-lg space-y-1 text-sm">
+              <div><strong>De:</strong> {bookingDetails.pickup}</div>
+              <div><strong>Para:</strong> {bookingDetails.dropoff}</div>
+              <div><strong>Veículo:</strong> {bookingDetails.vehicle}</div>
+              <div><strong>Data:</strong> {bookingDetails.date} às {bookingDetails.time}</div>
+            </div>
           )}
-        />
 
-        <FormField
-          control={form.control}
-          name="address"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Address</FormLabel>
-              <FormControl>
-                <Input placeholder="Address" className="p-3 bg-gray-50" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
+          {/* Elemento do Cartão */}
+          <div>
+            <Label>Informações do Cartão *</Label>
+            <div className="border rounded-md p-3 bg-white">
+              <CardElement options={cardElementOptions} />
+            </div>
+          </div>
+
+          {/* Erro */}
+          {error && (
+            <Alert variant="destructive">
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
           )}
-        />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="country"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Country</FormLabel>
-                <FormControl>
-                  <Input placeholder="Country" className="p-3 bg-gray-50" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+          {/* Botão de Pagamento */}
+          <Button
+            type="submit"
+            disabled={!stripe || isProcessing || !clientSecret}
+            className="w-full bg-green-600 hover:bg-green-700"
+            size="lg"
+          >
+            {isProcessing ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processando...
+              </>
+            ) : (
+              <>
+                <Shield className="mr-2 h-4 w-4" />
+                Pagar {formatCurrency(amount)}
+              </>
             )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>City</FormLabel>
-                <FormControl>
-                  <Input placeholder="City" className="p-3 bg-gray-50" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="postal"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Postal Code</FormLabel>
-                <FormControl>
-                  <Input placeholder="Postal Code" className="p-3 bg-gray-50" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
+          </Button>
 
-        <h3 className="text-xl font-semibold pt-4">Credit Card Payment</h3>
+          {/* Informações de Segurança */}
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-500">
+            <Shield className="h-3 w-3" />
+            Pagamento seguro processado pelo Stripe
+          </div>
+        </form>
+      </CardContent>
+    </Card>
+  );
+};
 
-        <FormField
-          control={form.control}
-          name="cardHolder"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Card Holder Name</FormLabel>
-              <FormControl>
-                <Input placeholder="Card Holder Name" className="p-3 bg-gray-50" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="cardNumber"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Card Number</FormLabel>
-              <FormControl>
-                <Input 
-                  placeholder="Card Number" 
-                  className="p-3 bg-gray-50" 
-                  maxLength={19}
-                  {...field} 
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <FormField
-            control={form.control}
-            name="expiryMonth"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Month</FormLabel>
-                <FormControl>
-                  <Input placeholder="MM" className="p-3 bg-gray-50" maxLength={2} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="expiryYear"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Year</FormLabel>
-                <FormControl>
-                  <Input placeholder="YYYY" className="p-3 bg-gray-50" maxLength={4} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="cvv"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>CVV</FormLabel>
-                <FormControl>
-                  <Input placeholder="CVV" className="p-3 bg-gray-50" maxLength={4} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <div className="flex gap-2 my-4">
-          <div className="w-10 h-6 bg-gray-200 rounded"></div>
-          <div className="w-10 h-6 bg-gray-200 rounded"></div>
-          <div className="w-10 h-6 bg-gray-200 rounded"></div>
-        </div>
-
-        <p className="text-sm text-gray-600">
-          The credit card must be issued in the driver's name. Debit cards are accepted at some locations and for some car categories.
-        </p>
-
-        <div className="space-y-3 pt-4">
-          <FormField
-            control={form.control}
-            name="termsAccepted"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    I accept the Terms & Conditions - Booking Conditions and Privacy Policy. *
-                  </FormLabel>
-                  <FormMessage />
-                </div>
-              </FormItem>
-            )}
-          />
-          
-          <FormField
-            control={form.control}
-            name="newsletterSubscription"
-            render={({ field }) => (
-              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
-                  <FormLabel>
-                    I want to subscribe to Transfero's newsletter (Travel tips and special deals)
-                  </FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
-        </div>
-
-        <Button 
-          type="submit" 
-          disabled={isProcessing}
-          className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto mt-6"
-        >
-          {isProcessing ? "Processing..." : "Book Now"} <ChevronRight size={18} className="ml-1" />
-        </Button>
-      </form>
-    </Form>
+// Componente wrapper com Elements Provider
+const StripePaymentForm: React.FC<PaymentFormProps> = (props) => {
+  return (
+    <Elements stripe={stripePromise}>
+      <PaymentForm {...props} />
+    </Elements>
   );
 };
 

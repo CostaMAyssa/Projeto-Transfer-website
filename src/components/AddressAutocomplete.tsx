@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { MapPin, AlertCircle } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AddressAutocompleteProps {
   placeholder: string;
@@ -13,91 +14,24 @@ interface AddressAutocompleteProps {
   className?: string;
 }
 
-interface MockPlace {
+interface GooglePlacePrediction {
   place_id: string;
   description: string;
   structured_formatting: {
     main_text: string;
     secondary_text: string;
   };
-  coordinates: [number, number];
 }
 
-// Dados mockados para autocomplete
-const MOCK_PLACES: MockPlace[] = [
-  {
-    place_id: "mock_ewr",
-    description: "Newark Airport, Newark, NJ, USA",
-    structured_formatting: {
-      main_text: "Newark Airport",
-      secondary_text: "Newark, NJ, USA"
-    },
-    coordinates: [-74.1745, 40.6895]
-  },
-  {
-    place_id: "mock_jfk", 
-    description: "JFK Airport, Queens, NY, USA",
-    structured_formatting: {
-      main_text: "JFK Airport",
-      secondary_text: "Queens, NY, USA"
-    },
-    coordinates: [-73.7781, 40.6413]
-  },
-  {
-    place_id: "mock_lga",
-    description: "LaGuardia Airport, Queens, NY, USA",
-    structured_formatting: {
-      main_text: "LaGuardia Airport",
-      secondary_text: "Queens, NY, USA"
-    },
-    coordinates: [-73.8740, 40.7769]
-  },
-  {
-    place_id: "mock_times_square",
-    description: "Times Square, New York, NY, USA",
-    structured_formatting: {
-      main_text: "Times Square",
-      secondary_text: "New York, NY, USA"
-    },
-    coordinates: [-73.9857, 40.7589]
-  },
-  {
-    place_id: "mock_manhattan",
-    description: "Manhattan, New York, NY, USA",
-    structured_formatting: {
-      main_text: "Manhattan",
-      secondary_text: "New York, NY, USA"
-    },
-    coordinates: [-73.9712, 40.7831]
-  },
-  {
-    place_id: "mock_brooklyn",
-    description: "Brooklyn Bridge, New York, NY, USA",
-    structured_formatting: {
-      main_text: "Brooklyn Bridge",
-      secondary_text: "New York, NY, USA"
-    },
-    coordinates: [-73.9969, 40.7061]
-  },
-  {
-    place_id: "mock_bronx",
-    description: "Yankee Stadium, Bronx, NY, USA",
-    structured_formatting: {
-      main_text: "Yankee Stadium",
-      secondary_text: "Bronx, NY, USA"
-    },
-    coordinates: [-73.9276, 40.8296]
-  },
-  {
-    place_id: "mock_queens",
-    description: "Flushing Meadows, Queens, NY, USA",
-    structured_formatting: {
-      main_text: "Flushing Meadows",
-      secondary_text: "Queens, NY, USA"
-    },
-    coordinates: [-73.8448, 40.7282]
-  }
-];
+interface GooglePlaceDetails {
+  geometry: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+  formatted_address: string;
+}
 
 const AddressAutocomplete = ({
   placeholder,
@@ -107,7 +41,7 @@ const AddressAutocomplete = ({
   required = false,
   className,
 }: AddressAutocompleteProps) => {
-  const [suggestions, setSuggestions] = useState<MockPlace[]>([]);
+  const [suggestions, setSuggestions] = useState<GooglePlacePrediction[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -119,7 +53,7 @@ const AddressAutocomplete = ({
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (debouncedValue.length < 2) {
+      if (debouncedValue.length < 3) {
         setSuggestions([]);
         setIsOpen(false);
         setErrorMessage(null);
@@ -130,24 +64,34 @@ const AddressAutocomplete = ({
       setErrorMessage(null);
       
       try {
-        console.log("Filtering suggestions for:", debouncedValue);
+        console.log("Buscando sugestões para:", debouncedValue);
         
-        // Simular delay da API
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        // Filtrar lugares mockados
-        const filtered = MOCK_PLACES.filter(place =>
-          place.description.toLowerCase().includes(debouncedValue.toLowerCase()) ||
-          place.structured_formatting.main_text.toLowerCase().includes(debouncedValue.toLowerCase())
-        );
-        
-        setSuggestions(filtered);
-        setIsOpen(filtered.length > 0);
+        // Tenta usar a Edge Function primeiro
+        const { data, error } = await supabase.functions.invoke('google-places/autocomplete', {
+          body: { input: debouncedValue }
+        });
+
+        if (error) {
+          console.warn('Edge Function não disponível, usando fallback local');
+          throw error;
+        }
+
+        if (data.status === 'OK' && data.predictions) {
+          setSuggestions(data.predictions);
+          setIsOpen(data.predictions.length > 0);
+        } else {
+          setSuggestions([]);
+          setIsOpen(false);
+          if (data.status === 'ZERO_RESULTS') {
+            setErrorMessage('Nenhum endereço encontrado. Tente ser mais específico.');
+          }
+        }
         
       } catch (error) {
-        console.error("Error filtering suggestions:", error);
+        console.error("Erro ao buscar endereços:", error);
         setSuggestions([]);
-        setErrorMessage("Erro ao buscar endereços. Tente novamente.");
+        setIsOpen(false);
+        setErrorMessage("Erro ao buscar endereços. Verifique sua conexão e tente novamente.");
       } finally {
         setIsLoading(false);
       }
@@ -180,23 +124,54 @@ const AddressAutocomplete = ({
     setErrorMessage(null);
     setSelectedAddress(null);
     
-    if (newValue.length >= 2) {
+    if (newValue.length >= 3) {
       setIsLoading(true);
     } else {
       setIsOpen(false);
     }
   };
 
-  const handleSuggestionClick = (suggestion: MockPlace) => {
-    console.log("Selected address:", suggestion);
+  const handleSuggestionClick = async (suggestion: GooglePlacePrediction) => {
+    console.log("Endereço selecionado:", suggestion);
     
     setSelectedAddress(suggestion.description);
     onChange(suggestion.description);
-    onAddressSelect({
-      address: suggestion.description,
-      coordinates: suggestion.coordinates
-    });
     setIsOpen(false);
+    setIsLoading(true);
+    
+    try {
+      // Busca detalhes do lugar para obter coordenadas
+      const { data, error } = await supabase.functions.invoke('google-places/details', {
+        body: { place_id: suggestion.place_id }
+      });
+
+      if (error) {
+        console.warn('Erro ao buscar detalhes, usando endereço sem coordenadas');
+        onAddressSelect({
+          address: suggestion.description
+        });
+        return;
+      }
+
+      if (data.status === 'OK' && data.result) {
+        const details: GooglePlaceDetails = data.result;
+        onAddressSelect({
+          address: details.formatted_address,
+          coordinates: [details.geometry.location.lng, details.geometry.location.lat]
+        });
+      } else {
+        onAddressSelect({
+          address: suggestion.description
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao buscar detalhes do endereço:', error);
+      onAddressSelect({
+        address: suggestion.description
+      });
+    } finally {
+      setIsLoading(false);
+    }
     
     if (inputRef.current) {
       inputRef.current.focus();
@@ -213,7 +188,7 @@ const AddressAutocomplete = ({
           onChange={handleInputChange}
           onFocus={() => {
             setIsFocused(true);
-            if (value.length >= 2 && suggestions.length > 0) {
+            if (value.length >= 3 && suggestions.length > 0) {
               setIsOpen(true);
             }
           }}

@@ -11,6 +11,7 @@ import { useEffect, useState } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import FAQ from "@/components/FAQ";
 import CityTourSection from "@/components/CityTourSection";
+import AutoFixPricing from "@/components/AutoFixPricing";
 
 const serviceSlides = [{
   id: 1,
@@ -51,173 +52,156 @@ const Index = () => {
     return () => clearInterval(interval);
   }, [api]);
   
-  return <div className="min-h-screen flex flex-col">
+  return (
+    <div className="min-h-screen flex flex-col">
       <Navbar />
+      <AutoFixPricing />
       
-      {/* Hero Section with Background - Increased height to fit booking widget without scrolling */}
-      <div className="relative h-[850px] md:h-[800px]">
-        {/* Background Image */}
-        <div className="absolute inset-0 bg-cover bg-center" style={{
-        backgroundImage: "url('/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png')",
-        backgroundSize: 'cover',
-        backgroundPosition: 'center'
-      }}>
-          {/* Overlay */}
-          <div className="absolute inset-0 bg-black/60 my-0 py-0"></div>
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-gray-800 to-black overflow-hidden">
+        {/* Background Video */}
+        <div className="absolute inset-0 z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover opacity-30"
+          >
+            <source src="/lovable-uploads/b8b8b8b8-b8b8-b8b8-b8b8-b8b8b8b8b8b8.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-black/50"></div>
         </div>
-        
-        {/* Hero Content */}
-        <div className="container mx-auto px-4 h-full flex relative z-10">
-          {/* Left side content - reduced width to give more space to the booking widget */}
-          <div className="w-full md:w-3/5 flex flex-col justify-center h-full pt-16">
-            <div className="text-white max-w-xl">
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
-                {t('hero.title')}
-              </h1>
-              <p className="text-xl mb-8 font-light max-w-2xl">
-                {t('hero.subtitle')}
-              </p>
-            </div>
-          </div>
+
+        {/* Content */}
+        <div className="relative z-10 container mx-auto px-4 text-center text-white">
+          <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+            {t('hero.title', 'Luxury Transportation')}
+            <span className="block text-brand">{t('hero.subtitle', 'Redefined')}</span>
+          </h1>
+          <p className="text-xl md:text-2xl mb-8 max-w-3xl mx-auto opacity-90">
+            {t('hero.description', 'Experience premium comfort and reliability with our fleet of luxury vehicles and professional chauffeurs.')}
+          </p>
           
-          {/* Right side booking widget - moved slightly to the left with right margin */}
-          <div className="hidden md:block md:w-2/5 h-full pt-16 pl-8 pr-12">
-            <div className="h-full flex items-center">
-              <BookingWidget vertical={true} />
-            </div>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <Button size="lg" className="bg-brand hover:bg-brand/90 text-white px-8 py-4 text-lg">
+              {t('hero.bookNow', 'Book Now')}
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Button>
+            <Button variant="outline" size="lg" className="border-white text-white hover:bg-white hover:text-black px-8 py-4 text-lg">
+              <Play className="mr-2 h-5 w-5" />
+              {t('hero.watchVideo', 'Watch Video')}
+            </Button>
+          </div>
+
+          {/* Booking Widget */}
+          <div className="max-w-4xl mx-auto">
+            <BookingWidget />
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Mobile Booking Widget (Only shows on small screens) */}
-      <div className="md:hidden container mx-auto px-4 -mt-36 relative z-10">
-        <BookingWidget vertical={false} />
-      </div>
-
-      {/* Benefits Section */}
-      <section className="py-20 bg-white">
+      {/* Services Carousel Section */}
+      <section className="py-20 bg-gray-50">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {/* Safety First */}
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-6">
-                <img src="/lovable-uploads/317b73c6-d260-46bf-a54a-8f509814815a.png" alt="Safety First" className="w-16 h-16 object-contain" />
-              </div>
-              <h3 className="text-2xl font-normal mb-4">{t('benefits.safetyFirst')}</h3>
-              <p className="text-gray-600 font-light">
-                {t('benefits.safetyDescription')}
-              </p>
-            </div>
-            
-            {/* Prices With No Surprises */}
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-6">
-                <img src="/lovable-uploads/acddb1ee-40ba-410e-a859-767186f56f96.png" alt="Prices With No Surprises" className="w-16 h-16 object-contain" />
-              </div>
-              <h3 className="text-2xl font-normal mb-4">{t('benefits.pricesNoSurprises')}</h3>
-              <p className="text-gray-600 font-light">
-                {t('benefits.pricesDescription')}
-              </p>
-            </div>
-            
-            {/* Private Travel Solutions */}
-            <div className="flex flex-col items-center text-center">
-              <div className="mb-6">
-                <img src="/lovable-uploads/9dffe454-d17e-4393-b086-9b697da7c149.png" alt="Private Travel Solutions" className="w-16 h-16 object-contain" />
-              </div>
-              <h3 className="text-2xl font-normal mb-4">{t('benefits.privateSolutions')}</h3>
-              <p className="text-gray-600 font-light">
-                {t('benefits.privateDescription')}
-              </p>
-            </div>
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              {t('services.title', 'Our Premium Services')}
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {t('services.description', 'From airport transfers to special events, we provide luxury transportation solutions tailored to your needs.')}
+            </p>
           </div>
+
+          <Carousel
+            setApi={setApi}
+            className="w-full max-w-6xl mx-auto"
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+          >
+            <CarouselContent>
+              {serviceSlides.map((service) => (
+                <CarouselItem key={service.id} className="md:basis-1/2 lg:basis-1/3">
+                  <div className="p-4">
+                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                      <div className="aspect-video relative overflow-hidden">
+                        <img
+                          src={service.image}
+                          alt={service.title}
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                      <div className="p-6">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">{service.title}</h3>
+                        <p className="text-gray-600 mb-4">{service.description}</p>
+                        <Button className="w-full bg-brand hover:bg-brand/90">
+                          {t('services.learnMore', 'Learn More')}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
       </section>
 
       {/* Fleet Section */}
-      <section className="py-20 container mx-auto px-4">
-        <div className="flex justify-between items-center mb-12">
-          <h2 className="text-3xl font-normal">{t('fleet.title')}</h2>
-          <Link to="/fleet" className="flex items-center text-brand hover:text-brand-700">
-            {t('fleet.moreFleet')} <ArrowRight size={16} className="ml-2" />
-          </Link>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {vehicles.map(vehicle => <div key={vehicle.id} className="border rounded-lg overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow">
-              <div className="p-4 bg-gray-50 flex items-center justify-center h-60 overflow-hidden">
-                <img src={vehicle.image} alt={vehicle.name} className="w-full h-full object-contain" style={{
-              transform: "scale(1.3)"
-            }} // 30% zoom
-            />
-              </div>
-              <div className="p-6">
-                <h3 className="text-xl font-normal mb-2">{vehicle.category}</h3>
-                <p className="text-gray-600 text-sm mb-4">{vehicle.models}</p>
-                <div className="flex flex-col space-y-4">
-                  <div className="flex space-x-4">
-                    <div className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="mr-1 text-gray-500">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                      </svg>
-                      <span className="text-sm text-gray-500">{t('fleet.passengers')}: {vehicle.capacity}</span>
-                    </div>
-                  </div>
-                  <div className="flex flex-col space-y-2">
-                    <span className="text-sm text-gray-500">{t('fleet.luggage')}:</span>
-                    {vehicle.id === "suv" && <p className="text-xs text-gray-600">6 of 23kg ({t('fleet.checkedBaggage')}) and 5 of 10kg ({t('fleet.carryOnBaggage')})</p>}
-                    {vehicle.id === "sedan" && <p className="text-xs text-gray-600">3 of 23kg ({t('fleet.checkedBaggage')}) and 2 of 10kg ({t('fleet.carryOnBaggage')})</p>}
-                    {vehicle.id === "minivan" && <p className="text-xs text-gray-600">4 of 23kg ({t('fleet.checkedBaggage')}) and 4 of 10kg ({t('fleet.carryOnBaggage')})</p>}
-                  </div>
-                </div>
-              </div>
-            </div>)}
-        </div>
-      </section>
-
-      {/* Services Section with Carousel */}
-      <section className="py-20 bg-gray-50 overflow-hidden relative">
-        {/* Red curved line on the left side - moved from CityTourSection */}
-        <div 
-          className="absolute left-0 top-0 bottom-0 z-0" 
-          style={{ 
-            width: '40%', 
-            backgroundImage: `url("/lovable-uploads/45b9942a-dad5-4d13-ad48-48f01e8e8772.png")`, 
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'contain',
-            backgroundPosition: 'left center'
-          }}
-        ></div>
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="flex justify-between items-center mb-10">
-            <h2 className="text-3xl font-normal">{t('services.title')}</h2>
-            <Link to="/services" className="flex items-center text-brand hover:text-brand-700">
-              {t('services.moreServices')} <ArrowRight size={16} className="ml-2" />
-            </Link>
+      <section className="py-20 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              {t('fleet.title', 'Our Luxury Fleet')}
+            </h2>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              {t('fleet.description', 'Choose from our carefully selected collection of premium vehicles, each maintained to the highest standards.')}
+            </p>
           </div>
-          
-          <div className="relative">
-            <Carousel setApi={setApi} className="w-full" opts={{
-            align: "start",
-            loop: true
-          }}>
-              <CarouselContent>
-                {serviceSlides.map(slide => <CarouselItem key={slide.id} className="md:basis-1/2 lg:basis-1/3">
-                    <div className="p-4">
-                      <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow overflow-hidden">
-                        <img src={slide.image} alt={slide.title} className="w-full h-48 object-cover" />
-                        <div className="p-6">
-                          <h3 className="text-xl font-normal mb-2">{slide.title}</h3>
-                          <p className="text-gray-600 text-sm">{slide.description}</p>
-                        </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {vehicles.map((vehicle) => (
+              <HoverCard key={vehicle.id}>
+                <HoverCardTrigger asChild>
+                  <div className="bg-gray-50 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 cursor-pointer group">
+                    <div className="aspect-video relative overflow-hidden">
+                      <img
+                        src={vehicle.image}
+                        alt={vehicle.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    </div>
+                    <div className="p-6">
+                      <h3 className="text-2xl font-bold text-gray-900 mb-2">{vehicle.name}</h3>
+                      <p className="text-gray-600 mb-4">{vehicle.description}</p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-2xl font-bold text-brand">${vehicle.price}/hour</span>
+                        <span className="text-sm text-gray-500">{vehicle.passengers} passengers</span>
                       </div>
                     </div>
-                  </CarouselItem>)}
-              </CarouselContent>
-              <CarouselPrevious />
-              <CarouselNext />
-            </Carousel>
+                  </div>
+                </HoverCardTrigger>
+                <HoverCardContent className="w-80">
+                  <div className="space-y-2">
+                    <h4 className="text-lg font-semibold">{vehicle.name}</h4>
+                    <p className="text-sm text-gray-600">{vehicle.description}</p>
+                    <div className="flex justify-between text-sm">
+                      <span>Passengers: {vehicle.passengers}</span>
+                      <span>Luggage: {vehicle.luggage} bags</span>
+                    </div>
+                    <div className="pt-2">
+                      <Button className="w-full bg-brand hover:bg-brand/90">
+                        Book This Vehicle
+                      </Button>
+                    </div>
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
+            ))}
           </div>
         </div>
       </section>
@@ -229,7 +213,8 @@ const Index = () => {
       <FAQ />
 
       <Footer />
-    </div>;
+    </div>
+  );
 };
 
 export default Index;
