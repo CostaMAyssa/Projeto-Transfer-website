@@ -50,21 +50,20 @@ export interface PricingCalculationRequest {
 
 export interface PricingCalculationResponse {
   success: boolean;
-  pickup_zone?: Zone;
-  dropoff_zone?: Zone;
-  vehicle_category?: VehicleCategory;
-  price?: number; // Preço em USD cents
-  base_price?: number;
-  out_of_coverage?: boolean;
+  price?: number;
+  pickup_zone?: string;
+  dropoff_zone?: string;
+  vehicle_category?: string;
+  distance_miles?: number;
   message?: string;
-  whatsapp_contact?: boolean;
+  calculation_method?: 'zone_specific' | 'base_price' | 'fallback';
 }
 
 export interface ZoneDetectionResult {
-  zone?: Zone;
-  is_within_zone: boolean;
-  distance_to_zone?: number; // Em metros
-  out_of_coverage: boolean;
+  zone_id: string | null;
+  zone_name: string | null;
+  confidence: number;
+  method: 'exact' | 'approximate' | 'fallback';
 }
 
 // Predefined zones data structure

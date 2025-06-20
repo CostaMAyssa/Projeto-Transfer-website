@@ -112,97 +112,83 @@ export async function detectZone(
   longitude: number
 ): Promise<ZoneDetectionResult> {
   try {
-    // Por enquanto, usa apenas zonas predefinidas até que o banco seja configurado
-    const allZones: Zone[] = PREDEFINED_ZONES.map(pz => ({
-      ...pz,
-      type: pz.type as 'circular' | 'polygonal'
-    }));
+    console.log(`🔍 Detectando zona para coordenadas: [${longitude}, ${latitude}]`);
     
-    let closestZone: Zone | undefined;
-    let closestDistance = Infinity;
-    let isWithinAnyZone = false;
-    
-    // Verifica cada zona, priorizando zonas circulares (aeroportos)
-    const sortedZones = allZones.sort((a, b) => {
-      if (a.type === 'circular' && b.type === 'polygonal') return -1;
-      if (a.type === 'polygonal' && b.type === 'circular') return 1;
-      return 0;
-    });
-    
-    for (const zone of sortedZones) {
-      let isInZone = false;
-      let distanceToZone = 0;
+    // Mapeamento das coordenadas dos dados mockados para as zonas da tabela de tarifas
+    const COORDINATE_TO_ZONE_MAP: Array<{
+      coordinates: [number, number]; // [lng, lat]
+      zone_id: string;
+      zone_name: string;
+      tolerance: number; // metros
+    }> = [
+      // Aeroportos
+      { coordinates: [-74.1745, 40.6895], zone_id: 'EWR', zone_name: 'Newark Liberty International Airport', tolerance: 1000 },
+      { coordinates: [-73.7781, 40.6413], zone_id: 'JFK', zone_name: 'John F. Kennedy International Airport', tolerance: 1000 },
+      { coordinates: [-73.8740, 40.7769], zone_id: 'LGA', zone_name: 'LaGuardia Airport', tolerance: 1000 },
       
-      if (zone.type === 'circular') {
-        isInZone = isPointInCircularZone(latitude, longitude, zone);
-        if (!isInZone && zone.center_lat && zone.center_lng) {
-          distanceToZone = calculateDistance(
-            latitude, longitude, 
-            zone.center_lat, zone.center_lng
-          );
-        }
-      } else if (zone.type === 'polygonal') {
-        isInZone = isPointInPolygonalZone(latitude, longitude, zone);
-        // Para zonas poligonais, calculamos distância aproximada ao centro
-        if (!isInZone) {
-          // Usa coordenadas aproximadas do centro dos boroughs
-          const boroughCenters: Record<string, {lat: number, lng: number}> = {
-            'Z_MHTN': { lat: 40.7831, lng: -73.9712 },
-            'Z_BKLYN': { lat: 40.6782, lng: -73.9442 },
-            'Z_QNS': { lat: 40.7282, lng: -73.7949 },
-            'Z_BRONX': { lat: 40.8448, lng: -73.8648 }
+      // Manhattan
+      { coordinates: [-73.9857, 40.7589], zone_id: 'MAN', zone_name: 'Manhattan', tolerance: 2000 }, // Times Square
+      { coordinates: [-73.9712, 40.7831], zone_id: 'MAN', zone_name: 'Manhattan', tolerance: 2000 }, // Manhattan center
+      
+      // Brooklyn
+      { coordinates: [-73.9969, 40.7061], zone_id: 'BKN', zone_name: 'Brooklyn', tolerance: 2000 }, // Brooklyn Bridge
+      
+      // Bronx
+      { coordinates: [-73.9276, 40.8296], zone_id: 'BRX', zone_name: 'Bronx', tolerance: 2000 }, // Yankee Stadium
+      
+      // Queens
+      { coordinates: [-73.8448, 40.7282], zone_id: 'QNS', zone_name: 'Queens', tolerance: 2000 }, // Flushing Meadows
+    ];
+    
+    // Busca a zona mais próxima baseada nas coordenadas
+    let bestMatch: { zone_id: string; zone_name: string; distance: number; confidence: number } | null = null;
+    
+    for (const mapping of COORDINATE_TO_ZONE_MAP) {
+      const distance = calculateDistance(
+        latitude, longitude,
+        mapping.coordinates[1], mapping.coordinates[0] // lat, lng
+      );
+      
+      console.log(`📍 Distância para ${mapping.zone_id}: ${Math.round(distance)}m`);
+      
+      if (distance <= mapping.tolerance) {
+        if (!bestMatch || distance < bestMatch.distance) {
+          bestMatch = {
+            zone_id: mapping.zone_id,
+            zone_name: mapping.zone_name,
+            distance: distance,
+            confidence: distance <= 100 ? 1.0 : 0.8
           };
-          
-          const center = boroughCenters[zone.id];
-          if (center) {
-            distanceToZone = calculateDistance(
-              latitude, longitude, 
-              center.lat, center.lng
-            );
-          }
-        }
-      }
-      
-      // Se está dentro da zona, retorna imediatamente (prioridade para zona mais específica)
-      if (isInZone) {
-        return {
-          zone,
-          is_within_zone: true,
-          distance_to_zone: 0,
-          out_of_coverage: false
-        };
-      }
-      
-      // Verifica se está dentro da tolerância
-      if (distanceToZone <= ZONE_TOLERANCE_METERS) {
-        isWithinAnyZone = true;
-        if (distanceToZone < closestDistance) {
-          closestDistance = distanceToZone;
-          closestZone = zone;
         }
       }
     }
     
-    // Se está dentro da tolerância de alguma zona
-    if (isWithinAnyZone && closestZone) {
+    if (bestMatch) {
+      console.log(`✅ Zona detectada: ${bestMatch.zone_id} (${bestMatch.zone_name})`);
       return {
-        zone: closestZone,
-        is_within_zone: true,
-        distance_to_zone: closestDistance,
-        out_of_coverage: false
+        zone_id: bestMatch.zone_id,
+        zone_name: bestMatch.zone_name,
+        confidence: bestMatch.confidence,
+        method: bestMatch.distance <= 100 ? 'exact' : 'approximate'
       };
     }
     
-    // Fora de cobertura
+    console.log(`❌ Nenhuma zona encontrada para as coordenadas`);
     return {
-      is_within_zone: false,
-      out_of_coverage: true,
-      distance_to_zone: closestDistance === Infinity ? undefined : closestDistance
+      zone_id: null,
+      zone_name: null,
+      confidence: 0,
+      method: 'fallback'
     };
     
   } catch (error) {
     console.error('Erro na detecção de zona:', error);
-    return { is_within_zone: false, out_of_coverage: true };
+    return {
+      zone_id: null,
+      zone_name: null,
+      confidence: 0,
+      method: 'fallback'
+    };
   }
 }
 
@@ -218,67 +204,95 @@ export function getVehicleCategory(categoryName: string): VehicleCategory | unde
 }
 
 /**
- * Calcula o preço de uma viagem baseado nas zonas e categoria do veículo
+ * Função principal para calcular preços baseado em zonas
  */
 export async function calculateZonePricing(
   request: PricingCalculationRequest
 ): Promise<PricingCalculationResponse> {
   try {
-    const { pickup_location, dropoff_location, vehicle_category } = request;
+    console.log('🔍 Iniciando cálculo de zone pricing:', request);
     
-    // Detecta zona de origem
-    const pickupZoneResult = await detectZone(
-      pickup_location.coordinates[1], // latitude
-      pickup_location.coordinates[0]  // longitude
-    );
+    // 1. Detectar zona de origem
+    const [pickupLng, pickupLat] = request.pickup_location.coordinates;
+    const pickupZoneResult = await detectZone(pickupLat, pickupLng);
     
-    // Detecta zona de destino
-    const dropoffZoneResult = await detectZone(
-      dropoff_location.coordinates[1], // latitude
-      dropoff_location.coordinates[0]  // longitude
-    );
+    // 2. Detectar zona de destino
+    const [dropoffLng, dropoffLat] = request.dropoff_location.coordinates;
+    const dropoffZoneResult = await detectZone(dropoffLat, dropoffLng);
     
-    // Busca categoria do veículo
-    const vehicleCat = getVehicleCategory(vehicle_category);
-    if (!vehicleCat) {
-      return {
-        success: false,
-        message: 'Categoria de veículo não encontrada',
-        out_of_coverage: false
-      };
-    }
+    console.log('📍 Zonas detectadas:', {
+      pickup: pickupZoneResult,
+      dropoff: dropoffZoneResult
+    });
     
-    // Verifica se ambas as localizações estão fora de cobertura
-    if (pickupZoneResult.out_of_coverage || dropoffZoneResult.out_of_coverage) {
+    // 3. Verificar se conseguimos detectar ambas as zonas
+    if (!pickupZoneResult.zone_id || !dropoffZoneResult.zone_id) {
+      const vehicleCategory = getVehicleCategory(request.vehicle_category);
+      const fallbackPrice = vehicleCategory?.base_price || 130;
+      
       return {
         success: true,
-        vehicle_category: vehicleCat,
-        price: vehicleCat.base_price, // Preço padrão para fora de cobertura
-        base_price: vehicleCat.base_price,
-        out_of_coverage: true,
-        message: 'Uma ou ambas as localizações estão fora da área de cobertura. Entre em contato conosco via WhatsApp.',
-        whatsapp_contact: true
+        price: fallbackPrice,
+        pickup_zone: pickupZoneResult.zone_name || 'Zona desconhecida',
+        dropoff_zone: dropoffZoneResult.zone_name || 'Zona desconhecida',
+        vehicle_category: request.vehicle_category,
+        message: 'Preço base aplicado - zona não detectada',
+        calculation_method: 'fallback'
       };
     }
     
-    // Por enquanto, usa sempre o preço base até que o banco seja configurado
+    // 4. Buscar preço específico na matriz
+    const vehicleType = request.vehicle_category.toUpperCase();
+    const specificPrice = getZonePrice(
+      pickupZoneResult.zone_id, 
+      dropoffZoneResult.zone_id, 
+      vehicleType
+    );
+    
+    // 5. Obter distância da rota
+    const routeDistance = getRouteDistance(
+      pickupZoneResult.zone_id,
+      dropoffZoneResult.zone_id
+    );
+    
+    if (specificPrice) {
+      console.log('💰 Preço específico encontrado:', specificPrice);
+      return {
+        success: true,
+        price: specificPrice,
+        pickup_zone: pickupZoneResult.zone_name,
+        dropoff_zone: dropoffZoneResult.zone_name,
+        vehicle_category: vehicleType,
+        distance_miles: routeDistance,
+        message: `Preço para rota ${pickupZoneResult.zone_id} → ${dropoffZoneResult.zone_id}`,
+        calculation_method: 'zone_specific'
+      };
+    }
+    
+    // 6. Fallback para preço base da categoria
+    const vehicleCategory = getVehicleCategory(vehicleType);
+    const basePrice = vehicleCategory?.base_price || 130;
+    
+    console.log('📦 Usando preço base:', basePrice);
+    
     return {
       success: true,
-      pickup_zone: pickupZoneResult.zone,
-      dropoff_zone: dropoffZoneResult.zone,
-      vehicle_category: vehicleCat,
-      price: vehicleCat.base_price,
-      base_price: vehicleCat.base_price,
-      out_of_coverage: false,
-      message: `Viagem de ${pickupZoneResult.zone?.name || 'Origem'} para ${dropoffZoneResult.zone?.name || 'Destino'}`
+      price: basePrice,
+      pickup_zone: pickupZoneResult.zone_name,
+      dropoff_zone: dropoffZoneResult.zone_name,
+      vehicle_category: vehicleType,
+      distance_miles: routeDistance,
+      message: `Preço base para ${vehicleType} - rota não encontrada na matriz`,
+      calculation_method: 'base_price'
     };
     
   } catch (error) {
-    console.error('Erro no cálculo de preços:', error);
+    console.error('❌ Erro no cálculo de zone pricing:', error);
+    
     return {
       success: false,
-      message: 'Erro interno no cálculo de preços',
-      out_of_coverage: false
+      message: 'Erro interno no cálculo de preços. Tente novamente.',
+      calculation_method: 'fallback'
     };
   }
 }
@@ -312,4 +326,119 @@ export function getAvailableZones(): Zone[] {
     ...pz,
     type: pz.type as 'circular' | 'polygonal'
   }));
-} 
+}
+
+// Zone pricing matrix based on the fare table
+export const ZONE_PRICING_MATRIX: Record<string, Record<string, number>> = {
+  // All routes FROM EWR
+  'EWR-MAN': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'EWR-BKN': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'EWR-LGA': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'EWR-QNS': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'EWR-BRX': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'EWR-JFK': { SEDAN: 140, SUV: 170, VAN: 160 },
+  
+  // Routes FROM JFK
+  'JFK-QNS': { SEDAN: 130, SUV: 150, VAN: 140 },
+  'JFK-BKN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'JFK-MAN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'JFK-BRX': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'JFK-LGA': { SEDAN: 100, SUV: 120, VAN: 110 },
+  'JFK-EWR': { SEDAN: 140, SUV: 170, VAN: 160 },
+  
+  // Routes FROM LGA
+  'LGA-MAN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'LGA-BRX': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'LGA-BKN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'LGA-QNS': { SEDAN: 120, SUV: 150, VAN: 140 },
+  'LGA-JFK': { SEDAN: 100, SUV: 120, VAN: 110 },
+  'LGA-EWR': { SEDAN: 140, SUV: 170, VAN: 160 },
+  
+  // Routes FROM MAN
+  'MAN-BKN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'MAN-BRX': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'MAN-QNS': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'MAN-EWR': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'MAN-JFK': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'MAN-LGA': { SEDAN: 130, SUV: 160, VAN: 150 },
+  
+  // Routes FROM BKN
+  'BKN-BRX': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BKN-QNS': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BKN-MAN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BKN-EWR': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'BKN-JFK': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BKN-LGA': { SEDAN: 130, SUV: 160, VAN: 150 },
+  
+  // Routes FROM BRX
+  'BRX-QNS': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BRX-MAN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BRX-BKN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BRX-EWR': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'BRX-JFK': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'BRX-LGA': { SEDAN: 130, SUV: 160, VAN: 150 },
+  
+  // Routes FROM QNS
+  'QNS-MAN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'QNS-BKN': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'QNS-BRX': { SEDAN: 130, SUV: 160, VAN: 150 },
+  'QNS-EWR': { SEDAN: 140, SUV: 170, VAN: 160 },
+  'QNS-JFK': { SEDAN: 130, SUV: 150, VAN: 140 },
+  'QNS-LGA': { SEDAN: 120, SUV: 150, VAN: 140 }
+};
+
+// Route distances in miles (from the fare table)
+export const ROUTE_DISTANCES: Record<string, number> = {
+  'BKN-BRX': 20,
+  'BKN-EWR': 12.05,
+  'BKN-JFK': 11,
+  'BKN-LGA': 12,
+  'BKN-MAN': 16,
+  'BKN-QNS': 14,
+  'BRX-EWR': 20.53,
+  'BRX-JFK': 17,
+  'BRX-LGA': 10,
+  'BRX-MAN': 9,
+  'BRX-QNS': 12,
+  'EWR-JFK': 20.92,
+  'EWR-LGA': 16.83,
+  'EWR-MAN': 11.67,
+  'EWR-QNS': 17.35,
+  'JFK-LGA': 12,
+  'JFK-MAN': 15,
+  'JFK-QNS': 7,
+  'LGA-MAN': 10,
+  'LGA-QNS': 8,
+  'MAN-QNS': 15
+};
+
+// Helper function to get route key
+export const getRouteKey = (origin: string, destination: string): string => {
+  return `${origin}-${destination}`;
+};
+
+// Helper function to get price for a specific route and vehicle
+export const getZonePrice = (origin: string, destination: string, vehicle: string): number | null => {
+  const routeKey = getRouteKey(origin, destination);
+  const reverseRouteKey = getRouteKey(destination, origin);
+  
+  // Try direct route first
+  if (ZONE_PRICING_MATRIX[routeKey] && ZONE_PRICING_MATRIX[routeKey][vehicle]) {
+    return ZONE_PRICING_MATRIX[routeKey][vehicle];
+  }
+  
+  // Try reverse route
+  if (ZONE_PRICING_MATRIX[reverseRouteKey] && ZONE_PRICING_MATRIX[reverseRouteKey][vehicle]) {
+    return ZONE_PRICING_MATRIX[reverseRouteKey][vehicle];
+  }
+  
+  return null;
+};
+
+// Helper function to get distance between zones
+export const getRouteDistance = (origin: string, destination: string): number | null => {
+  const routeKey = getRouteKey(origin, destination);
+  const reverseRouteKey = getRouteKey(destination, origin);
+  
+  return ROUTE_DISTANCES[routeKey] || ROUTE_DISTANCES[reverseRouteKey] || null;
+}; 
