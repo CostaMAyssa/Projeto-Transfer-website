@@ -3,6 +3,7 @@ import { Input } from "@/components/ui/input";
 import { MapPin, AlertCircle } from "lucide-react";
 import { useDebounce } from "@/hooks/useDebounce";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { supabase } from "@/integrations/supabase/client";
 
 interface AddressAutocompleteProps {
   placeholder: string;
@@ -13,91 +14,23 @@ interface AddressAutocompleteProps {
   className?: string;
 }
 
-interface MockPlace {
+interface GooglePlace {
   place_id: string;
   description: string;
   structured_formatting: {
     main_text: string;
     secondary_text: string;
   };
-  coordinates: [number, number];
 }
 
-// Dados mockados para autocomplete
-const MOCK_PLACES: MockPlace[] = [
-  {
-    place_id: "mock_ewr",
-    description: "Newark Airport, Newark, NJ, USA",
-    structured_formatting: {
-      main_text: "Newark Airport",
-      secondary_text: "Newark, NJ, USA"
-    },
-    coordinates: [-74.1745, 40.6895]
-  },
-  {
-    place_id: "mock_jfk", 
-    description: "JFK Airport, Queens, NY, USA",
-    structured_formatting: {
-      main_text: "JFK Airport",
-      secondary_text: "Queens, NY, USA"
-    },
-    coordinates: [-73.7781, 40.6413]
-  },
-  {
-    place_id: "mock_lga",
-    description: "LaGuardia Airport, Queens, NY, USA",
-    structured_formatting: {
-      main_text: "LaGuardia Airport",
-      secondary_text: "Queens, NY, USA"
-    },
-    coordinates: [-73.8740, 40.7769]
-  },
-  {
-    place_id: "mock_times_square",
-    description: "Times Square, New York, NY, USA",
-    structured_formatting: {
-      main_text: "Times Square",
-      secondary_text: "New York, NY, USA"
-    },
-    coordinates: [-73.9857, 40.7589]
-  },
-  {
-    place_id: "mock_manhattan",
-    description: "Manhattan, New York, NY, USA",
-    structured_formatting: {
-      main_text: "Manhattan",
-      secondary_text: "New York, NY, USA"
-    },
-    coordinates: [-73.9712, 40.7831]
-  },
-  {
-    place_id: "mock_brooklyn",
-    description: "Brooklyn Bridge, New York, NY, USA",
-    structured_formatting: {
-      main_text: "Brooklyn Bridge",
-      secondary_text: "New York, NY, USA"
-    },
-    coordinates: [-73.9969, 40.7061]
-  },
-  {
-    place_id: "mock_bronx",
-    description: "Yankee Stadium, Bronx, NY, USA",
-    structured_formatting: {
-      main_text: "Yankee Stadium",
-      secondary_text: "Bronx, NY, USA"
-    },
-    coordinates: [-73.9276, 40.8296]
-  },
-  {
-    place_id: "mock_queens",
-    description: "Flushing Meadows, Queens, NY, USA",
-    structured_formatting: {
-      main_text: "Flushing Meadows",
-      secondary_text: "Queens, NY, USA"
-    },
-    coordinates: [-73.8448, 40.7282]
-  }
-];
+interface PlaceDetailsResponse {
+  geometry?: {
+    location: {
+      lat: number;
+      lng: number;
+    };
+  };
+}
 
 const AddressAutocomplete = ({
   placeholder,
@@ -107,7 +40,7 @@ const AddressAutocomplete = ({
   required = false,
   className,
 }: AddressAutocompleteProps) => {
-  const [suggestions, setSuggestions] = useState<MockPlace[]>([]);
+  const [suggestions, setSuggestions] = useState<GooglePlace[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -130,24 +63,35 @@ const AddressAutocomplete = ({
       setErrorMessage(null);
       
       try {
-        console.log("Filtering suggestions for:", debouncedValue);
+        console.log("Fetching suggestions from Google Places API for:", debouncedValue);
         
-        // Simular delay da API
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        // Filtrar lugares mockados
-        const filtered = MOCK_PLACES.filter(place =>
-          place.description.toLowerCase().includes(debouncedValue.toLowerCase()) ||
-          place.structured_formatting.main_text.toLowerCase().includes(debouncedValue.toLowerCase())
-        );
-        
-        setSuggestions(filtered);
-        setIsOpen(filtered.length > 0);
+        const { data, error } = await supabase.functions.invoke('google-places/autocomplete', {
+          body: { 
+            input: debouncedValue
+          }
+        });
+
+        if (error) {
+          console.error('Erro na API do Google Places:', error);
+          setErrorMessage("Erro ao buscar endereços. Tente novamente.");
+          setSuggestions([]);
+          return;
+        }
+
+        if (data?.status === 'OK' && data?.predictions) {
+          console.log('Sugestões recebidas:', data.predictions.length);
+          setSuggestions(data.predictions);
+          setIsOpen(data.predictions.length > 0);
+        } else {
+          console.warn('API retornou status:', data?.status);
+          setErrorMessage("Nenhum resultado encontrado.");
+          setSuggestions([]);
+        }
         
       } catch (error) {
-        console.error("Error filtering suggestions:", error);
+        console.error("Erro ao buscar sugestões:", error);
         setSuggestions([]);
-        setErrorMessage("Erro ao buscar endereços. Tente novamente.");
+        setErrorMessage("Erro ao buscar endereços. Verifique sua conexão.");
       } finally {
         setIsLoading(false);
       }
@@ -174,6 +118,30 @@ const AddressAutocomplete = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const getCoordinatesForPlace = async (placeId: string): Promise<[number, number] | undefined> => {
+    try {
+      console.log('Buscando coordenadas para place_id:', placeId);
+      
+      const { data, error } = await supabase.functions.invoke('google-places/details', {
+        body: { 
+          place_id: placeId 
+        }
+      });
+
+      if (!error && data?.result?.geometry?.location) {
+        const { lat, lng } = data.result.geometry.location;
+        console.log('Coordenadas encontradas:', [lng, lat]);
+        return [lng, lat]; // [longitude, latitude]
+      }
+
+      console.warn('Não foi possível obter coordenadas para:', placeId);
+      return undefined;
+    } catch (error) {
+      console.error('Erro ao buscar coordenadas:', error);
+      return undefined;
+    }
+  };
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     onChange(newValue);
@@ -187,16 +155,34 @@ const AddressAutocomplete = ({
     }
   };
 
-  const handleSuggestionClick = (suggestion: MockPlace) => {
+  const handleSuggestionClick = async (suggestion: GooglePlace) => {
     console.log("Selected address:", suggestion);
     
     setSelectedAddress(suggestion.description);
     onChange(suggestion.description);
-    onAddressSelect({
-      address: suggestion.description,
-      coordinates: suggestion.coordinates
-    });
     setIsOpen(false);
+    setIsLoading(true);
+    
+    try {
+      // Buscar coordenadas
+      const coordinates = await getCoordinatesForPlace(suggestion.place_id);
+      
+      onAddressSelect({
+        address: suggestion.description,
+        coordinates: coordinates
+      });
+      
+      if (!coordinates) {
+        setErrorMessage("Endereço selecionado, mas coordenadas não disponíveis.");
+      }
+    } catch (error) {
+      console.error('Erro ao processar seleção:', error);
+      onAddressSelect({
+        address: suggestion.description
+      });
+    } finally {
+      setIsLoading(false);
+    }
     
     if (inputRef.current) {
       inputRef.current.focus();
