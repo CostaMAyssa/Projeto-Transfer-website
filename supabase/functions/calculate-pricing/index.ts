@@ -55,7 +55,7 @@ const VEHICLE_CATEGORIES: VehicleCategory[] = [
     id: 'sedan',
     name: 'Sedan',
     capacity: 3,
-    base_price: 75000, // $750 in cents
+    base_price: 13000, // $130 in cents
     description: 'Toyota Camry ou similar',
     features: ['3 passageiros', 'Confortável', 'Econômico']
   },
@@ -63,15 +63,15 @@ const VEHICLE_CATEGORIES: VehicleCategory[] = [
     id: 'suv',
     name: 'SUV',
     capacity: 6,
-    base_price: 115000, // $1150 in cents
+    base_price: 16000, // $160 in cents
     description: 'Chevrolet Suburban ou similar',
     features: ['6 passageiros', 'Espaçoso', 'Luxuoso']
   },
   {
-    id: 'minivan',
-    name: 'Minivan',
+    id: 'van',
+    name: 'Van',
     capacity: 7,
-    base_price: 130000, // $1300 in cents
+    base_price: 15000, // $150 in cents
     description: 'Chrysler Pacifica ou similar',
     features: ['7 passageiros', 'Máximo espaço', 'Familiar']
   }
@@ -79,7 +79,7 @@ const VEHICLE_CATEGORIES: VehicleCategory[] = [
 
 const PREDEFINED_ZONES: Zone[] = [
   {
-    id: 'Z_EWR',
+    id: 'EWR',
     name: 'Aeroporto Intl. Newark (EWR)',
     description: 'Círculo 2,4 mi radius',
     type: 'circular',
@@ -89,7 +89,7 @@ const PREDEFINED_ZONES: Zone[] = [
     coverage_area: 'NJ'
   },
   {
-    id: 'Z_JFK',
+    id: 'JFK',
     name: 'Aeroporto John F. Kennedy (JFK)',
     description: 'Círculo 4,4 mi radius',
     type: 'circular',
@@ -99,7 +99,7 @@ const PREDEFINED_ZONES: Zone[] = [
     coverage_area: 'NY'
   },
   {
-    id: 'Z_LGA',
+    id: 'LGA',
     name: 'Aeroporto LaGuardia (LGA)',
     description: 'Círculo 2,4 mi radius',
     type: 'circular',
@@ -109,28 +109,28 @@ const PREDEFINED_ZONES: Zone[] = [
     coverage_area: 'NY'
   },
   {
-    id: 'Z_BRONX',
+    id: 'BRX',
     name: 'Bronx, NY',
     description: '25 ZIP Codes',
     type: 'polygonal',
     coverage_area: 'NY'
   },
   {
-    id: 'Z_BKLYN',
+    id: 'BKN',
     name: 'Brooklyn, NY',
     description: '38 ZIP Codes',
     type: 'polygonal',
     coverage_area: 'NY'
   },
   {
-    id: 'Z_MHTN',
+    id: 'MAN',
     name: 'Manhattan, NY',
     description: '55 ZIP Codes',
     type: 'polygonal',
     coverage_area: 'NY'
   },
   {
-    id: 'Z_QNS',
+    id: 'QNS',
     name: 'Queens, NY',
     description: '56 ZIP Codes',
     type: 'polygonal',
@@ -189,10 +189,10 @@ function isPointInBoroughApproximation(
   zoneId: string
 ): boolean {
   const boroughBounds: Record<string, {minLat: number, maxLat: number, minLng: number, maxLng: number}> = {
-    'Z_MHTN': { minLat: 40.7009, maxLat: 40.8820, minLng: -74.0479, maxLng: -73.9067 },
-    'Z_BKLYN': { minLat: 40.5707, maxLat: 40.7395, minLng: -74.0420, maxLng: -73.8331 },
-    'Z_QNS': { minLat: 40.5431, maxLat: 40.8007, minLng: -73.9626, maxLng: -73.7004 },
-    'Z_BRONX': { minLat: 40.7856, maxLat: 40.9176, minLng: -73.9339, maxLng: -73.7654 }
+    'MAN': { minLat: 40.7009, maxLat: 40.8820, minLng: -74.0479, maxLng: -73.9067 },
+    'BKN': { minLat: 40.5707, maxLat: 40.7395, minLng: -74.0420, maxLng: -73.8331 },
+    'QNS': { minLat: 40.5431, maxLat: 40.8007, minLng: -73.9626, maxLng: -73.7004 },
+    'BRX': { minLat: 40.7856, maxLat: 40.9176, minLng: -73.9339, maxLng: -73.7654 }
   };
   
   const bounds = boroughBounds[zoneId];
@@ -235,10 +235,10 @@ function detectZone(latitude: number, longitude: number): Zone | null {
       if (!isInZone) {
         // Usa coordenadas aproximadas do centro dos boroughs
         const boroughCenters: Record<string, {lat: number, lng: number}> = {
-          'Z_MHTN': { lat: 40.7831, lng: -73.9712 },
-          'Z_BKLYN': { lat: 40.6782, lng: -73.9442 },
-          'Z_QNS': { lat: 40.7282, lng: -73.7949 },
-          'Z_BRONX': { lat: 40.8448, lng: -73.8648 }
+          'MAN': { lat: 40.7831, lng: -73.9712 },
+          'BKN': { lat: 40.6782, lng: -73.9442 },
+          'QNS': { lat: 40.7282, lng: -73.7949 },
+          'BRX': { lat: 40.8448, lng: -73.8648 }
         };
         
         const center = boroughCenters[zone.id];

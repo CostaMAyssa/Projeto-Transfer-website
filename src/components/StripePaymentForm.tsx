@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useBooking } from "@/contexts/BookingContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -71,37 +70,54 @@ const StripePaymentForm = () => {
   });
   
   const onSubmit = async (data: PaymentFormData) => {
+    setIsProcessing(true);
+    
     try {
-      setIsProcessing(true);
-      
-      // Create a non-optional version of the payment details to satisfy TypeScript
+      // Create a complete payment details object that matches PaymentDetails interface
       const paymentDetails = {
-        firstName: data.firstName,
-        lastName: data.lastName,
-        company: data.company || "",
-        address: data.address,
-        country: data.country,
-        city: data.city,
-        postal: data.postal,
+        firstName: data.firstName || '',
+        lastName: data.lastName || '',
+        company: data.company,
+        address: data.address || '',
+        country: data.country || '',
+        city: data.city || '',
+        postal: data.postal || '',
         cardHolder: data.cardHolder,
         cardNumber: data.cardNumber,
         expiryMonth: data.expiryMonth,
         expiryYear: data.expiryYear,
         cvv: data.cvv,
-        termsAccepted: data.termsAccepted,
+        termsAccepted: data.termsAccepted || false,
         newsletterSubscription: data.newsletterSubscription || false,
       };
       
-      // Save details to context
+      // Update payment details in context
       setPaymentDetails(paymentDetails);
       
-      // Call process-payment function
-      const { data: paymentResponse, error } = await supabase.functions.invoke("process-payment", {
+      // Calculate total price
+      const { total } = await calculateTotal();
+      
+      // Mock payment processing function
+      const mockPaymentProcess = async (params: { 
         body: { 
-          paymentDetails: data, 
+          paymentDetails: Record<string, unknown>; 
+          bookingData: Record<string, unknown> 
+        } 
+      }) => {
+        // Simulate payment processing delay
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Mock success response
+        return { error: null };
+      };
+      
+      // Process payment
+      const { error } = await mockPaymentProcess({ 
+        body: { 
+          paymentDetails: paymentDetails, 
           bookingData: {
             ...bookingData,
-            total: calculateTotal().total,
+            total,
           }
         }
       });

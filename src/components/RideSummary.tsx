@@ -3,14 +3,48 @@ import { format } from "date-fns";
 import { MapPin, Calendar, Clock, Users, Briefcase } from "lucide-react";
 import RideMap from "./RideMap";
 import { useTranslation } from "react-i18next";
+import { useState, useEffect } from "react";
 
 const RideSummary = () => {
   const { t } = useTranslation();
   const { bookingData, calculateTotal } = useBooking();
   const { pickupLocation, dropoffLocation, pickupDate, pickupTime, passengers, luggage, vehicle, extras } = bookingData;
   
+  const [pricing, setPricing] = useState({ vehiclePrice: 0, extrasPrice: 0, total: 0 });
+  const [isCalculating, setIsCalculating] = useState(false);
+  
   const formattedDate = format(pickupDate, "EEE, MMM d, yyyy");
-  const { vehiclePrice, extrasPrice, total } = calculateTotal();
+  
+  // Calcular preços quando dados relevantes mudarem
+  useEffect(() => {
+    const updatePricing = async () => {
+      setIsCalculating(true);
+      try {
+        const result = await calculateTotal();
+        setPricing(result);
+        console.log('📊 RideSummary - Preços atualizados:', result);
+      } catch (error) {
+        console.error('Erro ao calcular preços:', error);
+        // Fallback para valores padrão
+        setPricing({ 
+          vehiclePrice: vehicle?.price || 0, 
+          extrasPrice: extras.reduce((sum, extra) => sum + extra.price * extra.quantity, 0),
+          total: (vehicle?.price || 0) + extras.reduce((sum, extra) => sum + extra.price * extra.quantity, 0)
+        });
+      } finally {
+        setIsCalculating(false);
+      }
+    };
+    
+    // Reset pricing quando não há veículo selecionado
+    if (!vehicle) {
+      setPricing({ vehiclePrice: 0, extrasPrice: 0, total: 0 });
+      setIsCalculating(false);
+      return;
+    }
+    
+    updatePricing();
+  }, [calculateTotal, vehicle, extras, pickupLocation.coordinates, dropoffLocation.coordinates, pickupLocation.address, dropoffLocation.address]);
   
   return (
     <div className="bg-white border rounded-lg overflow-hidden">
@@ -120,15 +154,27 @@ const RideSummary = () => {
       <div className="p-6 bg-gray-50">
         <div className="flex justify-between mb-2">
           <span>{t('booking.vehiclePrice')}</span>
-          <span>${vehiclePrice.toFixed(2)}</span>
+          <span>
+            {isCalculating ? (
+              <span className="text-gray-400">Calculando...</span>
+            ) : (
+              `$${pricing.vehiclePrice.toFixed(2)}`
+            )}
+          </span>
         </div>
         <div className="flex justify-between mb-4">
           <span>{t('booking.extras')}</span>
-          <span>${extrasPrice.toFixed(2)}</span>
+          <span>${pricing.extrasPrice.toFixed(2)}</span>
         </div>
         <div className="flex justify-between text-lg font-medium">
           <span>{t('booking.total')}</span>
-          <span>${total.toFixed(2)}</span>
+          <span>
+            {isCalculating ? (
+              <span className="text-gray-400">Calculando...</span>
+            ) : (
+              `$${pricing.total.toFixed(2)}`
+            )}
+          </span>
         </div>
       </div>
     </div>

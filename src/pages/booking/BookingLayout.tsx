@@ -1,4 +1,3 @@
-
 import { useBooking } from "@/contexts/BookingContext";
 import BookingStepIndicator from "@/components/BookingStepIndicator";
 import VehicleSelection from "./VehicleSelection";
@@ -7,9 +6,16 @@ import PassengerDetails from "./PassengerDetails";
 import Payment from "./Payment";
 import Confirmation from "./Confirmation";
 import Navbar from "@/components/Navbar";
+import { useEffect } from "react";
 
 const BookingLayout = () => {
-  const { currentStep, goToStep, bookingComplete } = useBooking();
+  const { currentStep, goToStep, bookingComplete, resetBooking } = useBooking();
+
+  // Reset booking data when entering the booking page
+  useEffect(() => {
+    console.log('🔄 Usuário acessou página de booking - resetando dados...');
+    resetBooking();
+  }, []); // Empty dependency array - only run on mount
 
   const steps = [
     { component: <VehicleSelection /> },

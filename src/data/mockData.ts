@@ -1,4 +1,3 @@
-
 import { ExtraType, VehicleType } from "@/types/booking";
 
 export const vehicles: VehicleType[] = [
@@ -10,31 +9,31 @@ export const vehicles: VehicleType[] = [
     models: "Chevrolet Suburban or similar",
     capacity: 6,
     luggage: 6,
-    price: 1150,
+    price: 160,
     image: "/lovable-uploads/d7859a6e-d290-4f3f-a494-2dd91f50c9cd.png",
     features: ["Meet & Greet included", "Free cancellation", "Free Waiting time", "Safe and secure travel"]
   },
   {
     id: "sedan",
     name: "Sedan",
-    category: "Sedan",
+    category: "SEDAN",
     description: "Comfortable and elegant transport for business travelers",
     models: "Toyota Camry or similar",
     capacity: 3,
     luggage: 3,
-    price: 750,
+    price: 130,
     image: "/lovable-uploads/c2fc4186-469d-4557-a80b-4a3e32dbc017.png",
     features: ["Meet & Greet included", "Free cancellation", "Free Waiting time", "Safe and secure travel"]
   },
   {
-    id: "minivan",
-    name: "Minivan",
-    category: "Minivan",
+    id: "van",
+    name: "Van",
+    category: "VAN",
     description: "Spacious transport for families and groups",
     models: "Chrysler Pacifica or similar",
     capacity: 7,
     luggage: 4,
-    price: 1300,
+    price: 150,
     image: "/lovable-uploads/76414054-57cd-4796-9734-f706281297f6.png",
     features: ["Meet & Greet included", "Free cancellation", "Free Waiting time", "Safe and secure travel"]
   }

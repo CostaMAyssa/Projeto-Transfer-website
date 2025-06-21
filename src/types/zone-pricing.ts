@@ -10,7 +10,7 @@ export interface Zone {
   center_lng?: number;
   radius_meters?: number;
   // For polygonal zones
-  geojson?: any;
+  geojson?: Record<string, unknown>;
   coverage_area: string; // NY, NJ, PA, CT
   created_at?: string;
   updated_at?: string;
@@ -18,7 +18,7 @@ export interface Zone {
 
 export interface VehicleCategory {
   id: string;
-  name: string; // SUV, Sedan, Minivan
+  name: string; // SUV, Sedan, Van
   capacity: number;
   base_price: number; // Preço base em USD
   description?: string;
@@ -45,7 +45,7 @@ export interface PricingCalculationRequest {
     address: string;
     coordinates: [number, number];
   };
-  vehicle_category: string; // 'SUV' | 'Sedan' | 'Minivan'
+  vehicle_category: string; // 'SUV' | 'SEDAN' | 'VAN'
 }
 
 export interface PricingCalculationResponse {
@@ -81,13 +81,13 @@ export interface PredefinedZone {
 // Zone tolerance for boundary checking
 export const ZONE_TOLERANCE_METERS = 300;
 
-// Fixed vehicle categories with pricing
+// Fixed vehicle categories with pricing (corrigido para valores em dólares)
 export const VEHICLE_CATEGORIES: VehicleCategory[] = [
   {
     id: 'sedan',
     name: 'Sedan',
     capacity: 3,
-    base_price: 75000, // $750 in cents
+    base_price: 130, // Preço médio da tabela
     description: 'Toyota Camry ou similar',
     features: ['3 passageiros', 'Confortável', 'Econômico']
   },
@@ -95,15 +95,15 @@ export const VEHICLE_CATEGORIES: VehicleCategory[] = [
     id: 'suv',
     name: 'SUV',
     capacity: 6,
-    base_price: 115000, // $1150 in cents
+    base_price: 160, // Preço médio da tabela
     description: 'Chevrolet Suburban ou similar',
     features: ['6 passageiros', 'Espaçoso', 'Luxuoso']
   },
   {
-    id: 'minivan',
-    name: 'Minivan',
+    id: 'van',
+    name: 'Van',
     capacity: 7,
-    base_price: 130000, // $1300 in cents
+    base_price: 150, // Preço médio da tabela
     description: 'Chrysler Pacifica ou similar',
     features: ['7 passageiros', 'Máximo espaço', 'Familiar']
   }
@@ -112,7 +112,7 @@ export const VEHICLE_CATEGORIES: VehicleCategory[] = [
 // Predefined zones as per documentation
 export const PREDEFINED_ZONES: PredefinedZone[] = [
   {
-    id: 'Z_EWR',
+    id: 'EWR',
     name: 'Aeroporto Intl. Newark (EWR)',
     description: 'Círculo 2,4 mi radius',
     type: 'circular',
@@ -122,7 +122,7 @@ export const PREDEFINED_ZONES: PredefinedZone[] = [
     coverage_area: 'NJ'
   },
   {
-    id: 'Z_JFK',
+    id: 'JFK',
     name: 'Aeroporto John F. Kennedy (JFK)',
     description: 'Círculo 4,4 mi radius',
     type: 'circular',
@@ -132,7 +132,7 @@ export const PREDEFINED_ZONES: PredefinedZone[] = [
     coverage_area: 'NY'
   },
   {
-    id: 'Z_LGA',
+    id: 'LGA',
     name: 'Aeroporto LaGuardia (LGA)',
     description: 'Círculo 2,4 mi radius',
     type: 'circular',
@@ -142,28 +142,28 @@ export const PREDEFINED_ZONES: PredefinedZone[] = [
     coverage_area: 'NY'
   },
   {
-    id: 'Z_BRONX',
+    id: 'BRX',
     name: 'Bronx, NY',
     description: '25 ZIP Codes',
     type: 'polygonal',
     coverage_area: 'NY'
   },
   {
-    id: 'Z_BKLYN',
+    id: 'BKN',
     name: 'Brooklyn, NY',
     description: '38 ZIP Codes',
     type: 'polygonal',
     coverage_area: 'NY'
   },
   {
-    id: 'Z_MHTN',
+    id: 'MAN',
     name: 'Manhattan, NY',
     description: '55 ZIP Codes',
     type: 'polygonal',
     coverage_area: 'NY'
   },
   {
-    id: 'Z_QNS',
+    id: 'QNS',
     name: 'Queens, NY',
     description: '56 ZIP Codes',
     type: 'polygonal',
