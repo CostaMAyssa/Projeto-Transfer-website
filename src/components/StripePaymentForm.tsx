@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ChevronRight } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { useTranslation } from "react-i18next";
 import {
   Form,
   FormControl,
@@ -43,6 +44,7 @@ const paymentSchema = z.object({
 type PaymentFormData = z.infer<typeof paymentSchema>;
 
 const StripePaymentForm = () => {
+  const { t } = useTranslation();
   const { completeBooking, bookingData, setPaymentDetails, calculateTotal } = useBooking();
   const [isProcessing, setIsProcessing] = useState(false);
   const navigate = useNavigate();
@@ -157,7 +159,7 @@ const StripePaymentForm = () => {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <h2 className="text-2xl font-bold mb-6">Billing Address</h2>
+        <h2 className="text-2xl font-bold mb-6">{t('payment.billingAddress')}</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <FormField
@@ -165,9 +167,9 @@ const StripePaymentForm = () => {
             name="firstName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>First Name</FormLabel>
+                <FormLabel>{t('payment.firstName')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="First Name" className="p-3 bg-gray-50" {...field} />
+                  <Input placeholder={t('payment.firstName')} className="p-3 bg-gray-50" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -179,9 +181,9 @@ const StripePaymentForm = () => {
             name="lastName"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Last Name</FormLabel>
+                <FormLabel>{t('payment.lastName')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Last Name" className="p-3 bg-gray-50" {...field} />
+                  <Input placeholder={t('payment.lastName')} className="p-3 bg-gray-50" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -194,9 +196,9 @@ const StripePaymentForm = () => {
           name="company"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Company (Optional)</FormLabel>
+              <FormLabel>{t('payment.company')}</FormLabel>
               <FormControl>
-                <Input placeholder="Company" className="p-3 bg-gray-50" {...field} />
+                <Input placeholder={t('payment.company')} className="p-3 bg-gray-50" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -208,9 +210,9 @@ const StripePaymentForm = () => {
           name="address"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Address</FormLabel>
+              <FormLabel>{t('payment.address')}</FormLabel>
               <FormControl>
-                <Input placeholder="Address" className="p-3 bg-gray-50" {...field} />
+                <Input placeholder={t('payment.address')} className="p-3 bg-gray-50" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -223,9 +225,9 @@ const StripePaymentForm = () => {
             name="country"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Country</FormLabel>
+                <FormLabel>{t('payment.country')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Country" className="p-3 bg-gray-50" {...field} />
+                  <Input placeholder={t('payment.country')} className="p-3 bg-gray-50" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -237,9 +239,9 @@ const StripePaymentForm = () => {
             name="city"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>City</FormLabel>
+                <FormLabel>{t('payment.city')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="City" className="p-3 bg-gray-50" {...field} />
+                  <Input placeholder={t('payment.city')} className="p-3 bg-gray-50" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -251,9 +253,9 @@ const StripePaymentForm = () => {
             name="postal"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Postal Code</FormLabel>
+                <FormLabel>{t('payment.postalCode')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Postal Code" className="p-3 bg-gray-50" {...field} />
+                  <Input placeholder={t('payment.postalCode')} className="p-3 bg-gray-50" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -261,16 +263,16 @@ const StripePaymentForm = () => {
           />
         </div>
 
-        <h3 className="text-xl font-semibold pt-4">Credit Card Payment</h3>
+        <h3 className="text-xl font-semibold pt-4">{t('payment.creditCardPayment')}</h3>
 
         <FormField
           control={form.control}
           name="cardHolder"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Card Holder Name</FormLabel>
+              <FormLabel>{t('payment.cardHolderName')}</FormLabel>
               <FormControl>
-                <Input placeholder="Card Holder Name" className="p-3 bg-gray-50" {...field} />
+                <Input placeholder={t('payment.cardHolderName')} className="p-3 bg-gray-50" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -282,10 +284,10 @@ const StripePaymentForm = () => {
           name="cardNumber"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Card Number</FormLabel>
+              <FormLabel>{t('payment.cardNumber')}</FormLabel>
               <FormControl>
                 <Input 
-                  placeholder="Card Number" 
+                  placeholder={t('payment.cardNumber')} 
                   className="p-3 bg-gray-50" 
                   maxLength={19}
                   {...field} 
@@ -302,7 +304,7 @@ const StripePaymentForm = () => {
             name="expiryMonth"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Month</FormLabel>
+                <FormLabel>{t('payment.month')}</FormLabel>
                 <FormControl>
                   <Input placeholder="MM" className="p-3 bg-gray-50" maxLength={2} {...field} />
                 </FormControl>
@@ -316,7 +318,7 @@ const StripePaymentForm = () => {
             name="expiryYear"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Year</FormLabel>
+                <FormLabel>{t('payment.year')}</FormLabel>
                 <FormControl>
                   <Input placeholder="YYYY" className="p-3 bg-gray-50" maxLength={4} {...field} />
                 </FormControl>
@@ -330,7 +332,7 @@ const StripePaymentForm = () => {
             name="cvv"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>CVV</FormLabel>
+                <FormLabel>{t('payment.cvv')}</FormLabel>
                 <FormControl>
                   <Input placeholder="CVV" className="p-3 bg-gray-50" maxLength={4} {...field} />
                 </FormControl>
@@ -347,7 +349,7 @@ const StripePaymentForm = () => {
         </div>
 
         <p className="text-sm text-gray-600">
-          The credit card must be issued in the driver's name. Debit cards are accepted at some locations and for some car categories.
+          {t('payment.cardInfo')}
         </p>
 
         <div className="space-y-3 pt-4">
@@ -364,7 +366,7 @@ const StripePaymentForm = () => {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>
-                    I accept the Terms & Conditions - Booking Conditions and Privacy Policy. *
+                    {t('payment.termsConditions')}
                   </FormLabel>
                   <FormMessage />
                 </div>
@@ -385,7 +387,7 @@ const StripePaymentForm = () => {
                 </FormControl>
                 <div className="space-y-1 leading-none">
                   <FormLabel>
-                    I want to subscribe to Transfero's newsletter (Travel tips and special deals)
+                    {t('payment.newsletter')}
                   </FormLabel>
                 </div>
               </FormItem>
@@ -398,7 +400,7 @@ const StripePaymentForm = () => {
           disabled={isProcessing}
           className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto mt-6"
         >
-          {isProcessing ? "Processing..." : "Book Now"} <ChevronRight size={18} className="ml-1" />
+          {isProcessing ? t('payment.processing') : t('payment.bookNow')} <ChevronRight size={18} className="ml-1" />
         </Button>
       </form>
     </Form>

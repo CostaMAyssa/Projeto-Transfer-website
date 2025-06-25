@@ -7,10 +7,12 @@ import { extras } from "@/data/mockData";
 import ExtraOptionItem from "@/components/ExtraOptionItem";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { useState } from "react";
 
 const ExtrasSelection = () => {
   const { t } = useTranslation();
-  const { nextStep, prevStep, updateExtraQuantity, bookingData } = useBooking();
+  const { nextStep, prevStep, updateExtraQuantity, bookingData, setPassengerDetails } = useBooking();
+  const [notes, setNotes] = useState(bookingData.passengerDetails.notes || '');
 
   const handleSelectExtra = (extraId: string) => {
     // Verificar se o extra já está selecionado
@@ -22,6 +24,42 @@ const ExtrasSelection = () => {
       // Se não está selecionado, adicionar com quantidade 1
       updateExtraQuantity(extraId, 1);
     }
+  };
+
+  const handleContinue = () => {
+    // Salvar as observações no contexto antes de continuar
+    setPassengerDetails({
+      ...bookingData.passengerDetails,
+      notes: notes
+    });
+    nextStep();
+  };
+
+  // Map extra IDs to translation keys
+  const getExtraName = (extraId: string) => {
+    const translationMap: Record<string, string> = {
+      'child-seat': t('extras.childSeat'),
+      'booster-seat': t('extras.boosterSeat'),
+      'vodka-bottle': t('extras.vodkaBottle'),
+      'flowers': t('extras.flowers'),
+      'alcohol-package': t('extras.alcoholPackage'),
+      'airport-assistance': t('extras.airportAssistance'),
+      'bodyguard': t('extras.bodyguard')
+    };
+    return translationMap[extraId] || '';
+  };
+
+  const getExtraDescription = (extraId: string) => {
+    const translationMap: Record<string, string> = {
+      'child-seat': t('extras.childSeatDesc'),
+      'booster-seat': t('extras.boosterSeatDesc'),
+      'vodka-bottle': t('extras.vodkaBottleDesc'),
+      'flowers': t('extras.flowersDesc'),
+      'alcohol-package': t('extras.alcoholPackageDesc'),
+      'airport-assistance': t('extras.airportAssistanceDesc'),
+      'bodyguard': t('extras.bodyguardDesc')
+    };
+    return translationMap[extraId] || '';
   };
 
   return (
@@ -54,12 +92,12 @@ const ExtrasSelection = () => {
                 <div key={extra.id} className="bg-white border rounded-lg p-4 flex justify-between items-center">
                   <div>
                     <h4 className="font-normal flex items-center">
-                      {extra.name}
+                      {getExtraName(extra.id)}
                       <span className="ml-2 px-2 py-1 bg-[#ED1B24] text-white rounded-md text-sm">
                         ${extra.price}
                       </span>
                     </h4>
-                    <p className="text-sm text-gray-600 mt-1">{extra.description}</p>
+                    <p className="text-sm text-gray-600 mt-1">{getExtraDescription(extra.id)}</p>
                   </div>
                   <Button 
                     variant={isSelected ? "default" : "outline"}
@@ -81,13 +119,15 @@ const ExtrasSelection = () => {
               <Textarea
                 placeholder={t('booking.notesToDriverPlaceholder')}
                 className="w-full h-32 p-3"
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
               />
             </div>
 
             {/* Continue Button */}
             <div className="mt-6">
               <Button 
-                onClick={nextStep} 
+                onClick={handleContinue} 
                 className="bg-[#111111] hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto font-normal"
               >
                 {t('booking.continue')} <ChevronRight size={18} className="ml-1" />

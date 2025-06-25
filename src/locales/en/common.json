@@ -91,7 +91,12 @@
     "durationDays": "Duration (days)",
     "roundTripPlaceholder": "0 = round-trip",
     "cityTourComingSoon": "City tour booking form will be available soon.",
-    "and": "and"
+    "and": "and",
+    "steps": {
+      "vehicle": "Vehicle",
+      "extras": "Extras", 
+      "payment": "Payment"
+    }
   },
   "benefits": {
     "safetyFirst": "Safety First",
@@ -157,7 +162,13 @@
     "minivan": "Minivan",
     "suvDesc": "Spacious vehicle for groups and larger luggage needs",
     "sedanDesc": "Comfortable and elegant transport for business travelers",
-    "minivanDesc": "Spacious transport for families and groups"
+    "minivanDesc": "Spacious transport for families and groups",
+    "features": {
+      "meetGreet": "Meet & Greet included",
+      "freeCancellation": "Free cancellation",
+      "freeWaiting": "Free Waiting time",
+      "safeTravel": "Safe and secure travel"
+    }
   },
   "languages": {
     "en": "EN",
@@ -231,5 +242,26 @@
       "libertyBell": "Liberty Bell",
       "artMuseum": "Art Museum"
     }
+  },
+  "payment": {
+    "billingAddress": "Billing Address",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "company": "Company (Optional)",
+    "address": "Address",
+    "country": "Country",
+    "city": "City",
+    "postalCode": "Postal Code",
+    "creditCardPayment": "Credit Card Payment",
+    "cardHolderName": "Card Holder Name",
+    "cardNumber": "Card Number",
+    "month": "Month",
+    "year": "Year",
+    "cvv": "CVV",
+    "cardInfo": "The credit card must be issued in the driver's name. Debit cards are accepted at some locations and for some car categories.",
+    "termsConditions": "I accept the Terms & Conditions - Booking Conditions and Privacy Policy. *",
+    "newsletter": "I want to subscribe to Transfero's newsletter (Travel tips and special deals)",
+    "processing": "Processing...",
+    "bookNow": "Book Now"
   }
 } 

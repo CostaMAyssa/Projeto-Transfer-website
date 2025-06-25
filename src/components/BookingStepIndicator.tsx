@@ -1,5 +1,5 @@
-
-import { Car, Package, UserRound, CreditCard } from "lucide-react";
+import { Car, Package, CreditCard } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 interface BookingStepIndicatorProps {
   currentStep: number;
@@ -7,11 +7,12 @@ interface BookingStepIndicatorProps {
 }
 
 const BookingStepIndicator = ({ currentStep, onStepClick }: BookingStepIndicatorProps) => {
+  const { t } = useTranslation();
+  
   const steps = [
-    { name: 'Vehicle', icon: <Car size={20} /> },
-    { name: 'Extras', icon: <Package size={20} /> },
-    { name: 'Details', icon: <UserRound size={20} /> },
-    { name: 'Payment', icon: <CreditCard size={20} /> }
+    { name: t('booking.steps.vehicle'), icon: <Car size={20} /> },
+    { name: t('booking.steps.extras'), icon: <Package size={20} /> },
+    { name: t('booking.steps.payment'), icon: <CreditCard size={20} /> }
   ];
 
   const isStepClickable = (stepIndex: number): boolean => {

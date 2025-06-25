@@ -32,6 +32,17 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
     }
   };
 
+  // Map vehicle features to translations
+  const getTranslatedFeature = (feature: string) => {
+    const featureMap: Record<string, string> = {
+      "Meet & Greet included": t('vehicles.features.meetGreet'),
+      "Free cancellation": t('vehicles.features.freeCancellation'),
+      "Free Waiting time": t('vehicles.features.freeWaiting'),
+      "Safe and secure travel": t('vehicles.features.safeTravel')
+    };
+    return featureMap[feature] || feature;
+  };
+
   return (
     <div className="border rounded-lg overflow-hidden mb-6 bg-white">
       <div className="grid grid-cols-1 lg:grid-cols-3">
@@ -76,7 +87,7 @@ const VehicleCard = ({ vehicle }: VehicleCardProps) => {
               {vehicle.features.map((feature, index) => (
                 <div key={index} className="flex items-center text-xs bg-gray-100 px-2 py-1 rounded">
                   <Check size={12} className="mr-1 text-brand" />
-                  {feature}
+                  {getTranslatedFeature(feature)}
                 </div>
               ))}
             </div>

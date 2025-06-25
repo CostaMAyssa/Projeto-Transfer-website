@@ -87,7 +87,12 @@
     "selectedExtras": "Extras Selecionados",
     "vehiclePrice": "Preço do Veículo",
     "extras": "Extras",
-    "total": "Total"
+    "total": "Total",
+    "steps": {
+      "vehicle": "Veículo",
+      "extras": "Extras",
+      "payment": "Pagamento"
+    }
   },
   "benefits": {
     "safetyFirst": "Segurança em Primeiro Lugar",
@@ -153,7 +158,13 @@
     "minivan": "Minivan",
     "suvDesc": "Veículo espaçoso para grupos e necessidades maiores de bagagem",
     "sedanDesc": "Transporte confortável e elegante para viajantes de negócios",
-    "minivanDesc": "Transporte espaçoso para famílias e grupos"
+    "minivanDesc": "Transporte espaçoso para famílias e grupos",
+    "features": {
+      "meetGreet": "Meet & Greet incluído",
+      "freeCancellation": "Cancelamento gratuito",
+      "freeWaiting": "Tempo de espera gratuito",
+      "safeTravel": "Viagem segura e protegida"
+    }
   },
   "languages": {
     "en": "EN",
@@ -227,5 +238,26 @@
       "libertyBell": "Sino da Liberdade",
       "artMuseum": "Museu de Arte"
     }
+  },
+  "payment": {
+    "billingAddress": "Endereço de Cobrança",
+    "firstName": "Nome",
+    "lastName": "Sobrenome",
+    "company": "Empresa (Opcional)",
+    "address": "Endereço",
+    "country": "País",
+    "city": "Cidade",
+    "postalCode": "CEP",
+    "creditCardPayment": "Pagamento com Cartão de Crédito",
+    "cardHolderName": "Nome do Portador do Cartão",
+    "cardNumber": "Número do Cartão",
+    "month": "Mês",
+    "year": "Ano",
+    "cvv": "CVV",
+    "cardInfo": "O cartão de crédito deve ser emitido em nome do motorista. Cartões de débito são aceitos em alguns locais e para algumas categorias de carros.",
+    "termsConditions": "Aceito os Termos e Condições - Condições de Reserva e Política de Privacidade. *",
+    "newsletter": "Quero me inscrever na newsletter da Transfero (Dicas de viagem e ofertas especiais)",
+    "processing": "Processando...",
+    "bookNow": "Reservar Agora"
   }
 } 
