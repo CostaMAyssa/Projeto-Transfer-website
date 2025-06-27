@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Check, ChevronRight, Users, Briefcase, MapPin, Clock, AlertTriangle } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useAutoPricing, formatPrice } from "@/hooks/useZonePricing";
+import { useAutoPricing } from "@/hooks/useZonePricing";
 import { VehicleCategory } from "@/lib/zone-pricing";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -23,6 +23,11 @@ const ZonePricingVehicleCard = ({
   onSelect 
 }: ZonePricingVehicleCardProps) => {
   const { t } = useTranslation();
+  
+  // Função local para formatar preços (valores já estão em dólares)
+  const formatPrice = (price: number): string => {
+    return `$${price.toFixed(0)}`;
+  };
   
   // Calculo automático de preços baseado nas localizações
   const { 
@@ -56,12 +61,21 @@ const ZonePricingVehicleCard = ({
   };
 
   const getVehicleImage = (vehicleId: string) => {
+    // Mapear exatamente como no mockData.ts - cada veículo tem sua imagem específica
+    // Normalizar para minúsculo para garantir compatibilidade
+    const normalizedId = vehicleId.toLowerCase();
+    
     const images = {
-      sedan: "/lovable-uploads/8cd7b8ce-deda-49ae-bd1a-e6b2b07a6d82.png",
-      suv: "/lovable-uploads/4e7b6c9a-3c84-4593-a7c6-07c21b6e7b22.png", 
-      minivan: "/lovable-uploads/6d1f4c84-2e3a-4f95-8b5d-9c8e7f1a6d92.png"
+      sedan: "/lovable-uploads/c2fc4186-469d-4557-a80b-4a3e32dbc017.png",  // Sedan - Toyota Camry
+      suv: "/lovable-uploads/d7859a6e-d290-4f3f-a494-2dd91f50c9cd.png",    // SUV - Chevrolet Suburban
+      van: "/lovable-uploads/76414054-57cd-4796-9734-f706281297f6.png",     // Van - Chrysler Pacifica
+      minivan: "/lovable-uploads/76414054-57cd-4796-9734-f706281297f6.png"  // Minivan - mesma do Van
     };
-    return images[vehicleId as keyof typeof images] || images.sedan;
+    
+    const selectedImage = images[normalizedId as keyof typeof images] || images.sedan;
+    console.log(`🚗 Veículo: ${vehicleId} (normalizado: ${normalizedId}) -> Imagem: ${selectedImage}`);
+    
+    return selectedImage;
   };
 
   const renderPriceSection = () => {
@@ -124,7 +138,7 @@ const ZonePricingVehicleCard = ({
         {pickup_zone && dropoff_zone && (
           <div className="text-xs text-gray-500 mt-1 flex items-center">
             <MapPin size={12} className="mr-1" />
-            {pickup_zone.name} → {dropoff_zone.name}
+            {typeof pickup_zone === 'object' ? pickup_zone.name : pickup_zone} → {typeof dropoff_zone === 'object' ? dropoff_zone.name : dropoff_zone}
           </div>
         )}
         
@@ -150,7 +164,7 @@ const ZonePricingVehicleCard = ({
         {/* Image with zoom effect */}
         <div className="p-4 flex items-center justify-center bg-gray-50 overflow-hidden">
           <img 
-            src={getVehicleImage(vehicle.id)} 
+            src={`${getVehicleImage(vehicle.id)}?v=${Date.now()}`}
             alt={vehicle.name} 
             className="w-full max-w-sm object-contain h-48"
             style={{ transform: "scale(1.1)" }}

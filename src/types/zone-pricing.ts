@@ -51,12 +51,15 @@ export interface PricingCalculationRequest {
 export interface PricingCalculationResponse {
   success: boolean;
   price?: number;
-  pickup_zone?: string;
-  dropoff_zone?: string;
-  vehicle_category?: string;
+  pickup_zone?: Zone | string;
+  dropoff_zone?: Zone | string;
+  vehicle_category?: string | VehicleCategory;
   distance_miles?: number;
   message?: string;
   calculation_method?: 'zone_specific' | 'base_price' | 'fallback';
+  out_of_coverage?: boolean;
+  whatsapp_contact?: boolean;
+  base_price?: number;
 }
 
 export interface ZoneDetectionResult {
