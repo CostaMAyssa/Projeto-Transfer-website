@@ -341,6 +341,30 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     console.log('✅ Completing booking...');
     try {
       const newReservationId = `RES-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      
+      // Determine payment method based on payment details
+      let paymentMethod = 'Cartão de Crédito';
+      if (bookingData.paymentDetails.cardNumber) {
+        const cardNumber = bookingData.paymentDetails.cardNumber.replace(/\s/g, '');
+        if (cardNumber.startsWith('4')) {
+          paymentMethod = 'Visa';
+        } else if (cardNumber.startsWith('5') || cardNumber.startsWith('2')) {
+          paymentMethod = 'Mastercard';
+        } else if (cardNumber.startsWith('3')) {
+          paymentMethod = 'American Express';
+        }
+      }
+      
+      // Update payment details with payment method and email
+      setBookingData(prev => ({
+        ...prev,
+        paymentDetails: {
+          ...prev.paymentDetails,
+          paymentMethod,
+          email: prev.passengerDetails.email || prev.paymentDetails.email
+        }
+      }));
+      
       setReservationId(newReservationId);
       setBookingComplete(true);
       
@@ -358,7 +382,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         variant: "destructive"
       });
     }
-  }, [toast]);
+  }, [toast, bookingData.paymentDetails, bookingData.passengerDetails]);
 
   const populateDemoData = useCallback(() => {
     console.log('🧪 Populating demo data...');

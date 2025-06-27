@@ -1,4 +1,3 @@
-
 // Define booking types
 export type BookingType = 'one-way' | 'round-trip' | 'hourly' | 'city-tour';
 
@@ -35,6 +34,8 @@ export interface PaymentDetails {
   cvv?: string; // Added cvv property
   termsAccepted: boolean;
   newsletterSubscription: boolean;
+  email?: string; // Added email property
+  paymentMethod?: string; // Added payment method property
 }
 
 export interface VehicleType {
