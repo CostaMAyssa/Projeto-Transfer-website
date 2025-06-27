@@ -10,18 +10,31 @@ const VehicleSelection = () => {
   const { data: vehicleCategories, isLoading } = useVehicleCategories();
 
   // Convert VehicleCategory to VehicleType for compatibility
-  const convertToVehicleType = (category: VehicleCategory): VehicleType => ({
-    id: category.id,
-    name: category.name,
-    category: category.name,
-    description: category.description || '',
-    capacity: category.capacity,
-    price: category.base_price,
-    image: `/lovable-uploads/${category.id === 'sedan' ? '8cd7b8ce-deda-49ae-bd1a-e6b2b07a6d82' : 
-                                category.id === 'suv' ? '4e7b6c9a-3c84-4593-a7c6-07c21b6e7b22' : 
-                                '6d1f4c84-2e3a-4f95-8b5d-9c8e7f1a6d92'}.png`,
-    features: category.features || []
-  });
+  const convertToVehicleType = (category: VehicleCategory): VehicleType => {
+    // Usar o mesmo mapeamento de imagens do ZonePricingVehicleCard
+    const getVehicleImage = (vehicleId: string) => {
+      const normalizedId = vehicleId.toLowerCase();
+      const images = {
+        sedan: "/lovable-uploads/c2fc4186-469d-4557-a80b-4a3e32dbc017.png",  // Sedan - Toyota Camry
+        suv: "/lovable-uploads/d7859a6e-d290-4f3f-a494-2dd91f50c9cd.png",    // SUV - Chevrolet Suburban
+        van: "/lovable-uploads/76414054-57cd-4796-9734-f706281297f6.png",     // Van - Chrysler Pacifica
+        minivan: "/lovable-uploads/76414054-57cd-4796-9734-f706281297f6.png"  // Minivan - mesma do Van
+      };
+      return images[normalizedId as keyof typeof images] || images.sedan;
+    };
+
+    return {
+      id: category.id,
+      name: category.name,
+      category: category.name,
+      description: category.description || '',
+      capacity: category.capacity,
+      price: category.base_price,
+      image: getVehicleImage(category.id),
+      features: category.features || [],
+      models: category.description || category.name // Usar description como models ou fallback para name
+    };
+  };
 
   const handleVehicleSelect = (category: VehicleCategory) => {
     const vehicleType = convertToVehicleType(category);

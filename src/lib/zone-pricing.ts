@@ -127,17 +127,21 @@ export async function detectZone(
       { coordinates: [-73.8740, 40.7769], zone_id: 'LGA', zone_name: 'LaGuardia Airport', tolerance: 1000 },
       
       // Manhattan
-      { coordinates: [-73.9857, 40.7589], zone_id: 'MAN', zone_name: 'Manhattan', tolerance: 2000 }, // Times Square
-      { coordinates: [-73.9712, 40.7831], zone_id: 'MAN', zone_name: 'Manhattan', tolerance: 2000 }, // Manhattan center
+      { coordinates: [-73.9857, 40.7589], zone_id: 'MAN', zone_name: 'Manhattan', tolerance: 5000 }, // Times Square
+      { coordinates: [-73.9712, 40.7831], zone_id: 'MAN', zone_name: 'Manhattan', tolerance: 5000 }, // Manhattan center
       
-      // Brooklyn
-      { coordinates: [-73.9969, 40.7061], zone_id: 'BKN', zone_name: 'Brooklyn', tolerance: 2000 }, // Brooklyn Bridge
+      // Brooklyn - Múltiplos pontos de referência
+      { coordinates: [-73.9969, 40.7061], zone_id: 'BKN', zone_name: 'Brooklyn', tolerance: 5000 }, // Brooklyn Bridge
+      { coordinates: [-73.9442, 40.6782], zone_id: 'BKN', zone_name: 'Brooklyn', tolerance: 5000 }, // Downtown Brooklyn
+      { coordinates: [-73.9532, 40.6892], zone_id: 'BKN', zone_name: 'Brooklyn', tolerance: 5000 }, // Fort Greene (próximo a Bogart St)
       
       // Bronx
-      { coordinates: [-73.9276, 40.8296], zone_id: 'BRX', zone_name: 'Bronx', tolerance: 2000 }, // Yankee Stadium
+      { coordinates: [-73.9276, 40.8296], zone_id: 'BRX', zone_name: 'Bronx', tolerance: 5000 }, // Yankee Stadium
       
-      // Queens - Coordenadas atualizadas do Google Places API
-      { coordinates: [-73.7948516, 40.7282239], zone_id: 'QNS', zone_name: 'Queens', tolerance: 2000 }, // ✅ ATUALIZADO
+      // Queens - Múltiplos pontos de referência
+      { coordinates: [-73.7948516, 40.7282239], zone_id: 'QNS', zone_name: 'Queens', tolerance: 5000 }, // Queens center original
+      { coordinates: [-73.8648, 40.7282], zone_id: 'QNS', zone_name: 'Queens', tolerance: 5000 }, // Elmhurst area
+      { coordinates: [-73.8370, 40.7590], zone_id: 'QNS', zone_name: 'Queens', tolerance: 5000 }, // Jackson Heights
     ];
     
     // Busca a zona mais próxima baseada nas coordenadas
@@ -236,8 +240,10 @@ export async function calculateZonePricing(
         pickup_zone: pickupZoneResult.zone_name || 'Zona desconhecida',
         dropoff_zone: dropoffZoneResult.zone_name || 'Zona desconhecida',
         vehicle_category: request.vehicle_category,
-        message: 'Preço base aplicado - zona não detectada',
-        calculation_method: 'fallback'
+        message: 'Uma ou ambas as localizações estão fora da área de cobertura. Entre em contato conosco via WhatsApp para mais informações.',
+        calculation_method: 'fallback',
+        out_of_coverage: true,
+        whatsapp_contact: true
       };
     }
     

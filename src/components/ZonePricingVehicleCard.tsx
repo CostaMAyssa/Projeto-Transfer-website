@@ -23,6 +23,7 @@ const ZonePricingVehicleCard = ({
   onSelect 
 }: ZonePricingVehicleCardProps) => {
   const { t } = useTranslation();
+  const { nextStep } = useBooking();
   
   // Função local para formatar preços (valores já estão em dólares)
   const formatPrice = (price: number): string => {
@@ -44,6 +45,11 @@ const ZonePricingVehicleCard = ({
   const handleVehicleSelect = () => {
     if (onSelect) {
       onSelect(vehicle);
+      
+      // Só avança automaticamente se não estiver fora de cobertura
+      if (!pricingData?.whatsapp_contact) {
+        nextStep();
+      }
     }
   };
 
@@ -73,7 +79,6 @@ const ZonePricingVehicleCard = ({
     };
     
     const selectedImage = images[normalizedId as keyof typeof images] || images.sedan;
-    console.log(`🚗 Veículo: ${vehicleId} (normalizado: ${normalizedId}) -> Imagem: ${selectedImage}`);
     
     return selectedImage;
   };
@@ -222,9 +227,9 @@ const ZonePricingVehicleCard = ({
                     ? "border-brand text-brand hover:text-brand-700 font-medium" 
                     : "bg-black hover:bg-gray-800 text-white font-medium"
                 }
-                disabled={pricingData?.whatsapp_contact && !pricingData?.success}
+                disabled={pricingData && !pricingData.success}
               >
-                {selected ? t('booking.selected') : t('booking.select')} 
+                {selected && pricingData?.whatsapp_contact ? 'Contate via WhatsApp' : (selected ? t('booking.selected') : t('booking.select'))}
                 <ChevronRight size={16} className="ml-1" />
               </Button>
             </div>
