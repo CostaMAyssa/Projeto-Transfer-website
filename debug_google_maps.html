@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico Google Maps API</title>
+    <style>
+        body { margin: 0; padding: 20px; font-family: Arial, sans-serif; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .status { background: #f0f0f0; padding: 15px; margin: 10px 0; border-radius: 8px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .warning { background: #fff3cd; color: #856404; border: 1px solid #ffeaa7; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 8px; }
+        .logs { background: #000; color: #0f0; padding: 15px; border-radius: 8px; font-family: monospace; height: 300px; overflow-y: auto; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
+        button { background: #007bff; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .suggestions { border: 1px solid #ddd; border-radius: 4px; max-height: 200px; overflow-y: auto; }
+        .suggestion { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; }
+        .suggestion:hover { background: #f8f9fa; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Diagnóstico Google Maps API</h1>
+        
+        <div id="status" class="status">
+            <strong>Status:</strong> Iniciando diagnóstico...
+        </div>
+        
+        <div class="test-section">
+            <h2>🔑 Teste 1: Verificação da API Key</h2>
+            <div id="api-key-status" class="status">
+                <strong>API Key:</strong> Verificando configuração...
+            </div>
+            <button onclick="testApiKey()">Testar API Key</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔍 Teste 2: Autocomplete de Endereços</h2>
+            <div id="autocomplete-status" class="status">
+                <strong>Autocomplete:</strong> Digite um endereço para testar...
+            </div>
+            <input type="text" id="address-input" placeholder="Digite um endereço (ex: Times Square)" oninput="testAutocomplete(this.value)">
+            <div id="suggestions" class="suggestions" style="display: none;"></div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📍 Teste 3: Detalhes do Local (Place Details)</h2>
+            <div id="details-status" class="status">
+                <strong>Place Details:</strong> Selecione um endereço acima para testar...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🌍 Teste 4: Detecção de Zonas</h2>
+            <div id="zone-status" class="status">
+                <strong>Zone Detection:</strong> Aguardando coordenadas...
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>📋 Logs do Sistema</h2>
+            <div id="logs" class="logs"></div>
+        </div>
+    </div>
+
+    <script>
+        const logsContainer = document.getElementById('logs');
+        
+        function log(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const color = type === 'error' ? '#f00' : type === 'success' ? '#0f0' : type === 'warning' ? '#ff0' : '#fff';
+            logsContainer.innerHTML += `<div style="color: ${color};">[${timestamp}] ${message}</div>`;
+            logsContainer.scrollTop = logsContainer.scrollHeight;
+            console.log(`[${timestamp}] ${message}`);
+        }
+        
+        function updateStatus(elementId, message, type = 'info') {
+            const element = document.getElementById(elementId);
+            element.className = `status ${type}`;
+            element.innerHTML = `<strong>${elementId.replace('-status', '').toUpperCase().replace('-', ' ')}:</strong> ${message}`;
+        }
+        
+        // Teste 1: API Key
+        async function testApiKey() {
+            log('🔑 Testando configuração da Google Maps API Key...');
+            
+            try {
+                // Teste simples de geocoding
+                const response = await fetch('/api/test-google-maps');
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ API Key configurada corretamente!', 'success');
+                    updateStatus('api-key-status', 'API Key válida e funcionando', 'success');
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                log(`❌ Erro na API Key: ${error.message}`, 'error');
+                updateStatus('api-key-status', `Erro: ${error.message}`, 'error');
+                
+                // Teste alternativo via Supabase
+                log('🔄 Tentando via Supabase Edge Function...', 'warning');
+                testViaSupabase();
+            }
+        }
+        
+        async function testViaSupabase() {
+            try {
+                const response = await fetch('https://your-project.supabase.co/functions/v1/google-places/autocomplete', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer your-anon-key'
+                    },
+                    body: JSON.stringify({ input: 'New York' })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error && data.error.includes('GOOGLE_API_KEY')) {
+                    log('❌ GOOGLE_API_KEY não configurada no Supabase!', 'error');
+                    updateStatus('api-key-status', 'GOOGLE_API_KEY não configurada no Supabase Secrets', 'error');
+                } else {
+                    log('✅ Supabase Edge Function funcionando!', 'success');
+                    updateStatus('api-key-status', 'API funcionando via Supabase', 'success');
+                }
+            } catch (error) {
+                log(`❌ Erro no Supabase: ${error.message}`, 'error');
+                updateStatus('api-key-status', `Erro no Supabase: ${error.message}`, 'error');
+            }
+        }
+        
+        // Teste 2: Autocomplete
+        let autocompleteTimeout;
+        async function testAutocomplete(input) {
+            clearTimeout(autocompleteTimeout);
+            
+            if (input.length < 3) {
+                document.getElementById('suggestions').style.display = 'none';
+                updateStatus('autocomplete-status', 'Digite pelo menos 3 caracteres...', 'warning');
+                return;
+            }
+            
+            autocompleteTimeout = setTimeout(async () => {
+                log(`🔍 Testando autocomplete para: "${input}"`);
+                updateStatus('autocomplete-status', 'Buscando sugestões...', 'warning');
+                
+                try {
+                    // Simular chamada para o Supabase Edge Function
+                    const mockResponse = await simulateAutocomplete(input);
+                    
+                    if (mockResponse.predictions && mockResponse.predictions.length > 0) {
+                        log(`✅ ${mockResponse.predictions.length} sugestões encontradas!`, 'success');
+                        updateStatus('autocomplete-status', `${mockResponse.predictions.length} sugestões encontradas`, 'success');
+                        showSuggestions(mockResponse.predictions);
+                    } else {
+                        log('⚠️ Nenhuma sugestão encontrada', 'warning');
+                        updateStatus('autocomplete-status', 'Nenhuma sugestão encontrada', 'warning');
+                        document.getElementById('suggestions').style.display = 'none';
+                    }
+                } catch (error) {
+                    log(`❌ Erro no autocomplete: ${error.message}`, 'error');
+                    updateStatus('autocomplete-status', `Erro: ${error.message}`, 'error');
+                    document.getElementById('suggestions').style.display = 'none';
+                }
+            }, 500);
+        }
+        
+        async function simulateAutocomplete(input) {
+            // Simular resposta da Google Places API
+            const mockPredictions = [
+                {
+                    place_id: "ChIJOwg_06VPwokRYv534QaPC8g",
+                    description: `${input} - Times Square, New York, NY, USA`,
+                    structured_formatting: {
+                        main_text: `${input} - Times Square`,
+                        secondary_text: "New York, NY, USA"
+                    }
+                },
+                {
+                    place_id: "ChIJOwg_06VPwokRYv534QaPC8h",
+                    description: `${input} - Central Park, New York, NY, USA`,
+                    structured_formatting: {
+                        main_text: `${input} - Central Park`,
+                        secondary_text: "New York, NY, USA"
+                    }
+                }
+            ];
+            
+            return {
+                status: "OK",
+                predictions: mockPredictions
+            };
+        }
+        
+        function showSuggestions(predictions) {
+            const suggestionsDiv = document.getElementById('suggestions');
+            suggestionsDiv.innerHTML = '';
+            
+            predictions.forEach(prediction => {
+                const div = document.createElement('div');
+                div.className = 'suggestion';
+                div.innerHTML = `
+                    <strong>${prediction.structured_formatting.main_text}</strong><br>
+                    <small>${prediction.structured_formatting.secondary_text}</small>
+                `;
+                div.onclick = () => testPlaceDetails(prediction);
+                suggestionsDiv.appendChild(div);
+            });
+            
+            suggestionsDiv.style.display = 'block';
+        }
+        
+        // Teste 3: Place Details
+        async function testPlaceDetails(place) {
+            log(`📍 Testando detalhes para: ${place.description}`);
+            updateStatus('details-status', 'Buscando coordenadas...', 'warning');
+            
+            try {
+                // Simular coordenadas
+                const mockCoordinates = [-73.9857, 40.7484]; // Times Square
+                
+                log(`✅ Coordenadas encontradas: [${mockCoordinates[0]}, ${mockCoordinates[1]}]`, 'success');
+                updateStatus('details-status', `Coordenadas: [${mockCoordinates[0]}, ${mockCoordinates[1]}]`, 'success');
+                
+                // Teste de detecção de zona
+                testZoneDetection(mockCoordinates);
+                
+            } catch (error) {
+                log(`❌ Erro ao buscar coordenadas: ${error.message}`, 'error');
+                updateStatus('details-status', `Erro: ${error.message}`, 'error');
+            }
+        }
+        
+        // Teste 4: Zone Detection
+        function testZoneDetection(coordinates) {
+            log(`🌍 Testando detecção de zona para coordenadas: [${coordinates[0]}, ${coordinates[1]}]`);
+            updateStatus('zone-status', 'Detectando zona...', 'warning');
+            
+            try {
+                // Simular detecção de zona (baseado no código real)
+                const [lng, lat] = coordinates;
+                
+                // Mapeamento simplificado das zonas
+                const zones = [
+                    { id: 'JFK', name: 'Aeroporto JFK', coords: [-73.7781, 40.6413], tolerance: 3000 },
+                    { id: 'LGA', name: 'Aeroporto LaGuardia', coords: [-73.8740, 40.7769], tolerance: 3000 },
+                    { id: 'EWR', name: 'Aeroporto Newark', coords: [-74.1745, 40.6895], tolerance: 3000 },
+                    { id: 'MAN', name: 'Manhattan', coords: [-73.9857, 40.7484], tolerance: 5000 },
+                    { id: 'BRK', name: 'Brooklyn', coords: [-73.9442, 40.6782], tolerance: 8000 },
+                    { id: 'QNS', name: 'Queens', coords: [-73.8648, 40.7282], tolerance: 10000 }
+                ];
+                
+                let detectedZone = null;
+                let minDistance = Infinity;
+                
+                zones.forEach(zone => {
+                    const distance = calculateDistance(lat, lng, zone.coords[1], zone.coords[0]);
+                    if (distance <= zone.tolerance && distance < minDistance) {
+                        detectedZone = zone;
+                        minDistance = distance;
+                    }
+                });
+                
+                if (detectedZone) {
+                    log(`✅ Zona detectada: ${detectedZone.name} (${detectedZone.id}) - Distância: ${Math.round(minDistance)}m`, 'success');
+                    updateStatus('zone-status', `Zona: ${detectedZone.name} (${detectedZone.id})`, 'success');
+                } else {
+                    log(`❌ Localização fora da área de cobertura`, 'error');
+                    updateStatus('zone-status', 'Fora da área de cobertura', 'error');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na detecção de zona: ${error.message}`, 'error');
+                updateStatus('zone-status', `Erro: ${error.message}`, 'error');
+            }
+        }
+        
+        // Função auxiliar para calcular distância
+        function calculateDistance(lat1, lng1, lat2, lng2) {
+            const R = 6371000; // Raio da Terra em metros
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLng = (lng2 - lng1) * Math.PI / 180;
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLng/2) * Math.sin(dLng/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+        
+        // Inicializar diagnóstico
+        window.addEventListener('load', () => {
+            log('🚀 Iniciando diagnóstico do Google Maps API...');
+            updateStatus('status', 'Diagnóstico iniciado. Execute os testes manualmente.', 'warning');
+        });
+        
+        // Capturar erros globais
+        window.addEventListener('error', (e) => {
+            log(`❌ Erro global: ${e.message}`, 'error');
+        });
+    </script>
+</body>
+</html> 

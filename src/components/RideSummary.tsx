@@ -1,7 +1,7 @@
 import { useBooking } from "@/contexts/BookingContext";
 import { format } from "date-fns";
 import { MapPin, Calendar, Clock, Users, Briefcase } from "lucide-react";
-// import RideMap from "./RideMap"; // TEMPORARIAMENTE COMENTADO
+import RideMap from "./RideMap";
 import { useTranslation } from "react-i18next";
 import { useState, useEffect } from "react";
 
@@ -103,15 +103,8 @@ const RideSummary = () => {
       <div className="p-6 border-b">
         <h3 className="text-xl font-normal mb-6">{t('booking.yourRide')}</h3>
         
-        {/* Map View - TEMPORARIAMENTE DESABILITADO */}
-        <div className="mb-6 h-64 bg-gray-100 rounded-lg flex items-center justify-center">
-          <div className="text-center text-gray-500">
-            <MapPin size={32} className="mx-auto mb-2" />
-            <p className="text-sm">Mapa temporariamente desabilitado</p>
-            <p className="text-xs">Teste: {pickupLocation.address} → {dropoffLocation.address}</p>
-          </div>
-        </div>
-        {/* <RideMap className="mb-6" /> */}
+        {/* Map View */}
+        <RideMap className="mb-6" />
 
         {/* Pickup & Dropoff */}
         <div className="space-y-4 mb-6">

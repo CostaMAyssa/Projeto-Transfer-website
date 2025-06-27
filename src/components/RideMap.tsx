@@ -23,6 +23,17 @@ const RideMap = ({ className }: RideMapProps) => {
   // Using the updated token
   const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
 
+  // 🔍 DEBUG: Log inicial do componente
+  console.log('🗺️ RideMap - Componente inicializado', {
+    hasPickupCoords: !!bookingData.pickupLocation?.coordinates,
+    hasDropoffCoords: !!bookingData.dropoffLocation?.coordinates,
+    pickupAddress: bookingData.pickupLocation?.address,
+    dropoffAddress: bookingData.dropoffLocation?.address,
+    mapContainerExists: !!mapContainerRef.current,
+    isInitialized,
+    isMapLoaded
+  });
+
   // Cleanup function to safely remove markers and map
   const cleanup = useCallback(() => {
     try {
@@ -57,22 +68,32 @@ const RideMap = ({ className }: RideMapProps) => {
   }, []);
 
   const initializeMap = useCallback(() => {
+    console.log('🚀 RideMap - initializeMap chamada', {
+      isInitialized,
+      containerExists: !!mapContainerRef.current,
+      mapExists: !!mapRef.current
+    });
+
     // Prevent multiple initializations
     if (isInitialized) {
+      console.log('⚠️ RideMap - Já inicializado, pulando...');
       return;
     }
 
     // Initialize map only if container is available and not already initialized
     if (!mapContainerRef.current) {
+      console.log('❌ RideMap - Container não existe ainda');
       return;
     }
     
     try {
+      console.log('🔑 RideMap - Definindo access token...');
       // Set access token
       mapboxgl.accessToken = mapboxToken;
 
       // Create the map if it doesn't exist
       if (!mapRef.current) {
+        console.log('🗺️ RideMap - Criando nova instância do mapa...');
         mapRef.current = new mapboxgl.Map({
           container: mapContainerRef.current,
           style: 'mapbox://styles/mapbox/streets-v12',
@@ -80,18 +101,22 @@ const RideMap = ({ className }: RideMapProps) => {
           preserveDrawingBuffer: true // Helps with DOM issues
         });
         
+        console.log('✅ RideMap - Mapa criado, aguardando eventos...');
+        
         // Handle map load errors
         mapRef.current.on('error', (e: mapboxgl.ErrorEvent) => {
-          console.error('Map error:', e);
+          console.error('❌ RideMap - Erro no mapa:', e);
           setErrorMessage('Erro no mapa. Verifique sua conexão.');
         });
 
         mapRef.current.on('load', () => {
+          console.log('🎉 RideMap - Mapa carregado com sucesso!');
           setIsMapLoaded(true);
           setIsInitialized(true);
         });
 
         mapRef.current.on('remove', () => {
+          console.log('🗑️ RideMap - Mapa removido');
           setIsInitialized(false);
           setIsMapLoaded(false);
         });
@@ -285,17 +310,29 @@ const RideMap = ({ className }: RideMapProps) => {
     // Prevent initialization on first render without locations
     const hasAnyLocation = bookingData.pickupLocation?.coordinates || bookingData.dropoffLocation?.coordinates;
     
+    console.log('🔄 RideMap - useEffect executado', {
+      hasAnyLocation,
+      hasPickup: !!bookingData.pickupLocation?.coordinates,
+      hasDropoff: !!bookingData.dropoffLocation?.coordinates,
+      pickupAddress: bookingData.pickupLocation?.address,
+      dropoffAddress: bookingData.dropoffLocation?.address
+    });
+    
     if (!hasAnyLocation) {
+      console.log('⏭️ RideMap - Sem localizações, pulando inicialização');
       return;
     }
     
+    console.log('⏰ RideMap - Agendando inicialização em 100ms...');
     // Small delay to ensure DOM is ready
     const timer = setTimeout(() => {
+      console.log('🎯 RideMap - Chamando initializeMap...');
       initializeMap();
     }, 100);
     
     // Clean up on unmount or dependency change
     return () => {
+      console.log('🧹 RideMap - Limpando timer e recursos...');
       clearTimeout(timer);
       cleanup();
     };
@@ -327,8 +364,25 @@ const RideMap = ({ className }: RideMapProps) => {
           <p className="mt-2 text-sm">Digite os locais de origem e destino para vê-los no mapa</p>
         </div>
       ) : (
-        <div className="h-64 relative" ref={mapContainerRef}>
-          {!isMapLoaded && <Skeleton className="w-full h-full" />}
+        <div 
+          className="h-64 relative" 
+          ref={mapContainerRef}
+          style={{
+            width: '100%',
+            height: '256px',
+            backgroundColor: '#f0f0f0',
+            border: '2px solid #333',
+            borderRadius: '8px'
+          }}
+        >
+          {!isMapLoaded && (
+            <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
+                <p className="text-sm text-gray-600">Carregando mapa...</p>
+              </div>
+            </div>
+          )}
         </div>
       )}
       
