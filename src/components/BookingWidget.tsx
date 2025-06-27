@@ -28,7 +28,9 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
     setPickupDate,
     setPickupTime,
     setPassengers,
-    setLuggage
+    setLuggage,
+    setRoundTripData,
+    setHourlyData
   } = useBooking();
   
   const [bookingType, setWidgetBookingType] = useState<BookingType>("one-way");
@@ -87,17 +89,49 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
       setPassengers(passengers);
       setLuggage(smallLuggage, largeLuggage);
     } else if (bookingType === "round-trip") {
+      // Save main fields for compatibility
       setPickupLocation({ address: outboundPickupAddress });
       setDropoffLocation({ address: outboundDropAddress });
       setPickupDate(outboundDate);
       setPickupTime(outboundTime);
       setPassengers(outboundPassengers);
+      
+      // Save complete round trip data
+      setRoundTripData({
+        outboundPickupLocation: { address: outboundPickupAddress },
+        outboundDropoffLocation: { address: outboundDropAddress },
+        outboundDate,
+        outboundTime,
+        outboundPassengers,
+        returnPickupLocation: { address: returnPickupAddress },
+        returnDropoffLocation: { address: returnDropAddress },
+        returnDate,
+        returnTime,
+        returnPassengers,
+        durationDays
+      });
     } else if (bookingType === "hourly") {
+      // Save main fields for compatibility
       setPickupLocation({ address: hourlyPickupAddress });
       setDropoffLocation({ address: departureAirport });
       setPickupDate(hourlyDate);
       setPickupTime(hourlyTime);
       setPassengers(hourlyPassengers);
+      
+      // Save complete hourly data
+      setHourlyData({
+        pickupLocation: { address: hourlyPickupAddress },
+        dropoffLocation: { address: departureAirport },
+        date: hourlyDate,
+        time: hourlyTime,
+        passengers: hourlyPassengers,
+        durationHours,
+        orderType,
+        departureAirport,
+        airline,
+        flightNumber,
+        noFlightInfo
+      });
     }
 
     // Navigate to booking page

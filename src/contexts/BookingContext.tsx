@@ -3,6 +3,7 @@ import { BookingFormData, ExtraType, VehicleType } from '@/types/booking';
 import { useToast } from "@/hooks/use-toast";
 import { vehicles, extras as mockExtras } from '@/data/mockData';
 import { calculateZonePricing } from '@/lib/zone-pricing';
+import { supabase } from '@/integrations/supabase/client';
 
 // Initialize with default data
 const defaultBookingData: BookingFormData = {
@@ -56,11 +57,17 @@ type BookingContextType = {
   prevStep: () => void;
   goToStep: (step: number) => void;
   calculateTotal: () => Promise<{ vehiclePrice: number; extrasPrice: number; total: number }>;
-  completeBooking: () => void;
+  completeBooking: () => Promise<void>;
   populateDemoData: () => void;
   resetBooking: () => void;
   bookingComplete: boolean;
   reservationId: string | null;
+  
+  // Round Trip functions
+  setRoundTripData: (data: BookingFormData['roundTrip']) => void;
+  
+  // Hourly functions
+  setHourlyData: (data: BookingFormData['hourly']) => void;
 };
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
@@ -337,10 +344,11 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     }
   }, [bookingData]);
 
-  const completeBooking = useCallback(() => {
+  const completeBooking = useCallback(async () => {
     console.log('✅ Completing booking...');
     try {
-      const newReservationId = `RES-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+      // Calculate pricing first
+      const pricing = await calculateTotal();
       
       // Determine payment method based on payment details
       let paymentMethod = 'Cartão de Crédito';
@@ -355,7 +363,66 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         }
       }
       
-      // Update payment details with payment method and email
+      // Prepare booking data for Supabase
+      const bookingToSave = {
+        booking_type: bookingData.bookingType,
+        pickup_location: bookingData.pickupLocation.address,
+        dropoff_location: bookingData.dropoffLocation.address,
+        pickup_location_json: {
+          address: bookingData.pickupLocation.address,
+          coordinates: bookingData.pickupLocation.coordinates
+        },
+        dropoff_location_json: {
+          address: bookingData.dropoffLocation.address,
+          coordinates: bookingData.dropoffLocation.coordinates
+        },
+        pickup_date: bookingData.pickupDate.toISOString().split('T')[0],
+        pickup_time: bookingData.pickupTime,
+        passengers: bookingData.passengers,
+        luggage: bookingData.luggage.small + bookingData.luggage.large,
+        luggage_json: bookingData.luggage,
+        vehicle_json: bookingData.vehicle,
+        extras: bookingData.extras,
+        round_trip_data: bookingData.roundTrip,
+        hourly_data: bookingData.hourly,
+        passenger_details: {
+          firstName: bookingData.passengerDetails.firstName,
+          lastName: bookingData.passengerDetails.lastName,
+          email: bookingData.passengerDetails.email,
+          phone: bookingData.passengerDetails.phone
+        },
+        payment_details: {
+          ...bookingData.paymentDetails,
+          paymentMethod,
+          email: bookingData.passengerDetails.email || bookingData.paymentDetails.email
+        },
+        vehicle_price: pricing.vehiclePrice,
+        extras_price: pricing.extrasPrice,
+        total_amount: pricing.total,
+        payment_method: paymentMethod,
+        status: 'confirmed',
+        payment_status: 'succeeded'
+      };
+      
+      console.log('💾 Saving booking to Supabase:', bookingToSave);
+      
+      // Save to Supabase
+      const { data: savedBooking, error } = await supabase
+        .from('bookings')
+        .insert([bookingToSave])
+        .select('*')
+        .single();
+      
+      if (error) {
+        console.error('🚨 Supabase error:', error);
+        throw new Error(`Erro ao salvar reserva: ${error.message}`);
+      }
+      
+      console.log('✅ Booking saved successfully:', savedBooking);
+      
+      // Update local state with the saved booking data
+      const newReservationId = savedBooking.reservation_id;
+      
       setBookingData(prev => ({
         ...prev,
         paymentDetails: {
@@ -378,11 +445,12 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       console.error('🚨 Error completing booking:', error);
       toast({
         title: "Erro",
-        description: "Erro ao finalizar a reserva. Tente novamente.",
+        description: error instanceof Error ? error.message : "Erro ao finalizar a reserva. Tente novamente.",
         variant: "destructive"
       });
+      throw error; // Re-throw to handle in payment form
     }
-  }, [toast, bookingData.paymentDetails, bookingData.passengerDetails]);
+  }, [toast, bookingData, calculateTotal]);
 
   const populateDemoData = useCallback(() => {
     console.log('🧪 Populating demo data...');
@@ -420,6 +488,18 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
+  // Round Trip functions
+  const setRoundTripData = useCallback((data: BookingFormData['roundTrip']) => {
+    console.log('🔄 Setting round trip data:', data);
+    setBookingData((prev) => ({ ...prev, roundTrip: data }));
+  }, []);
+  
+  // Hourly functions
+  const setHourlyData = useCallback((data: BookingFormData['hourly']) => {
+    console.log('🕒 Setting hourly data:', data);
+    setBookingData((prev) => ({ ...prev, hourly: data }));
+  }, []);
+
   const contextValue = {
     bookingData,
     currentStep,
@@ -446,6 +526,12 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     resetBooking,
     bookingComplete,
     reservationId,
+    
+    // Round Trip functions
+    setRoundTripData,
+    
+    // Hourly functions
+    setHourlyData,
   };
 
   return (

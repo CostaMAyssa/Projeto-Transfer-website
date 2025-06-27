@@ -11,6 +11,7 @@ import { useEffect, useState, useRef, Suspense } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import FAQ from "@/components/FAQ";
 import CityTourSection from "@/components/CityTourSection";
+import { useBooking } from "@/contexts/BookingContext";
 
 const serviceSlides = [{
   id: 1,
@@ -72,6 +73,13 @@ const Index = () => {
   const [api, setApi] = useState<unknown>(null);
   const { t } = useTranslation();
   const mountedRef = useRef(true);
+  const { resetBooking } = useBooking();
+
+  // Reset booking when user visits home page
+  useEffect(() => {
+    console.log('🏠 Home page loaded - resetting booking data');
+    resetBooking();
+  }, [resetBooking]);
 
   // Auto-play functionality for carousel with safe cleanup
   useEffect(() => {

@@ -73,4 +73,34 @@ export interface BookingFormData {
   extras: ExtraType[];
   passengerDetails: PassengerDetails;
   paymentDetails: PaymentDetails;
+  
+  // Round Trip specific fields
+  roundTrip?: {
+    outboundPickupLocation: LocationData;
+    outboundDropoffLocation: LocationData;
+    outboundDate: Date;
+    outboundTime: string;
+    outboundPassengers: number;
+    returnPickupLocation: LocationData;
+    returnDropoffLocation: LocationData;
+    returnDate: Date;
+    returnTime: string;
+    returnPassengers: number;
+    durationDays: number;
+  };
+  
+  // Hourly specific fields
+  hourly?: {
+    pickupLocation: LocationData;
+    dropoffLocation: LocationData;
+    date: Date;
+    time: string;
+    passengers: number;
+    durationHours: number;
+    orderType: 'airport-dropoff' | 'pickup';
+    departureAirport: string;
+    airline: string;
+    flightNumber: string;
+    noFlightInfo: boolean;
+  };
 }

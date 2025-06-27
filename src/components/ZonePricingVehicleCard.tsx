@@ -44,6 +44,20 @@ const ZonePricingVehicleCard = ({
 
   const handleVehicleSelect = () => {
     if (onSelect) {
+      // Se já está selecionado e é fora de cobertura, abrir WhatsApp
+      if (selected && pricingData?.whatsapp_contact) {
+        const message = encodeURIComponent(
+          `Olá! Gostaria de solicitar um orçamento para transfer fora da área de cobertura.\n\n` +
+          `Veículo: ${vehicle.name}\n` +
+          `Origem: ${pickupLocation?.address || 'Não informado'}\n` +
+          `Destino: ${dropoffLocation?.address || 'Não informado'}\n\n` +
+          `Aguardo retorno. Obrigado!`
+        );
+        const whatsappUrl = `https://wa.me/13478487765?text=${message}`;
+        window.open(whatsappUrl, '_blank');
+        return;
+      }
+      
       onSelect(vehicle);
       
       // Só avança automaticamente se não estiver fora de cobertura
