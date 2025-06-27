@@ -169,7 +169,7 @@ const Index = () => {
           fallback={<div className="bg-white rounded-xl border p-6 text-center">Widget temporariamente indisponível</div>}
         >
           <Suspense fallback={<div className="bg-white rounded-xl border p-6 animate-pulse">Carregando...</div>}>
-            <BookingWidget vertical={false} />
+            <BookingWidget vertical={true} />
           </Suspense>
         </ComponentErrorBoundary>
       </div>
