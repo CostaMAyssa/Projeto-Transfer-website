@@ -153,8 +153,15 @@ const StripePaymentForm = () => {
         });
 
         if (error) {
-          console.warn("⚠️ Edge Function não disponível, usando simulação:", error);
-          throw new Error("Edge Function não configurada");
+          console.warn("⚠️ Edge Function não disponível:", error);
+          
+          // For development, show error but don't complete booking
+          toast({
+            title: "⚠️ Ambiente de Desenvolvimento",
+            description: "Edge Function não configurada. Configure o Stripe para processar pagamentos reais.",
+            variant: "destructive",
+          });
+          return;
         }
 
         if (paymentResult?.error) {
@@ -167,33 +174,50 @@ const StripePaymentForm = () => {
           return;
         }
 
-        // Handle successful payment
-        console.log('✅ Pagamento processado com sucesso:', paymentResult);
-        
-        toast({
-          title: "Pagamento Realizado com Sucesso!",
-          description: "Sua reserva foi confirmada. Você receberá um e-mail de confirmação.",
-        });
-        
-        // Complete the booking
-        completeBooking();
+        // Only complete booking if payment was successful
+        if (paymentResult?.success && paymentResult?.status === 'succeeded') {
+          console.log('✅ Pagamento confirmado no Stripe:', paymentResult);
+          
+          toast({
+            title: "Pagamento Realizado com Sucesso!",
+            description: `Pagamento de $${total.toFixed(2)} confirmado. Sua reserva foi criada.`,
+          });
+          
+          // Complete the booking ONLY after payment confirmation
+          completeBooking();
+        } else if (paymentResult?.requiresAction) {
+          console.log('🔐 Pagamento requer autenticação 3D Secure');
+          
+          toast({
+            title: "Autenticação Necessária",
+            description: "Seu pagamento requer autenticação adicional. Por favor, complete a verificação.",
+            variant: "destructive",
+          });
+          
+          // Don't complete booking - payment needs additional action
+          return;
+        } else {
+          console.error('❌ Pagamento não foi confirmado:', paymentResult);
+          
+          toast({
+            title: "Pagamento Não Confirmado",
+            description: "O pagamento não foi processado com sucesso. Tente novamente.",
+            variant: "destructive",
+          });
+          return;
+        }
         
       } catch (edgeFunctionError) {
-        console.warn("⚠️ Edge Function não disponível, simulando pagamento para desenvolvimento...");
-        
-        // Simulate payment processing delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
-        
-        // Simulate successful payment for development
-        console.log('🧪 Simulação de pagamento bem-sucedida');
+        console.error("❌ Erro na Edge Function:", edgeFunctionError);
         
         toast({
-          title: "💳 Pagamento Simulado com Sucesso!",
-          description: `Reserva confirmada para ${paymentDetails.firstName}. Total: $${total.toFixed(2)}. (Modo Desenvolvimento)`,
+          title: "Erro no Processamento",
+          description: "Não foi possível processar o pagamento. Verifique se o Stripe está configurado corretamente.",
+          variant: "destructive",
         });
         
-        // Complete the booking
-        completeBooking();
+        // Do NOT complete booking if payment processing failed
+        return;
       }
       
     } catch (error) {
