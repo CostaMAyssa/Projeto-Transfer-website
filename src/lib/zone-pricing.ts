@@ -121,9 +121,9 @@ export async function detectZone(
       zone_name: string;
       tolerance: number; // metros
     }> = [
-      // Aeroportos
+      // Aeroportos - Coordenadas atualizadas do Google Places API
       { coordinates: [-74.1745, 40.6895], zone_id: 'EWR', zone_name: 'Newark Liberty International Airport', tolerance: 1000 },
-      { coordinates: [-73.7781, 40.6413], zone_id: 'JFK', zone_name: 'John F. Kennedy International Airport', tolerance: 1000 },
+      { coordinates: [-73.7797278, 40.6446124], zone_id: 'JFK', zone_name: 'John F. Kennedy International Airport', tolerance: 1000 }, // ✅ ATUALIZADO
       { coordinates: [-73.8740, 40.7769], zone_id: 'LGA', zone_name: 'LaGuardia Airport', tolerance: 1000 },
       
       // Manhattan
@@ -136,8 +136,8 @@ export async function detectZone(
       // Bronx
       { coordinates: [-73.9276, 40.8296], zone_id: 'BRX', zone_name: 'Bronx', tolerance: 2000 }, // Yankee Stadium
       
-      // Queens
-      { coordinates: [-73.8448, 40.7282], zone_id: 'QNS', zone_name: 'Queens', tolerance: 2000 }, // Flushing Meadows
+      // Queens - Coordenadas atualizadas do Google Places API
+      { coordinates: [-73.7948516, 40.7282239], zone_id: 'QNS', zone_name: 'Queens', tolerance: 2000 }, // ✅ ATUALIZADO
     ];
     
     // Busca a zona mais próxima baseada nas coordenadas
@@ -243,14 +243,14 @@ export async function calculateZonePricing(
     
     // 4. Buscar preço específico na matriz
     const vehicleType = request.vehicle_category.toUpperCase();
-    const specificPrice = getZonePrice(
+    const specificPrice = await getZonePrice(
       pickupZoneResult.zone_id, 
       dropoffZoneResult.zone_id, 
       vehicleType
     );
     
     // 5. Obter distância da rota
-    const routeDistance = getRouteDistance(
+    const routeDistance = await getRouteDistance(
       pickupZoneResult.zone_id,
       dropoffZoneResult.zone_id
     );
@@ -417,26 +417,80 @@ export const getRouteKey = (origin: string, destination: string): string => {
   return `${origin}-${destination}`;
 };
 
-// Helper function to get price for a specific route and vehicle
-export const getZonePrice = (origin: string, destination: string, vehicle: string): number | null => {
-  const routeKey = getRouteKey(origin, destination);
-  const reverseRouteKey = getRouteKey(destination, origin);
-  
-  // Try direct route first
-  if (ZONE_PRICING_MATRIX[routeKey] && ZONE_PRICING_MATRIX[routeKey][vehicle]) {
-    return ZONE_PRICING_MATRIX[routeKey][vehicle];
+// Helper function to get price for a specific route and vehicle - BUSCA DO BANCO DE DADOS
+export const getZonePrice = async (origin: string, destination: string, vehicle: string): Promise<number | null> => {
+  try {
+    console.log(`🔍 Buscando preço no banco: ${origin} → ${destination} (${vehicle})`);
+    
+    // Importar supabase dinamicamente para evitar problemas de circular dependency
+    const { supabase } = await import('@/integrations/supabase/client');
+    
+    // Mapear códigos de zona para IDs da tabela
+    const zoneMap: Record<string, string> = {
+      'EWR': 'Z_EWR',
+      'JFK': 'Z_JFK', 
+      'LGA': 'Z_LGA',
+      'MAN': 'Z_MHTN',
+      'BKN': 'Z_BKLYN',
+      'QNS': 'Z_QNS',
+      'BRX': 'Z_BRONX'
+    };
+    
+    // Normalizar nomes de veículos para o banco
+    const vehicleMap: Record<string, string> = {
+      'SEDAN': 'sedan',
+      'SUV': 'suv', 
+      'VAN': 'minivan',
+      'LUXURY': 'minivan'
+    };
+    
+    const originZoneId = zoneMap[origin] || origin;
+    const destinationZoneId = zoneMap[destination] || destination;
+    const dbVehicleType = vehicleMap[vehicle.toUpperCase()] || vehicle.toLowerCase();
+    
+    console.log(`🔄 Mapeado: ${origin}→${originZoneId}, ${destination}→${destinationZoneId}, ${vehicle}→${dbVehicleType}`);
+    
+    // Buscar preço direto (origem → destino)
+    const { data: directPrice, error: directError } = await supabase
+      .from('zone_pricing')
+      .select('price')
+      .eq('origin_zone_id', originZoneId)
+      .eq('destination_zone_id', destinationZoneId)
+      .eq('vehicle_category_id', dbVehicleType)
+      .single();
+    
+    if (!directError && directPrice) {
+      const priceInDollars = directPrice.price / 100;
+      console.log(`💰 Preço direto encontrado: $${priceInDollars}`);
+      return priceInDollars;
+    }
+    
+    // Buscar preço reverso (destino → origem) 
+    const { data: reversePrice, error: reverseError } = await supabase
+      .from('zone_pricing')
+      .select('price')
+      .eq('origin_zone_id', destinationZoneId)
+      .eq('destination_zone_id', originZoneId)
+      .eq('vehicle_category_id', dbVehicleType)
+      .single();
+    
+    if (!reverseError && reversePrice) {
+      const priceInDollars = reversePrice.price / 100;
+      console.log(`💰 Preço reverso encontrado: $${priceInDollars}`);
+      return priceInDollars;
+    }
+    
+    console.log(`❌ Nenhum preço encontrado no banco para ${originZoneId} → ${destinationZoneId} (${dbVehicleType})`);
+    return null;
+    
+  } catch (error) {
+    console.error('Erro ao buscar preço no banco:', error);
+    return null;
   }
-  
-  // Try reverse route
-  if (ZONE_PRICING_MATRIX[reverseRouteKey] && ZONE_PRICING_MATRIX[reverseRouteKey][vehicle]) {
-    return ZONE_PRICING_MATRIX[reverseRouteKey][vehicle];
-  }
-  
-  return null;
 };
 
 // Helper function to get distance between zones
-export const getRouteDistance = (origin: string, destination: string): number | null => {
+export const getRouteDistance = async (origin: string, destination: string): Promise<number | null> => {
   const routeKey = getRouteKey(origin, destination);
   const reverseRouteKey = getRouteKey(destination, origin);
   

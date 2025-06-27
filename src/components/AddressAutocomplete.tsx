@@ -23,15 +23,6 @@ interface GooglePlace {
   };
 }
 
-interface PlaceDetailsResponse {
-  geometry?: {
-    location: {
-      lat: number;
-      lng: number;
-    };
-  };
-}
-
 const AddressAutocomplete = ({
   placeholder,
   value,
@@ -52,7 +43,7 @@ const AddressAutocomplete = ({
 
   useEffect(() => {
     const fetchSuggestions = async () => {
-      if (debouncedValue.length < 2) {
+      if (debouncedValue.length < 3) {
         setSuggestions([]);
         setIsOpen(false);
         setErrorMessage(null);
@@ -63,7 +54,7 @@ const AddressAutocomplete = ({
       setErrorMessage(null);
       
       try {
-        console.log("Fetching suggestions from Google Places API for:", debouncedValue);
+        console.log("🔍 Buscando sugestões da Google Places API para:", debouncedValue);
         
         const { data, error } = await supabase.functions.invoke('google-places/autocomplete', {
           body: { 
@@ -72,26 +63,34 @@ const AddressAutocomplete = ({
         });
 
         if (error) {
-          console.error('Erro na API do Google Places:', error);
-          setErrorMessage("Erro ao buscar endereços. Tente novamente.");
+          console.error('❌ Erro na API do Google Places:', error);
+          setErrorMessage("Erro ao conectar com a API do Google. Verifique a configuração.");
           setSuggestions([]);
           return;
         }
 
         if (data?.status === 'OK' && data?.predictions) {
-          console.log('Sugestões recebidas:', data.predictions.length);
+          console.log('✅ Sugestões da Google API recebidas:', data.predictions.length);
           setSuggestions(data.predictions);
           setIsOpen(data.predictions.length > 0);
+        } else if (data?.status === 'REQUEST_DENIED') {
+          console.error('❌ Google API: REQUEST_DENIED -', data.error_message);
+          setErrorMessage("API Key do Google com restrições. Configure sem restrições no Google Cloud Console.");
+          setSuggestions([]);
+        } else if (data?.status === 'ZERO_RESULTS') {
+          console.warn('⚠️ Nenhum resultado encontrado para:', debouncedValue);
+          setSuggestions([]);
+          setIsOpen(false);
         } else {
-          console.warn('API retornou status:', data?.status);
-          setErrorMessage("Nenhum resultado encontrado.");
+          console.warn('⚠️ API retornou status:', data?.status, data?.error_message);
+          setErrorMessage(`Erro da Google API: ${data?.error_message || data?.status}`);
           setSuggestions([]);
         }
         
       } catch (error) {
-        console.error("Erro ao buscar sugestões:", error);
+        console.error("❌ Erro ao buscar sugestões:", error);
+        setErrorMessage("Erro de conexão. Verifique sua internet e a configuração da API.");
         setSuggestions([]);
-        setErrorMessage("Erro ao buscar endereços. Verifique sua conexão.");
       } finally {
         setIsLoading(false);
       }
@@ -120,7 +119,7 @@ const AddressAutocomplete = ({
 
   const getCoordinatesForPlace = async (placeId: string): Promise<[number, number] | undefined> => {
     try {
-      console.log('Buscando coordenadas para place_id:', placeId);
+      console.log('🔍 Buscando coordenadas para place_id:', placeId);
       
       const { data, error } = await supabase.functions.invoke('google-places/details', {
         body: { 
@@ -128,16 +127,21 @@ const AddressAutocomplete = ({
         }
       });
 
-      if (!error && data?.result?.geometry?.location) {
+      if (error) {
+        console.error('❌ Erro ao buscar coordenadas:', error);
+        return undefined;
+      }
+
+      if (data?.result?.geometry?.location) {
         const { lat, lng } = data.result.geometry.location;
-        console.log('Coordenadas encontradas:', [lng, lat]);
+        console.log('✅ Coordenadas da Google API encontradas:', [lng, lat]);
         return [lng, lat]; // [longitude, latitude]
       }
 
-      console.warn('Não foi possível obter coordenadas para:', placeId);
+      console.warn('⚠️ Coordenadas não encontradas para:', placeId);
       return undefined;
     } catch (error) {
-      console.error('Erro ao buscar coordenadas:', error);
+      console.error('❌ Erro ao buscar coordenadas:', error);
       return undefined;
     }
   };
@@ -148,7 +152,7 @@ const AddressAutocomplete = ({
     setErrorMessage(null);
     setSelectedAddress(null);
     
-    if (newValue.length >= 2) {
+    if (newValue.length >= 3) {
       setIsLoading(true);
     } else {
       setIsOpen(false);
@@ -156,7 +160,7 @@ const AddressAutocomplete = ({
   };
 
   const handleSuggestionClick = async (suggestion: GooglePlace) => {
-    console.log("Selected address:", suggestion);
+    console.log("📍 Endereço selecionado:", suggestion);
     
     setSelectedAddress(suggestion.description);
     onChange(suggestion.description);
@@ -173,13 +177,14 @@ const AddressAutocomplete = ({
       });
       
       if (!coordinates) {
-        setErrorMessage("Endereço selecionado, mas coordenadas não disponíveis.");
+        setErrorMessage("Endereço selecionado, mas não foi possível obter coordenadas.");
       }
     } catch (error) {
-      console.error('Erro ao processar seleção:', error);
+      console.error('❌ Erro ao processar seleção:', error);
       onAddressSelect({
         address: suggestion.description
       });
+      setErrorMessage("Erro ao obter coordenadas do endereço.");
     } finally {
       setIsLoading(false);
     }
@@ -199,52 +204,50 @@ const AddressAutocomplete = ({
           onChange={handleInputChange}
           onFocus={() => {
             setIsFocused(true);
-            if (value.length >= 2 && suggestions.length > 0) {
+            if (suggestions.length > 0) {
               setIsOpen(true);
             }
           }}
-          onBlur={() => {
-            setIsFocused(false);
-            setTimeout(() => {
-              if (!wrapperRef.current?.contains(document.activeElement)) {
-                setIsOpen(false);
-              }
-            }, 100);
-          }}
+          onBlur={() => setIsFocused(false)}
           required={required}
           className={className}
-          autoComplete="off"
         />
-
+        
         {isLoading && (
           <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-            <div className="animate-spin h-4 w-4 border-2 border-gray-500 rounded-full border-t-transparent"></div>
+            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-gray-900"></div>
           </div>
         )}
-
+        
         {isOpen && suggestions.length > 0 && (
-          <div className="absolute z-50 w-full mt-1 bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto">
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
             {suggestions.map((suggestion) => (
               <div
                 key={suggestion.place_id}
-                className="px-4 py-2 cursor-pointer hover:bg-gray-100 flex items-start gap-2"
+                className="px-4 py-2 hover:bg-gray-100 cursor-pointer flex items-center space-x-2"
                 onClick={() => handleSuggestionClick(suggestion)}
               >
-                <MapPin size={18} className="text-brand mt-0.5 flex-shrink-0" />
-                <div className="flex flex-col">
-                  <span className="text-sm font-medium">{suggestion.structured_formatting.main_text}</span>
-                  <span className="text-xs text-gray-500">{suggestion.structured_formatting.secondary_text}</span>
+                <MapPin className="h-4 w-4 text-gray-400 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-medium text-gray-900 truncate">
+                    {suggestion.structured_formatting.main_text}
+                  </div>
+                  <div className="text-xs text-gray-500 truncate">
+                    {suggestion.structured_formatting.secondary_text}
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         )}
       </div>
-
+      
       {errorMessage && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>{errorMessage}</AlertDescription>
+        <Alert className="bg-red-50 border-red-200">
+          <AlertCircle className="h-4 w-4 text-red-600" />
+          <AlertDescription className="text-red-800">
+            {errorMessage}
+          </AlertDescription>
         </Alert>
       )}
     </div>

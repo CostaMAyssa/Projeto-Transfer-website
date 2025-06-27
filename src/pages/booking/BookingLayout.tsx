@@ -5,16 +5,9 @@ import ExtrasSelection from "./ExtrasSelection";
 import Payment from "./Payment";
 import Confirmation from "./Confirmation";
 import Navbar from "@/components/Navbar";
-import { useEffect } from "react";
 
 const BookingLayout = () => {
-  const { currentStep, goToStep, bookingComplete, resetBooking } = useBooking();
-
-  // Reset booking data when entering the booking page
-  useEffect(() => {
-    console.log('🔄 Usuário acessou página de booking - resetando dados...');
-    resetBooking();
-  }, []); // Empty dependency array - only run on mount
+  const { currentStep, goToStep, bookingComplete } = useBooking();
 
   const steps = [
     { component: <VehicleSelection /> },

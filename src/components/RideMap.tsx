@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from 'react';
 import { useBooking } from "@/contexts/BookingContext";
 import { Skeleton } from '@/components/ui/skeleton';
@@ -48,13 +47,9 @@ const RideMap = ({ className }: RideMapProps) => {
         });
         
         // Handle map load errors
-        mapRef.current.on('error', (e: any) => {
+        mapRef.current.on('error', (e: mapboxgl.ErrorEvent) => {
           console.error('Map error:', e);
-          if (e.error && e.error.status === 401) {
-            setErrorMessage('Invalid Mapbox token. Please contact support.');
-          } else {
-            setErrorMessage(`Map error: ${e.error ? e.error.message : 'Unknown error'}`);
-          }
+          setErrorMessage('Map error occurred. Please check your connection.');
         });
 
         mapRef.current.on('load', () => {
