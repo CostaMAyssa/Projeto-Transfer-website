@@ -11,7 +11,6 @@ import Contact from "./pages/Contact";
 import TestZonePricing from "./pages/TestZonePricing";
 import TestZonePricingSimple from "./pages/TestZonePricingSimple";
 import NotFound from "./pages/NotFound";
-import DebugMonitor from "./components/DebugMonitor";
 import './lib/i18n';
 import './lib/domErrorFix';
 
@@ -97,28 +96,7 @@ const queryClient = new QueryClient({
   },
 });
 
-const App = () => {
-  console.log('🚀 App component rendering...');
-  
-  // Add global error handler
-  React.useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      console.error('🚨 Global error handler:', event.error);
-    };
-
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      console.error('🚨 Unhandled promise rejection:', event.reason);
-    };
-
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-
-    return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
-  }, []);
-
+export default function App() {
   return (
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
@@ -138,13 +116,10 @@ const App = () => {
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/test-zone-pricing" element={<TestZonePricing />} />
                   <Route path="/test-zone-pricing-simple" element={<TestZonePricingSimple />} />
-                  <Route path="/debug-monitor" element={<DebugMonitor />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
                 <Toaster />
                 <Sonner />
-                <DebugMonitor />
               </div>
             </BrowserRouter>
           </TooltipProvider>
@@ -152,6 +127,4 @@ const App = () => {
       </QueryClientProvider>
     </ErrorBoundary>
   );
-};
-
-export default App;
+}

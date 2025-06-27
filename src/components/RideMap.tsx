@@ -11,8 +11,6 @@ interface RideMapProps {
 }
 
 const RideMap = ({ className }: RideMapProps) => {
-  console.log('🗺️ RideMap component rendering...');
-  
   const { bookingData } = useBooking();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -27,17 +25,14 @@ const RideMap = ({ className }: RideMapProps) => {
 
   // Cleanup function to safely remove markers and map
   const cleanup = useCallback(() => {
-    console.log('🧹 RideMap cleanup starting...');
-    
     try {
       // Remove markers safely
       if (markersRef.current) {
-        markersRef.current.forEach((marker, index) => {
+        markersRef.current.forEach((marker) => {
           try {
-            console.log(`🗑️ Removing marker ${index}...`);
             marker.remove();
           } catch (error) {
-            console.warn(`⚠️ Error removing marker ${index}:`, error);
+            console.warn('Error removing marker:', error);
           }
         });
         markersRef.current = [];
@@ -47,41 +42,30 @@ const RideMap = ({ className }: RideMapProps) => {
       if (mapRef.current) {
         try {
           if (mapRef.current.getSource('route')) {
-            console.log('🗑️ Removing route layer and source...');
             if (mapRef.current.getLayer('route')) {
               mapRef.current.removeLayer('route');
             }
             mapRef.current.removeSource('route');
           }
         } catch (error) {
-          console.warn('⚠️ Error removing route:', error);
+          console.warn('Error removing route:', error);
         }
       }
     } catch (error) {
-      console.error('🚨 Error during cleanup:', error);
+      console.error('Error during cleanup:', error);
     }
-    
-    console.log('✅ RideMap cleanup completed');
   }, []);
 
   const initializeMap = useCallback(() => {
-    console.log('🗺️ Initializing map...');
-    
     // Prevent multiple initializations
     if (isInitialized) {
-      console.log('⚠️ Map already initialized, skipping...');
       return;
     }
 
     // Initialize map only if container is available and not already initialized
     if (!mapContainerRef.current) {
-      console.log("❌ Map container not found");
       return;
     }
-
-    // Log pickup and dropoff locations to debug
-    console.log("📍 Initializing map with pickup:", bookingData.pickupLocation);
-    console.log("📍 Initializing map with dropoff:", bookingData.dropoffLocation);
     
     try {
       // Set access token
@@ -89,8 +73,6 @@ const RideMap = ({ className }: RideMapProps) => {
 
       // Create the map if it doesn't exist
       if (!mapRef.current) {
-        console.log("🆕 Creating new map instance");
-        
         mapRef.current = new mapboxgl.Map({
           container: mapContainerRef.current,
           style: 'mapbox://styles/mapbox/streets-v12',
@@ -100,18 +82,16 @@ const RideMap = ({ className }: RideMapProps) => {
         
         // Handle map load errors
         mapRef.current.on('error', (e: mapboxgl.ErrorEvent) => {
-          console.error('🚨 Map error:', e);
+          console.error('Map error:', e);
           setErrorMessage('Erro no mapa. Verifique sua conexão.');
         });
 
         mapRef.current.on('load', () => {
-          console.log("✅ Map loaded successfully");
           setIsMapLoaded(true);
           setIsInitialized(true);
         });
 
         mapRef.current.on('remove', () => {
-          console.log("🗑️ Map removed");
           setIsInitialized(false);
           setIsMapLoaded(false);
         });
@@ -124,15 +104,11 @@ const RideMap = ({ className }: RideMapProps) => {
       const hasPickup = bookingData.pickupLocation?.coordinates;
       const hasDropoff = bookingData.dropoffLocation?.coordinates;
 
-      console.log("📍 Has pickup coordinates:", hasPickup);
-      console.log("📍 Has dropoff coordinates:", hasDropoff);
-
       // Default center if no coordinates are available
       let defaultCenter: [number, number] = [-74.006, 40.7128]; // Default to NYC
 
       if (hasPickup) {
         try {
-          console.log("📍 Adding pickup marker at:", bookingData.pickupLocation.coordinates);
           // Create a custom marker element for pickup
           const pickupEl = document.createElement('div');
           pickupEl.className = 'flex items-center justify-center';
@@ -154,13 +130,12 @@ const RideMap = ({ className }: RideMapProps) => {
           markersRef.current.push(pickupMarker);
           defaultCenter = bookingData.pickupLocation.coordinates;
         } catch (error) {
-          console.error('🚨 Error adding pickup marker:', error);
+          console.error('Error adding pickup marker:', error);
         }
       }
 
       if (hasDropoff) {
         try {
-          console.log("📍 Adding dropoff marker at:", bookingData.dropoffLocation.coordinates);
           // Create a custom marker element for dropoff
           const dropoffEl = document.createElement('div');
           dropoffEl.className = 'flex items-center justify-center';
@@ -182,27 +157,24 @@ const RideMap = ({ className }: RideMapProps) => {
           markersRef.current.push(dropoffMarker);
           defaultCenter = bookingData.dropoffLocation.coordinates;
         } catch (error) {
-          console.error('🚨 Error adding dropoff marker:', error);
+          console.error('Error adding dropoff marker:', error);
         }
       }
 
       // Center map on default or available location
       try {
         if (!hasPickup && !hasDropoff) {
-          console.log("🎯 Centering map on default location");
           mapRef.current.setCenter(defaultCenter);
         }
       } catch (error) {
-        console.error('🚨 Error setting map center:', error);
+        console.error('Error setting map center:', error);
       }
 
       // Draw route if both pickup and dropoff coordinates are available
       if (hasPickup && hasDropoff && mapRef.current.isStyleLoaded()) {
-        console.log("🛣️ Drawing route between points");
         drawRoute();
       } else if (hasPickup && hasDropoff) {
         // Wait for style to be loaded
-        console.log("⏳ Waiting for map style to load before drawing route");
         mapRef.current.once('style.load', () => {
           drawRoute();
         });
@@ -211,33 +183,29 @@ const RideMap = ({ className }: RideMapProps) => {
       // Fit map to include both markers if available
       try {
         if (hasPickup && hasDropoff && mapRef.current) {
-          console.log("🎯 Fitting map to bounds");
           const bounds = new mapboxgl.LngLatBounds()
             .extend(bookingData.pickupLocation.coordinates)
             .extend(bookingData.dropoffLocation.coordinates);
 
           mapRef.current.fitBounds(bounds, { padding: 70, maxZoom: 15 });
         } else if (hasPickup && mapRef.current) {
-          console.log("🎯 Centering map on pickup");
           mapRef.current.setCenter(bookingData.pickupLocation.coordinates);
         } else if (hasDropoff && mapRef.current) {
-          console.log("🎯 Centering map on dropoff");
           mapRef.current.setCenter(bookingData.dropoffLocation.coordinates);
         }
       } catch (error) {
-        console.error('🚨 Error fitting map bounds:', error);
+        console.error('Error fitting map bounds:', error);
       }
       
       setErrorMessage(null);
     } catch (error) {
-      console.error('🚨 Error initializing map:', error);
+      console.error('Error initializing map:', error);
       setErrorMessage('Erro ao inicializar o mapa. Verifique sua conexão.');
     }
   }, [bookingData.pickupLocation, bookingData.dropoffLocation, cleanup, isInitialized]);
 
   const drawRoute = async () => {
     if (!mapRef.current || !bookingData.pickupLocation.coordinates || !bookingData.dropoffLocation.coordinates) {
-      console.log("❌ Cannot draw route: missing map or coordinates");
       return;
     }
     
@@ -246,8 +214,6 @@ const RideMap = ({ className }: RideMapProps) => {
       const start = bookingData.pickupLocation.coordinates;
       const end = bookingData.dropoffLocation.coordinates;
       
-      console.log("🛣️ Fetching route from:", start, "to:", end);
-      
       // Get the route from Mapbox Directions API
       const query = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxToken}`;
       
@@ -255,12 +221,10 @@ const RideMap = ({ className }: RideMapProps) => {
       const data = await response.json();
       
       if (data.routes && data.routes.length > 0) {
-        console.log("✅ Route received successfully");
         const route = data.routes[0].geometry.coordinates;
 
         // Check if map is loaded and source exists
         if (mapRef.current.getSource('route')) {
-          console.log("🔄 Updating existing route");
           // Update existing source
           (mapRef.current.getSource('route') as mapboxgl.GeoJSONSource).setData({
             type: 'Feature',
@@ -271,7 +235,6 @@ const RideMap = ({ className }: RideMapProps) => {
             }
           });
         } else if (mapRef.current.isStyleLoaded()) {
-          console.log("🆕 Creating new route");
           // Add new source and layer
           mapRef.current.addSource('route', {
             type: 'geojson',
@@ -300,7 +263,6 @@ const RideMap = ({ className }: RideMapProps) => {
             }
           });
         } else {
-          console.log("⏳ Map style not loaded yet, waiting...");
           // Wait for style to be loaded
           mapRef.current.once('style.load', () => {
             drawRoute();
@@ -310,24 +272,20 @@ const RideMap = ({ className }: RideMapProps) => {
         
         setIsRouteLoaded(true);
       } else {
-        console.error('❌ No routes found in response:', data);
+        console.error('No routes found in response:', data);
         setErrorMessage('Não foi possível calcular a rota. Tente novamente.');
       }
     } catch (error) {
-      console.error('🚨 Error getting directions:', error);
+      console.error('Error getting directions:', error);
       setErrorMessage('Erro ao calcular a rota. Verifique sua conexão.');
     }
   };
 
   useEffect(() => {
-    console.log("🔄 RideMap useEffect - pickup:", bookingData.pickupLocation);
-    console.log("🔄 RideMap useEffect - dropoff:", bookingData.dropoffLocation);
-    
     // Prevent initialization on first render without locations
     const hasAnyLocation = bookingData.pickupLocation?.coordinates || bookingData.dropoffLocation?.coordinates;
     
     if (!hasAnyLocation) {
-      console.log("⏳ No locations available yet, skipping map initialization");
       return;
     }
     
@@ -346,7 +304,6 @@ const RideMap = ({ className }: RideMapProps) => {
   // Cleanup on component unmount
   useEffect(() => {
     return () => {
-      console.log("🗑️ RideMap unmounting, cleaning up...");
       cleanup();
       if (mapRef.current) {
         try {
@@ -361,7 +318,6 @@ const RideMap = ({ className }: RideMapProps) => {
 
   // Check if we have any location coordinates
   const hasLocations = Boolean(bookingData.pickupLocation?.coordinates || bookingData.dropoffLocation?.coordinates);
-  console.log("📍 Has locations:", hasLocations);
 
   return (
     <div className={`rounded-lg overflow-hidden border ${className}`}>
