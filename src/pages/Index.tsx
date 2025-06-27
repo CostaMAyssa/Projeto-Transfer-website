@@ -7,7 +7,7 @@ import { Play, ArrowRight } from "lucide-react";
 import { vehicles } from "@/data/mockData";
 import { Link } from "react-router-dom";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import FAQ from "@/components/FAQ";
 import CityTourSection from "@/components/CityTourSection";
@@ -34,22 +34,90 @@ const serviceSlides = [{
   image: "/lovable-uploads/4173129f-aea8-4579-aa0c-46930d2d3004.png"
 }];
 
-const Index = () => {
-  const [api, setApi] = useState<any>();
-  const { t } = useTranslation();
-
-  // Auto-play functionality for carousel
+// Simplified error boundary for components that may cause DOM issues
+const ComponentErrorBoundary = ({ children, fallback }: { children: React.ReactNode; fallback: React.ReactNode }) => {
+  const [hasError, setHasError] = useState(false);
+  
   useEffect(() => {
-    if (!api) return;
+    const handleError = (event: ErrorEvent) => {
+      if (event.message?.includes('removeChild') || event.message?.includes('appendChild')) {
+        console.warn('🚨 DOM manipulation error caught:', event.message);
+        setHasError(true);
+        event.preventDefault();
+      }
+    };
+    
+    window.addEventListener('error', handleError);
+    return () => window.removeEventListener('error', handleError);
+  }, []);
+  
+  if (hasError) {
+    return (
+      <div className="p-4 text-center">
+        {fallback}
+        <button 
+          onClick={() => setHasError(false)}
+          className="mt-2 px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+        >
+          Tentar novamente
+        </button>
+      </div>
+    );
+  }
+  
+  return <>{children}</>;
+};
 
-    // Set up interval to automatically advance slides
-    const interval = setInterval(() => {
-      api.scrollNext();
-    }, 5000);
+const Index = () => {
+  const [api, setApi] = useState<unknown>(null);
+  const { t } = useTranslation();
+  const mountedRef = useRef(true);
 
-    // Clear interval on component unmount
-    return () => clearInterval(interval);
+  // Auto-play functionality for carousel with safe cleanup
+  useEffect(() => {
+    console.log('🎠 Setting up carousel auto-play');
+    
+    if (!api || !mountedRef.current) {
+      console.log('⏳ Carousel API not ready or component unmounted');
+      return;
+    }
+
+    let interval: NodeJS.Timeout;
+    
+    try {
+      // Set up interval to automatically advance slides
+      interval = setInterval(() => {
+        try {
+          if (api && mountedRef.current && typeof (api as any).scrollNext === 'function') {
+            (api as any).scrollNext();
+          }
+        } catch (error) {
+          console.warn('⚠️ Carousel scroll error:', error);
+        }
+      }, 5000);
+
+      console.log('✅ Carousel auto-play configured');
+    } catch (error) {
+      console.error('🚨 Error setting up carousel:', error);
+    }
+      
+    // Clear interval on component unmount or API change
+    return () => {
+      console.log('🧹 Cleaning up carousel interval');
+      mountedRef.current = false;
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
   }, [api]);
+  
+  // Ensure cleanup on unmount
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   
   return <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -83,7 +151,13 @@ const Index = () => {
           {/* Right side booking widget - moved slightly to the left with right margin */}
           <div className="hidden md:block md:w-2/5 h-full pt-16 pl-8 pr-12">
             <div className="h-full flex items-center">
-              <BookingWidget vertical={true} />
+              <ComponentErrorBoundary 
+                fallback={<div className="text-white">Widget temporariamente indisponível</div>}
+              >
+                <Suspense fallback={<div className="bg-white rounded-xl p-6 animate-pulse">Carregando...</div>}>
+                  <BookingWidget vertical={true} />
+                </Suspense>
+              </ComponentErrorBoundary>
             </div>
           </div>
         </div>
@@ -91,7 +165,13 @@ const Index = () => {
 
       {/* Mobile Booking Widget (Only shows on small screens) */}
       <div className="md:hidden container mx-auto px-4 -mt-36 relative z-10">
-        <BookingWidget vertical={false} />
+        <ComponentErrorBoundary 
+          fallback={<div className="bg-white rounded-xl border p-6 text-center">Widget temporariamente indisponível</div>}
+        >
+          <Suspense fallback={<div className="bg-white rounded-xl border p-6 animate-pulse">Carregando...</div>}>
+            <BookingWidget vertical={false} />
+          </Suspense>
+        </ComponentErrorBoundary>
       </div>
 
       {/* Benefits Section */}
