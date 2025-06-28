@@ -243,13 +243,14 @@ export async function calculateZonePricing(
         message: 'Uma ou ambas as localizações estão fora da área de cobertura. Entre em contato conosco via WhatsApp para mais informações.',
         calculation_method: 'fallback',
         out_of_coverage: true,
-        whatsapp_contact: true
+        whatsapp_contact: true,
+        booking_type: request.booking_type || 'one-way'
       };
     }
     
     // 4. Buscar preço específico na matriz
     const vehicleType = request.vehicle_category.toUpperCase();
-    const specificPrice = await getZonePrice(
+    const basePrice = await getZonePrice(
       pickupZoneResult.zone_id, 
       dropoffZoneResult.zone_id, 
       vehicleType
@@ -261,35 +262,58 @@ export async function calculateZonePricing(
       dropoffZoneResult.zone_id
     );
     
-    if (specificPrice) {
-      console.log('💰 Preço específico encontrado:', specificPrice);
+    // 6. Calcular preço baseado no tipo de booking
+    const bookingType = request.booking_type || 'one-way';
+    let finalPrice: number;
+    let pricingBreakdown: any = {};
+    let calculationMessage: string;
+    
+    if (!basePrice) {
+      // Fallback para preço base da categoria
+      const vehicleCategory = getVehicleCategory(vehicleType);
+      const fallbackBasePrice = vehicleCategory?.base_price || 130;
+      
+      finalPrice = calculatePriceByBookingType(fallbackBasePrice, bookingType, request);
+      pricingBreakdown = buildPricingBreakdown(fallbackBasePrice, bookingType, request);
+      calculationMessage = `Preço base para ${vehicleType} - rota não encontrada na matriz`;
+      
       return {
         success: true,
-        price: specificPrice,
+        price: finalPrice,
         pickup_zone: pickupZoneResult.zone_name,
         dropoff_zone: dropoffZoneResult.zone_name,
         vehicle_category: vehicleType,
         distance_miles: routeDistance,
-        message: `Preço para rota ${pickupZoneResult.zone_id} → ${dropoffZoneResult.zone_id}`,
-        calculation_method: 'zone_specific'
+        message: calculationMessage,
+        calculation_method: 'base_price',
+        booking_type: bookingType,
+        pricing_breakdown: pricingBreakdown
       };
     }
     
-    // 6. Fallback para preço base da categoria
-    const vehicleCategory = getVehicleCategory(vehicleType);
-    const basePrice = vehicleCategory?.base_price || 130;
+    // Calcular preço final baseado no tipo de booking
+    finalPrice = calculatePriceByBookingType(basePrice, bookingType, request);
+    pricingBreakdown = buildPricingBreakdown(basePrice, bookingType, request);
+    calculationMessage = buildCalculationMessage(pickupZoneResult.zone_id, dropoffZoneResult.zone_id, bookingType);
     
-    console.log('📦 Usando preço base:', basePrice);
+    console.log('💰 Preço específico encontrado:', {
+      basePrice,
+      bookingType,
+      finalPrice,
+      pricingBreakdown
+    });
     
     return {
       success: true,
-      price: basePrice,
+      price: finalPrice,
       pickup_zone: pickupZoneResult.zone_name,
       dropoff_zone: dropoffZoneResult.zone_name,
       vehicle_category: vehicleType,
       distance_miles: routeDistance,
-      message: `Preço base para ${vehicleType} - rota não encontrada na matriz`,
-      calculation_method: 'base_price'
+      message: calculationMessage,
+      calculation_method: 'zone_specific',
+      booking_type: bookingType,
+      pricing_breakdown: pricingBreakdown
     };
     
   } catch (error) {
@@ -298,8 +322,76 @@ export async function calculateZonePricing(
     return {
       success: false,
       message: 'Erro interno no cálculo de preços. Tente novamente.',
-      calculation_method: 'fallback'
+      calculation_method: 'fallback',
+      booking_type: request.booking_type || 'one-way'
     };
+  }
+}
+
+// Função auxiliar para calcular preço baseado no tipo de booking
+function calculatePriceByBookingType(
+  basePrice: number, 
+  bookingType: 'one-way' | 'round-trip' | 'hourly', 
+  request: PricingCalculationRequest
+): number {
+  switch (bookingType) {
+    case 'round-trip':
+      // Para ida e volta, cobrar ida + volta (2x o preço base)
+      return basePrice * 2;
+      
+    case 'hourly':
+      // Para serviço por hora, calcular baseado na duração
+      const durationHours = request.duration_hours || 1;
+      const hourlyRate = Math.max(basePrice * 0.4, 50); // Mínimo $50/hora ou 40% do preço base
+      return hourlyRate * durationHours;
+      
+    case 'one-way':
+    default:
+      return basePrice;
+  }
+}
+
+// Função auxiliar para construir o breakdown de preços
+function buildPricingBreakdown(
+  basePrice: number, 
+  bookingType: 'one-way' | 'round-trip' | 'hourly',
+  request: PricingCalculationRequest
+): any {
+  const breakdown: any = { base_price: basePrice };
+  
+  switch (bookingType) {
+    case 'round-trip':
+      breakdown.outbound_price = basePrice;
+      breakdown.return_price = basePrice;
+      break;
+      
+    case 'hourly':
+      const durationHours = request.duration_hours || 1;
+      const hourlyRate = Math.max(basePrice * 0.4, 50);
+      breakdown.hourly_rate = hourlyRate;
+      breakdown.duration_hours = durationHours;
+      breakdown.total_hours_cost = hourlyRate * durationHours;
+      break;
+  }
+  
+  return breakdown;
+}
+
+// Função auxiliar para construir mensagem de cálculo
+function buildCalculationMessage(
+  pickupZoneId: string, 
+  dropoffZoneId: string, 
+  bookingType: 'one-way' | 'round-trip' | 'hourly'
+): string {
+  const baseMessage = `Preço para rota ${pickupZoneId} → ${dropoffZoneId}`;
+  
+  switch (bookingType) {
+    case 'round-trip':
+      return `${baseMessage} (ida e volta)`;
+    case 'hourly':
+      return `${baseMessage} (serviço por hora)`;
+    default:
+      return baseMessage;
   }
 }
 

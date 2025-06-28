@@ -46,6 +46,13 @@ export interface PricingCalculationRequest {
     coordinates: [number, number];
   };
   vehicle_category: string; // 'SUV' | 'SEDAN' | 'VAN'
+  booking_type?: 'one-way' | 'round-trip' | 'hourly';
+  duration_hours?: number;
+  round_trip_data?: {
+    outbound_date?: string;
+    return_date?: string;
+    duration_days?: number;
+  };
 }
 
 export interface PricingCalculationResponse {
@@ -60,6 +67,15 @@ export interface PricingCalculationResponse {
   out_of_coverage?: boolean;
   whatsapp_contact?: boolean;
   base_price?: number;
+  booking_type?: 'one-way' | 'round-trip' | 'hourly';
+  pricing_breakdown?: {
+    base_price: number;
+    outbound_price?: number;
+    return_price?: number;
+    hourly_rate?: number;
+    duration_hours?: number;
+    total_hours_cost?: number;
+  };
 }
 
 export interface ZoneDetectionResult {

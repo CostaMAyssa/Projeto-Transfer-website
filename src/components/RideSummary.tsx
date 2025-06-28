@@ -327,16 +327,69 @@ const RideSummary = () => {
       
       {/* Total */}
       <div className="p-6 bg-gray-50">
-        <div className="flex justify-between mb-2">
-          <span>{t('booking.vehiclePrice')}</span>
-          <span>
-            {isCalculating ? (
-              <span className="text-gray-400">Calculando...</span>
-            ) : (
-              `$${pricing.vehiclePrice.toFixed(2)}`
-            )}
-          </span>
-        </div>
+        {bookingType === 'round-trip' && (
+          <>
+            <div className="flex justify-between mb-2">
+              <span>Ida ({t('booking.vehiclePrice')})</span>
+              <span>
+                {isCalculating ? (
+                  <span className="text-gray-400">Calculando...</span>
+                ) : (
+                  `$${(pricing.vehiclePrice / 2).toFixed(2)}`
+                )}
+              </span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span>Volta ({t('booking.vehiclePrice')})</span>
+              <span>
+                {isCalculating ? (
+                  <span className="text-gray-400">Calculando...</span>
+                ) : (
+                  `$${(pricing.vehiclePrice / 2).toFixed(2)}`
+                )}
+              </span>
+            </div>
+          </>
+        )}
+        
+        {bookingType === 'hourly' && displayData.durationHours && (
+          <>
+            <div className="flex justify-between mb-2">
+              <span>Taxa por Hora</span>
+              <span>
+                {isCalculating ? (
+                  <span className="text-gray-400">Calculando...</span>
+                ) : (
+                  `$${(pricing.vehiclePrice / displayData.durationHours).toFixed(2)}/hora`
+                )}
+              </span>
+            </div>
+            <div className="flex justify-between mb-2">
+              <span>Duração ({displayData.durationHours} hora{displayData.durationHours > 1 ? 's' : ''})</span>
+              <span>
+                {isCalculating ? (
+                  <span className="text-gray-400">Calculando...</span>
+                ) : (
+                  `$${pricing.vehiclePrice.toFixed(2)}`
+                )}
+              </span>
+            </div>
+          </>
+        )}
+        
+        {bookingType === 'one-way' && (
+          <div className="flex justify-between mb-2">
+            <span>{t('booking.vehiclePrice')}</span>
+            <span>
+              {isCalculating ? (
+                <span className="text-gray-400">Calculando...</span>
+              ) : (
+                `$${pricing.vehiclePrice.toFixed(2)}`
+              )}
+            </span>
+          </div>
+        )}
+        
         <div className="flex justify-between mb-4">
           <span>{t('booking.extras')}</span>
           <span>${pricing.extrasPrice.toFixed(2)}</span>
@@ -350,6 +403,13 @@ const RideSummary = () => {
               `$${pricing.total.toFixed(2)}`
             )}
           </span>
+        </div>
+        
+        {/* Informação sobre o tipo de serviço */}
+        <div className="mt-3 pt-3 border-t text-xs text-gray-500">
+          {bookingType === 'round-trip' && 'Preço para ida e volta'}
+          {bookingType === 'hourly' && displayData.durationHours && `Serviço por ${displayData.durationHours} hora${displayData.durationHours > 1 ? 's' : ''}`}
+          {bookingType === 'one-way' && 'Preço para viagem de ida'}
         </div>
       </div>
     </div>

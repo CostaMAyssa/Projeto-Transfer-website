@@ -273,6 +273,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     console.log('📋 Veículo selecionado:', bookingData.vehicle);
     console.log('📍 Pickup coordinates:', bookingData.pickupLocation.coordinates);
     console.log('📍 Dropoff coordinates:', bookingData.dropoffLocation.coordinates);
+    console.log('🎯 Tipo de booking:', bookingData.bookingType);
     
     try {
       let vehiclePrice = bookingData.vehicle?.price || 0;
@@ -287,7 +288,8 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
           console.log('🔍 Calculando preço com zone pricing...');
           console.log('🚗 Categoria do veículo:', bookingData.vehicle.category);
           
-          const zonePricingResult = await calculateZonePricing({
+          // Preparar dados para diferentes tipos de booking
+          let zonePricingRequest = {
             pickup_location: {
               address: bookingData.pickupLocation.address,
               coordinates: bookingData.pickupLocation.coordinates
@@ -296,14 +298,45 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
               address: bookingData.dropoffLocation.address,
               coordinates: bookingData.dropoffLocation.coordinates
             },
-            vehicle_category: bookingData.vehicle.category
-          });
+            vehicle_category: bookingData.vehicle.category,
+            booking_type: bookingData.bookingType
+          };
+          
+          // Adicionar dados específicos por tipo de booking
+          switch (bookingData.bookingType) {
+            case 'round-trip':
+              if (bookingData.roundTrip) {
+                zonePricingRequest = {
+                  ...zonePricingRequest,
+                  round_trip_data: {
+                    outbound_date: bookingData.roundTrip.outboundDate?.toISOString(),
+                    return_date: bookingData.roundTrip.returnDate?.toISOString(),
+                    duration_days: bookingData.roundTrip.durationDays
+                  }
+                };
+              }
+              break;
+              
+            case 'hourly':
+              if (bookingData.hourly) {
+                zonePricingRequest = {
+                  ...zonePricingRequest,
+                  duration_hours: bookingData.hourly.durationHours
+                };
+              }
+              break;
+          }
+          
+          console.log('📤 Enviando request para zone pricing:', zonePricingRequest);
+          
+          const zonePricingResult = await calculateZonePricing(zonePricingRequest);
           
           console.log('📊 Resultado zone pricing:', zonePricingResult);
           
           if (zonePricingResult.success && zonePricingResult.price) {
             vehiclePrice = zonePricingResult.price;
             console.log('✅ Preço atualizado pelo zone pricing:', vehiclePrice);
+            console.log('📊 Breakdown de preços:', zonePricingResult.pricing_breakdown);
           } else {
             console.log('⚠️ Zone pricing não retornou preço válido, mantendo preço base');
           }
@@ -312,6 +345,16 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         }
       } else {
         console.log('ℹ️ Usando preço base (sem coordenadas ou veículo)');
+        
+        // Para bookings sem coordenadas, aplicar multiplicadores básicos
+        if (bookingData.bookingType === 'round-trip') {
+          vehiclePrice = vehiclePrice * 2; // Ida + volta
+          console.log('🔄 Round-trip: duplicando preço base para', vehiclePrice);
+        } else if (bookingData.bookingType === 'hourly' && bookingData.hourly?.durationHours) {
+          const hourlyRate = Math.max(vehiclePrice * 0.4, 50); // Mínimo $50/hora
+          vehiclePrice = hourlyRate * bookingData.hourly.durationHours;
+          console.log('⏰ Hourly: calculando', hourlyRate, 'x', bookingData.hourly.durationHours, '=', vehiclePrice);
+        }
       }
       
       // Calcular preço dos extras
@@ -324,6 +367,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
       const total = vehiclePrice + extrasPrice;
       
       console.log('💰 Resumo de preços:', {
+        bookingType: bookingData.bookingType,
         vehiclePrice,
         extrasPrice,
         total

@@ -23,14 +23,37 @@ const ZonePricingVehicleCard = ({
   onSelect 
 }: ZonePricingVehicleCardProps) => {
   const { t } = useTranslation();
-  const { nextStep } = useBooking();
+  const { nextStep, bookingData } = useBooking();
   
   // Função local para formatar preços (valores já estão em dólares)
   const formatPrice = (price: number): string => {
     return `$${price.toFixed(0)}`;
   };
   
-  // Calculo automático de preços baseado nas localizações
+  // Preparar dados para diferentes tipos de booking
+  const prepareBookingData = () => {
+    const bookingType = bookingData.bookingType || 'one-way';
+    let durationHours: number | undefined;
+    let roundTripData: { outbound_date?: string; return_date?: string; duration_days?: number } | undefined;
+    
+    if (bookingType === 'hourly' && bookingData.hourly) {
+      durationHours = bookingData.hourly.durationHours;
+    }
+    
+    if (bookingType === 'round-trip' && bookingData.roundTrip) {
+      roundTripData = {
+        outbound_date: bookingData.roundTrip.outboundDate?.toISOString(),
+        return_date: bookingData.roundTrip.returnDate?.toISOString(),
+        duration_days: bookingData.roundTrip.durationDays
+      };
+    }
+    
+    return { bookingType, durationHours, roundTripData };
+  };
+  
+  const { bookingType, durationHours, roundTripData } = prepareBookingData();
+  
+  // Calculo automático de preços baseado nas localizações e tipo de booking
   const { 
     data: pricingData, 
     isLoading: isPricingLoading, 
@@ -39,7 +62,10 @@ const ZonePricingVehicleCard = ({
     pickupLocation || null,
     dropoffLocation || null,
     vehicle.id,
-    !!(pickupLocation?.coordinates && dropoffLocation?.coordinates)
+    !!(pickupLocation?.coordinates && dropoffLocation?.coordinates),
+    bookingType,
+    durationHours,
+    roundTripData
   );
 
   const handleVehicleSelect = () => {

@@ -110,18 +110,21 @@ export function useAutoPricing(
   pickupLocation: { address: string; coordinates?: [number, number] } | null,
   dropoffLocation: { address: string; coordinates?: [number, number] } | null,
   vehicleCategory: string | null,
-  enabled: boolean = true
+  enabled: boolean = true,
+  bookingType: 'one-way' | 'round-trip' | 'hourly' = 'one-way',
+  durationHours?: number,
+  roundTripData?: { outbound_date?: string; return_date?: string; duration_days?: number }
 ) {
   const { calculatePrice } = useZonePricing();
 
   return useQuery({
-    queryKey: ['auto-pricing', pickupLocation, dropoffLocation, vehicleCategory],
+    queryKey: ['auto-pricing', pickupLocation, dropoffLocation, vehicleCategory, bookingType, durationHours, roundTripData],
     queryFn: async (): Promise<PricingCalculationResponse> => {
       if (!pickupLocation?.coordinates || !dropoffLocation?.coordinates || !vehicleCategory) {
         throw new Error('Dados insuficientes para cálculo');
       }
 
-      return calculatePrice({
+      const request: PricingCalculationRequest = {
         pickup_location: {
           address: pickupLocation.address,
           coordinates: pickupLocation.coordinates
@@ -130,8 +133,20 @@ export function useAutoPricing(
           address: dropoffLocation.address,
           coordinates: dropoffLocation.coordinates
         },
-        vehicle_category: vehicleCategory
-      });
+        vehicle_category: vehicleCategory,
+        booking_type: bookingType
+      };
+
+      // Adicionar dados específicos por tipo de booking
+      if (bookingType === 'hourly' && durationHours) {
+        request.duration_hours = durationHours;
+      }
+
+      if (bookingType === 'round-trip' && roundTripData) {
+        request.round_trip_data = roundTripData;
+      }
+
+      return calculatePrice(request);
     },
     enabled: enabled && 
              !!pickupLocation?.coordinates && 
