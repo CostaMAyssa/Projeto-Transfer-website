@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  transfer-website:
+    image: transfer-website:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: transfer-website
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    environment:
+      - NODE_ENV=production
+      - VITE_APP_NAME=${VITE_APP_NAME:-Transfer Website}
+      - VITE_APP_URL=${VITE_APP_URL:-https://localhost}
+      - VITE_MAPBOX_ACCESS_TOKEN=${VITE_MAPBOX_ACCESS_TOKEN}
+      - VITE_GOOGLE_MAPS_API_KEY=${VITE_GOOGLE_MAPS_API_KEY}
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_ANON_KEY=${VITE_SUPABASE_ANON_KEY}
+      - VITE_STRIPE_PUBLISHABLE_KEY=${VITE_STRIPE_PUBLISHABLE_KEY}
+      - VITE_API_BASE_URL=${VITE_API_BASE_URL}
+    networks:
+      - transfer-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - nginx_logs:/var/log/nginx
+    labels:
+      # Labels para Traefik (se estiver usando)
+      - "traefik.enable=true"
+      - "traefik.http.routers.transfer-website.rule=Host(`${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.transfer-website.entrypoints=websecure"
+      - "traefik.http.routers.transfer-website.tls.certresolver=letsencrypt"
+      - "traefik.http.services.transfer-website.loadbalancer.server.port=80"
+      
+      # Labels para organização no Portainer
+      - "io.portainer.accesscontrol.teams=administrators"
+      - "com.docker.compose.project=transfer-website"
+
+networks:
+  transfer-network:
+    driver: bridge
+    name: transfer-network
+
+volumes:
+  nginx_logs:
+    driver: local
+    name: transfer-website-logs 
