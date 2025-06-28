@@ -67,6 +67,36 @@ const RideSummary = () => {
   const displayData = getDisplayData();
   const formattedDate = format(displayData.pickupDate, "EEE, MMM d, yyyy");
   
+  // Preparar dados de localização para o mapa baseado no tipo de booking
+  const getMapLocations = () => {
+    switch (bookingType) {
+      case 'round-trip':
+        return {
+          pickup: roundTrip?.outboundPickupLocation || pickupLocation,
+          dropoff: roundTrip?.outboundDropoffLocation || dropoffLocation
+        };
+      case 'hourly':
+        return {
+          pickup: hourly?.pickupLocation || pickupLocation,
+          dropoff: hourly?.dropoffLocation || dropoffLocation
+        };
+      default:
+        return {
+          pickup: pickupLocation,
+          dropoff: dropoffLocation
+        };
+    }
+  };
+  
+  const mapLocations = getMapLocations();
+  
+  console.log('🗺️ RideSummary - Localizações para o mapa:', {
+    bookingType,
+    mapLocations,
+    hasPickupCoords: !!mapLocations.pickup?.coordinates,
+    hasDropoffCoords: !!mapLocations.dropoff?.coordinates
+  });
+  
   // Calcular preços quando dados relevantes mudarem
   useEffect(() => {
     const updatePricing = async () => {
@@ -96,7 +126,7 @@ const RideSummary = () => {
     }
     
     updatePricing();
-  }, [calculateTotal, vehicle, extras, pickupLocation.coordinates, dropoffLocation.coordinates, pickupLocation.address, dropoffLocation.address]);
+  }, [calculateTotal, vehicle, extras, mapLocations.pickup?.coordinates, mapLocations.dropoff?.coordinates, mapLocations.pickup?.address, mapLocations.dropoff?.address, bookingType, roundTrip, hourly]);
   
   return (
     <div className="bg-white border rounded-lg overflow-hidden">
@@ -104,7 +134,11 @@ const RideSummary = () => {
         <h3 className="text-xl font-normal mb-6">{t('booking.yourRide')}</h3>
         
         {/* Map View */}
-        <RideMap className="mb-6" />
+        <RideMap 
+          className="mb-6" 
+          pickupLocation={mapLocations.pickup}
+          dropoffLocation={mapLocations.dropoff}
+        />
 
         {/* Pickup & Dropoff */}
         <div className="space-y-4 mb-6">

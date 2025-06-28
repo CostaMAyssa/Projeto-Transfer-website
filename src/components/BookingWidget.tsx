@@ -51,12 +51,16 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [outboundTime, setOutboundTime] = useState("12:00");
   const [outboundPickupAddress, setOutboundPickupAddress] = useState("");
   const [outboundDropAddress, setOutboundDropAddress] = useState("");
+  const [outboundPickupCoordinates, setOutboundPickupCoordinates] = useState<[number, number] | undefined>();
+  const [outboundDropCoordinates, setOutboundDropCoordinates] = useState<[number, number] | undefined>();
   const [outboundPassengers, setOutboundPassengers] = useState(1);
   
   const [returnDate, setReturnDate] = useState<Date>(new Date());
   const [returnTime, setReturnTime] = useState("12:00");
   const [returnPickupAddress, setReturnPickupAddress] = useState("");
   const [returnDropAddress, setReturnDropAddress] = useState("");
+  const [returnPickupCoordinates, setReturnPickupCoordinates] = useState<[number, number] | undefined>();
+  const [returnDropCoordinates, setReturnDropCoordinates] = useState<[number, number] | undefined>();
   const [returnPassengers, setReturnPassengers] = useState(1);
   const [durationDays, setDurationDays] = useState(0);
 
@@ -64,12 +68,14 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [durationHours, setDurationHours] = useState(1);
   const [hourlyPickupAddress, setHourlyPickupAddress] = useState("");
   const [hourlyDropAddress, setHourlyDropAddress] = useState("");
+  const [hourlyPickupCoordinates, setHourlyPickupCoordinates] = useState<[number, number] | undefined>();
+  const [hourlyDropCoordinates, setHourlyDropCoordinates] = useState<[number, number] | undefined>();
   const [hourlyDate, setHourlyDate] = useState<Date>(new Date());
   const [hourlyTime, setHourlyTime] = useState("12:00");
   const [hourlyPassengers, setHourlyPassengers] = useState(1);
   
   // Hourly specific fields
-  const [orderType, setOrderType] = useState("airport-dropoff"); // airport-dropoff or pickup
+  const [orderType, setOrderType] = useState<"airport-dropoff" | "pickup">("airport-dropoff"); // airport-dropoff or pickup
   const [departureAirport, setDepartureAirport] = useState("");
   const [airline, setAirline] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
@@ -77,6 +83,18 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    console.log('🚀 BookingWidget - handleSubmit chamado', {
+      bookingType,
+      oneWayCoords: { pickup: pickupCoordinates, dropoff: dropoffCoordinates },
+      roundTripCoords: { 
+        outboundPickup: outboundPickupCoordinates, 
+        outboundDrop: outboundDropCoordinates,
+        returnPickup: returnPickupCoordinates,
+        returnDrop: returnDropCoordinates
+      },
+      hourlyCoords: { pickup: hourlyPickupCoordinates, dropoff: hourlyDropCoordinates }
+    });
     
     // Update booking data in context based on booking type
     setBookingType(bookingType);
@@ -90,21 +108,22 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
       setLuggage(smallLuggage, largeLuggage);
     } else if (bookingType === "round-trip") {
       // Save main fields for compatibility
-      setPickupLocation({ address: outboundPickupAddress });
-      setDropoffLocation({ address: outboundDropAddress });
+      setPickupLocation({ address: outboundPickupAddress, coordinates: outboundPickupCoordinates });
+      setDropoffLocation({ address: outboundDropAddress, coordinates: outboundDropCoordinates });
       setPickupDate(outboundDate);
       setPickupTime(outboundTime);
       setPassengers(outboundPassengers);
+      setLuggage(smallLuggage, largeLuggage);
       
       // Save complete round trip data
       setRoundTripData({
-        outboundPickupLocation: { address: outboundPickupAddress },
-        outboundDropoffLocation: { address: outboundDropAddress },
+        outboundPickupLocation: { address: outboundPickupAddress, coordinates: outboundPickupCoordinates },
+        outboundDropoffLocation: { address: outboundDropAddress, coordinates: outboundDropCoordinates },
         outboundDate,
         outboundTime,
         outboundPassengers,
-        returnPickupLocation: { address: returnPickupAddress },
-        returnDropoffLocation: { address: returnDropAddress },
+        returnPickupLocation: { address: returnPickupAddress, coordinates: returnPickupCoordinates },
+        returnDropoffLocation: { address: returnDropAddress, coordinates: returnDropCoordinates },
         returnDate,
         returnTime,
         returnPassengers,
@@ -112,16 +131,17 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
       });
     } else if (bookingType === "hourly") {
       // Save main fields for compatibility
-      setPickupLocation({ address: hourlyPickupAddress });
-      setDropoffLocation({ address: departureAirport });
+      setPickupLocation({ address: hourlyPickupAddress, coordinates: hourlyPickupCoordinates });
+      setDropoffLocation({ address: departureAirport, coordinates: hourlyDropCoordinates });
       setPickupDate(hourlyDate);
       setPickupTime(hourlyTime);
       setPassengers(hourlyPassengers);
+      setLuggage(smallLuggage, largeLuggage);
       
       // Save complete hourly data
       setHourlyData({
-        pickupLocation: { address: hourlyPickupAddress },
-        dropoffLocation: { address: departureAirport },
+        pickupLocation: { address: hourlyPickupAddress, coordinates: hourlyPickupCoordinates },
+        dropoffLocation: { address: departureAirport, coordinates: hourlyDropCoordinates },
         date: hourlyDate,
         time: hourlyTime,
         passengers: hourlyPassengers,
@@ -578,7 +598,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                           placeholder={t('booking.enterPickupLocation')}
                           value={outboundPickupAddress}
                           onChange={setOutboundPickupAddress}
-                          onAddressSelect={(location) => setOutboundPickupAddress(location.address)}
+                          onAddressSelect={(location) => {
+                            setOutboundPickupAddress(location.address);
+                            setOutboundPickupCoordinates(location.coordinates);
+                          }}
                           required
                         />
                       </div>
@@ -593,7 +616,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                           placeholder={t('booking.enterDropLocation')}
                           value={outboundDropAddress}
                           onChange={setOutboundDropAddress}
-                          onAddressSelect={(location) => setOutboundDropAddress(location.address)}
+                          onAddressSelect={(location) => {
+                            setOutboundDropAddress(location.address);
+                            setOutboundDropCoordinates(location.coordinates);
+                          }}
                           required
                         />
                       </div>
@@ -679,7 +705,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                           placeholder={t('booking.enterPickupLocation')}
                           value={returnPickupAddress}
                           onChange={setReturnPickupAddress}
-                          onAddressSelect={(location) => setReturnPickupAddress(location.address)}
+                          onAddressSelect={(location) => {
+                            setReturnPickupAddress(location.address);
+                            setReturnPickupCoordinates(location.coordinates);
+                          }}
                           required
                         />
                       </div>
@@ -694,7 +723,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                           placeholder={t('booking.enterDropLocation')}
                           value={returnDropAddress}
                           onChange={setReturnDropAddress}
-                          onAddressSelect={(location) => setReturnDropAddress(location.address)}
+                          onAddressSelect={(location) => {
+                            setReturnDropAddress(location.address);
+                            setReturnDropCoordinates(location.coordinates);
+                          }}
                           required
                         />
                       </div>
@@ -734,6 +766,46 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         placeholder={t('booking.roundTripPlaceholder')}
                         className="w-full h-8"
                       />
+                    </div>
+                    
+                    {/* 10kg Luggage */}
+                    <div className="space-y-1">
+                      <div className="flex items-center mb-1">
+                        <Briefcase size={14} className="text-red-600 mr-1" />
+                        <span className="text-xs font-medium text-red-600">{t('booking.luggage10kg')}</span>
+                      </div>
+                      <Select value={smallLuggage.toString()} onValueChange={(value) => setSmallLuggage(parseInt(value))}>
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="0" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 11 }, (_, i) => (
+                            <SelectItem key={i} value={i.toString()}>
+                              {i}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    
+                    {/* 23kg Luggage */}
+                    <div className="space-y-1">
+                      <div className="flex items-center mb-1">
+                        <Briefcase size={14} className="text-red-600 mr-1" />
+                        <span className="text-xs font-medium text-red-600">{t('booking.luggage23kg')}</span>
+                      </div>
+                      <Select value={largeLuggage.toString()} onValueChange={(value) => setLargeLuggage(parseInt(value))}>
+                        <SelectTrigger className="h-8">
+                          <SelectValue placeholder="0" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {Array.from({ length: 11 }, (_, i) => (
+                            <SelectItem key={i} value={i.toString()}>
+                              {i}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </div>
@@ -813,7 +885,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         placeholder={t('booking.enterPickupLocation')}
                         value={outboundPickupAddress}
                         onChange={setOutboundPickupAddress}
-                        onAddressSelect={(location) => setOutboundPickupAddress(location.address)}
+                        onAddressSelect={(location) => {
+                          setOutboundPickupAddress(location.address);
+                          setOutboundPickupCoordinates(location.coordinates);
+                        }}
                         required
                       />
                     </div>
@@ -828,7 +903,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         placeholder={t('booking.enterDropLocation')}
                         value={outboundDropAddress}
                         onChange={setOutboundDropAddress}
-                        onAddressSelect={(location) => setOutboundDropAddress(location.address)}
+                        onAddressSelect={(location) => {
+                          setOutboundDropAddress(location.address);
+                          setOutboundDropCoordinates(location.coordinates);
+                        }}
                         required
                       />
                     </div>
@@ -917,7 +995,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         placeholder={t('booking.enterPickupLocation')}
                         value={returnPickupAddress}
                         onChange={setReturnPickupAddress}
-                        onAddressSelect={(location) => setReturnPickupAddress(location.address)}
+                        onAddressSelect={(location) => {
+                          setReturnPickupAddress(location.address);
+                          setReturnPickupCoordinates(location.coordinates);
+                        }}
                         required
                       />
                     </div>
@@ -932,7 +1013,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         placeholder={t('booking.enterDropLocation')}
                         value={returnDropAddress}
                         onChange={setReturnDropAddress}
-                        onAddressSelect={(location) => setReturnDropAddress(location.address)}
+                        onAddressSelect={(location) => {
+                          setReturnDropAddress(location.address);
+                          setReturnDropCoordinates(location.coordinates);
+                        }}
                         required
                       />
                     </div>
@@ -971,8 +1055,48 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     value={durationDays}
                     onChange={(e) => setDurationDays(parseInt(e.target.value) || 0)}
                     placeholder={t('booking.roundTripPlaceholder')}
-                    className="w-full"
+                    className="w-full h-8"
                   />
+                </div>
+                
+                {/* 10kg Luggage */}
+                <div className="space-y-1">
+                  <div className="flex items-center mb-1">
+                    <Briefcase size={14} className="text-red-600 mr-1" />
+                    <span className="text-xs font-medium text-red-600">{t('booking.luggage10kg')}</span>
+                  </div>
+                  <Select value={smallLuggage.toString()} onValueChange={(value) => setSmallLuggage(parseInt(value))}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="0" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 11 }, (_, i) => (
+                        <SelectItem key={i} value={i.toString()}>
+                          {i}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* 23kg Luggage */}
+                <div className="space-y-1">
+                  <div className="flex items-center mb-1">
+                    <Briefcase size={14} className="text-red-600 mr-1" />
+                    <span className="text-xs font-medium text-red-600">{t('booking.luggage23kg')}</span>
+                  </div>
+                  <Select value={largeLuggage.toString()} onValueChange={(value) => setLargeLuggage(parseInt(value))}>
+                    <SelectTrigger className="h-8">
+                      <SelectValue placeholder="0" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {Array.from({ length: 11 }, (_, i) => (
+                        <SelectItem key={i} value={i.toString()}>
+                          {i}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {/* Submit Button */}
@@ -1022,7 +1146,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         <MapPin size={16} className="text-brand mr-1" />
                         <span className="text-sm font-medium">{t('booking.orderType')} *</span>
                       </div>
-                      <Select value={orderType} onValueChange={setOrderType}>
+                      <Select value={orderType} onValueChange={(value) => setOrderType(value as "airport-dropoff" | "pickup")}>
                         <SelectTrigger>
                           <SelectValue placeholder={t('booking.selectServiceType')} />
                         </SelectTrigger>
@@ -1088,7 +1212,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         placeholder={t('booking.enterPickupAddress')}
                         value={hourlyPickupAddress}
                         onChange={setHourlyPickupAddress}
-                        onAddressSelect={(location) => setHourlyPickupAddress(location.address)}
+                        onAddressSelect={(location) => {
+                          setHourlyPickupAddress(location.address);
+                          setHourlyPickupCoordinates(location.coordinates);
+                        }}
                         required
                       />
                     </div>
@@ -1103,7 +1230,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                         placeholder={t('booking.enterDepartureAirport')}
                         value={departureAirport}
                         onChange={setDepartureAirport}
-                        onAddressSelect={(location) => setDepartureAirport(location.address)}
+                        onAddressSelect={(location) => {
+                          setDepartureAirport(location.address);
+                          setHourlyDropCoordinates(location.coordinates);
+                        }}
                         required
                       />
                     </div>
@@ -1158,24 +1288,47 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       </label>
                     </div>
 
-                    {/* Passenger Count */}
-                    <div className="space-y-1">
-                      <div className="flex items-center mb-1">
-                        <Users size={16} className="text-brand mr-1" />
-                        <span className="text-sm font-medium">{t('booking.passengerCount')} *</span>
+                    {/* Luggage Row */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* 10kg Luggage */}
+                      <div className="space-y-2">
+                        <div className="flex items-center mb-1">
+                          <Briefcase size={16} className="text-red-600 mr-1" />
+                          <span className="text-sm font-medium text-red-600">{t('booking.luggage10kg')}</span>
+                        </div>
+                        <Select value={smallLuggage.toString()} onValueChange={(value) => setSmallLuggage(parseInt(value))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="0" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 11 }, (_, i) => (
+                              <SelectItem key={i} value={i.toString()}>
+                                {i}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
-                      <Select value={hourlyPassengers.toString()} onValueChange={(value) => setHourlyPassengers(parseInt(value))}>
-                        <SelectTrigger>
-                          <SelectValue placeholder={`1 ${t('booking.passenger')}`} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Array.from({ length: 10 }, (_, i) => (
-                            <SelectItem key={i + 1} value={(i + 1).toString()}>
-                              {i + 1} {i === 0 ? t('booking.passenger') : t('booking.passengers')}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      
+                      {/* 23kg Luggage */}
+                      <div className="space-y-2">
+                        <div className="flex items-center mb-1">
+                          <Briefcase size={16} className="text-red-600 mr-1" />
+                          <span className="text-sm font-medium text-red-600">{t('booking.luggage23kg')}</span>
+                        </div>
+                        <Select value={largeLuggage.toString()} onValueChange={(value) => setLargeLuggage(parseInt(value))}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="0" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Array.from({ length: 11 }, (_, i) => (
+                              <SelectItem key={i} value={i.toString()}>
+                                {i}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1220,7 +1373,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       <MapPin size={16} className="text-brand mr-1" />
                       <span className="text-sm font-medium">{t('booking.orderType')} *</span>
                     </div>
-                    <Select value={orderType} onValueChange={setOrderType}>
+                    <Select value={orderType} onValueChange={(value) => setOrderType(value as "airport-dropoff" | "pickup")}>
                       <SelectTrigger>
                         <SelectValue placeholder={t('booking.selectServiceType')} />
                       </SelectTrigger>
@@ -1289,7 +1442,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       placeholder={t('booking.enterPickupAddress')}
                       value={hourlyPickupAddress}
                       onChange={setHourlyPickupAddress}
-                      onAddressSelect={(location) => setHourlyPickupAddress(location.address)}
+                      onAddressSelect={(location) => {
+                        setHourlyPickupAddress(location.address);
+                        setHourlyPickupCoordinates(location.coordinates);
+                      }}
                       required
                     />
                   </div>
@@ -1304,7 +1460,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       placeholder={t('booking.enterDepartureAirport')}
                       value={departureAirport}
                       onChange={setDepartureAirport}
-                      onAddressSelect={(location) => setDepartureAirport(location.address)}
+                      onAddressSelect={(location) => {
+                        setDepartureAirport(location.address);
+                        setHourlyDropCoordinates(location.coordinates);
+                      }}
                       required
                     />
                   </div>
@@ -1381,6 +1540,49 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                   <label htmlFor="noFlightInfo" className="text-sm text-gray-600">
                     {t('booking.noFlightInfo')}
                   </label>
+                </div>
+
+                {/* Luggage Row */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* 10kg Luggage */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <Briefcase size={16} className="text-red-600 mr-1" />
+                      <span className="text-sm font-medium text-red-600">{t('booking.luggage10kg')}</span>
+                    </div>
+                    <Select value={smallLuggage.toString()} onValueChange={(value) => setSmallLuggage(parseInt(value))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="0" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 11 }, (_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {i}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  
+                  {/* 23kg Luggage */}
+                  <div className="space-y-2">
+                    <div className="flex items-center mb-1">
+                      <Briefcase size={16} className="text-red-600 mr-1" />
+                      <span className="text-sm font-medium text-red-600">{t('booking.luggage23kg')}</span>
+                    </div>
+                    <Select value={largeLuggage.toString()} onValueChange={(value) => setLargeLuggage(parseInt(value))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="0" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 11 }, (_, i) => (
+                          <SelectItem key={i} value={i.toString()}>
+                            {i}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
 
                 {/* Submit Button */}

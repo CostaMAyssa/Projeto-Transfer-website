@@ -8,9 +8,18 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 
 interface RideMapProps {
   className?: string;
+  // Novas props opcionais para sobrescrever as localizações do contexto
+  pickupLocation?: {
+    address: string;
+    coordinates?: [number, number];
+  };
+  dropoffLocation?: {
+    address: string;
+    coordinates?: [number, number];
+  };
 }
 
-const RideMap = ({ className }: RideMapProps) => {
+const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) => {
   const { bookingData } = useBooking();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -23,15 +32,20 @@ const RideMap = ({ className }: RideMapProps) => {
   // Using the updated token
   const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
 
+  // Usar props se fornecidas, caso contrário usar dados do contexto
+  const effectivePickupLocation = pickupLocation || bookingData.pickupLocation;
+  const effectiveDropoffLocation = dropoffLocation || bookingData.dropoffLocation;
+
   // 🔍 DEBUG: Log inicial do componente
   console.log('🗺️ RideMap - Componente inicializado', {
-    hasPickupCoords: !!bookingData.pickupLocation?.coordinates,
-    hasDropoffCoords: !!bookingData.dropoffLocation?.coordinates,
-    pickupAddress: bookingData.pickupLocation?.address,
-    dropoffAddress: bookingData.dropoffLocation?.address,
+    hasPickupCoords: !!effectivePickupLocation?.coordinates,
+    hasDropoffCoords: !!effectiveDropoffLocation?.coordinates,
+    pickupAddress: effectivePickupLocation?.address,
+    dropoffAddress: effectiveDropoffLocation?.address,
     mapContainerExists: !!mapContainerRef.current,
     isInitialized,
-    isMapLoaded
+    isMapLoaded,
+    usingProps: !!(pickupLocation || dropoffLocation)
   });
 
   // Cleanup function to safely remove markers and map
@@ -126,8 +140,8 @@ const RideMap = ({ className }: RideMapProps) => {
       cleanup();
 
       // Add markers for pickup and dropoff if coordinates are available
-      const hasPickup = bookingData.pickupLocation?.coordinates;
-      const hasDropoff = bookingData.dropoffLocation?.coordinates;
+      const hasPickup = effectivePickupLocation?.coordinates;
+      const hasDropoff = effectiveDropoffLocation?.coordinates;
 
       // Default center if no coordinates are available
       let defaultCenter: [number, number] = [-74.006, 40.7128]; // Default to NYC
@@ -147,13 +161,13 @@ const RideMap = ({ className }: RideMapProps) => {
           `;
 
           const pickupMarker = new mapboxgl.Marker(pickupEl)
-            .setLngLat(bookingData.pickupLocation.coordinates)
+            .setLngLat(effectivePickupLocation.coordinates)
             .setPopup(new mapboxgl.Popup({ offset: 25 })
-              .setHTML(`<strong>Origem:</strong> ${bookingData.pickupLocation.address}`))
+              .setHTML(`<strong>Origem:</strong> ${effectivePickupLocation.address}`))
             .addTo(mapRef.current);
           
           markersRef.current.push(pickupMarker);
-          defaultCenter = bookingData.pickupLocation.coordinates;
+          defaultCenter = effectivePickupLocation.coordinates;
         } catch (error) {
           console.error('Error adding pickup marker:', error);
         }
@@ -174,13 +188,13 @@ const RideMap = ({ className }: RideMapProps) => {
           `;
 
           const dropoffMarker = new mapboxgl.Marker(dropoffEl)
-            .setLngLat(bookingData.dropoffLocation.coordinates)
+            .setLngLat(effectiveDropoffLocation.coordinates)
             .setPopup(new mapboxgl.Popup({ offset: 25 })
-              .setHTML(`<strong>Destino:</strong> ${bookingData.dropoffLocation.address}`))
+              .setHTML(`<strong>Destino:</strong> ${effectiveDropoffLocation.address}`))
             .addTo(mapRef.current);
           
           markersRef.current.push(dropoffMarker);
-          defaultCenter = bookingData.dropoffLocation.coordinates;
+          defaultCenter = effectiveDropoffLocation.coordinates;
         } catch (error) {
           console.error('Error adding dropoff marker:', error);
         }
@@ -209,14 +223,14 @@ const RideMap = ({ className }: RideMapProps) => {
       try {
         if (hasPickup && hasDropoff && mapRef.current) {
           const bounds = new mapboxgl.LngLatBounds()
-            .extend(bookingData.pickupLocation.coordinates)
-            .extend(bookingData.dropoffLocation.coordinates);
+            .extend(effectivePickupLocation.coordinates)
+            .extend(effectiveDropoffLocation.coordinates);
 
           mapRef.current.fitBounds(bounds, { padding: 70, maxZoom: 15 });
         } else if (hasPickup && mapRef.current) {
-          mapRef.current.setCenter(bookingData.pickupLocation.coordinates);
+          mapRef.current.setCenter(effectivePickupLocation.coordinates);
         } else if (hasDropoff && mapRef.current) {
-          mapRef.current.setCenter(bookingData.dropoffLocation.coordinates);
+          mapRef.current.setCenter(effectiveDropoffLocation.coordinates);
         }
       } catch (error) {
         console.error('Error fitting map bounds:', error);
@@ -227,17 +241,17 @@ const RideMap = ({ className }: RideMapProps) => {
       console.error('Error initializing map:', error);
       setErrorMessage('Erro ao inicializar o mapa. Verifique sua conexão.');
     }
-  }, [bookingData.pickupLocation, bookingData.dropoffLocation, cleanup, isInitialized]);
+  }, [effectivePickupLocation, effectiveDropoffLocation, cleanup, isInitialized]);
 
   const drawRoute = async () => {
-    if (!mapRef.current || !bookingData.pickupLocation.coordinates || !bookingData.dropoffLocation.coordinates) {
+    if (!mapRef.current || !effectivePickupLocation.coordinates || !effectiveDropoffLocation.coordinates) {
       return;
     }
     
     try {
       setIsRouteLoaded(false);
-      const start = bookingData.pickupLocation.coordinates;
-      const end = bookingData.dropoffLocation.coordinates;
+      const start = effectivePickupLocation.coordinates;
+      const end = effectiveDropoffLocation.coordinates;
       
       // Get the route from Mapbox Directions API
       const query = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxToken}`;
@@ -308,14 +322,14 @@ const RideMap = ({ className }: RideMapProps) => {
 
   useEffect(() => {
     // Prevent initialization on first render without locations
-    const hasAnyLocation = bookingData.pickupLocation?.coordinates || bookingData.dropoffLocation?.coordinates;
+    const hasAnyLocation = effectivePickupLocation?.coordinates || effectiveDropoffLocation?.coordinates;
     
     console.log('🔄 RideMap - useEffect executado', {
       hasAnyLocation,
-      hasPickup: !!bookingData.pickupLocation?.coordinates,
-      hasDropoff: !!bookingData.dropoffLocation?.coordinates,
-      pickupAddress: bookingData.pickupLocation?.address,
-      dropoffAddress: bookingData.dropoffLocation?.address
+      hasPickup: !!effectivePickupLocation?.coordinates,
+      hasDropoff: !!effectiveDropoffLocation?.coordinates,
+      pickupAddress: effectivePickupLocation?.address,
+      dropoffAddress: effectiveDropoffLocation?.address
     });
     
     if (!hasAnyLocation) {
@@ -336,7 +350,7 @@ const RideMap = ({ className }: RideMapProps) => {
       clearTimeout(timer);
       cleanup();
     };
-  }, [bookingData.pickupLocation, bookingData.dropoffLocation, initializeMap]);
+  }, [effectivePickupLocation, effectiveDropoffLocation, initializeMap]);
 
   // Cleanup on component unmount
   useEffect(() => {
@@ -354,7 +368,7 @@ const RideMap = ({ className }: RideMapProps) => {
   }, [cleanup]);
 
   // Check if we have any location coordinates
-  const hasLocations = Boolean(bookingData.pickupLocation?.coordinates || bookingData.dropoffLocation?.coordinates);
+  const hasLocations = Boolean(effectivePickupLocation?.coordinates || effectiveDropoffLocation?.coordinates);
 
   return (
     <div className={`rounded-lg overflow-hidden border ${className}`}>
