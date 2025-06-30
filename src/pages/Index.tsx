@@ -70,7 +70,7 @@ const ComponentErrorBoundary = ({ children, fallback }: { children: React.ReactN
 };
 
 const Index = () => {
-  const [api, setApi] = useState<unknown>(null);
+  const [api, setApi] = useState<{ scrollNext?: () => void } | null>(null);
   const { t } = useTranslation();
   const mountedRef = useRef(true);
   const { resetBooking } = useBooking();
@@ -96,8 +96,8 @@ const Index = () => {
       // Set up interval to automatically advance slides
       interval = setInterval(() => {
         try {
-          if (api && mountedRef.current && typeof (api as any).scrollNext === 'function') {
-            (api as any).scrollNext();
+          if (api && mountedRef.current && api.scrollNext) {
+            api.scrollNext();
           }
         } catch (error) {
           console.warn('⚠️ Carousel scroll error:', error);
@@ -224,11 +224,8 @@ const Index = () => {
 
       {/* Fleet Section */}
       <section className="py-20 container mx-auto px-4">
-        <div className="flex justify-between items-center mb-12">
+        <div className="mb-12">
           <h2 className="text-3xl font-normal">{t('fleet.title')}</h2>
-          <Link to="/fleet" className="flex items-center text-brand hover:text-brand-700">
-            {t('fleet.moreFleet')} <ArrowRight size={16} className="ml-2" />
-          </Link>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -278,11 +275,8 @@ const Index = () => {
         ></div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="flex justify-between items-center mb-10">
+          <div className="mb-10">
             <h2 className="text-3xl font-normal">{t('services.title')}</h2>
-            <Link to="/services" className="flex items-center text-brand hover:text-brand-700">
-              {t('services.moreServices')} <ArrowRight size={16} className="ml-2" />
-            </Link>
           </div>
           
           <div className="relative">

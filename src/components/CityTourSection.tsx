@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { ArrowRight, Map } from "lucide-react";
+import { Map } from "lucide-react";
 import { cityTours, createCityTours } from "@/data/cityTours";
 import { useEffect, useState } from "react";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
@@ -123,24 +122,10 @@ const CityTourSection = () => {
                       </>
                     )}
                   </div>
-                  
-                  {/* Call to Action */}
-                  <Button 
-                    className="bg-brand-500 text-white hover:bg-brand-600 transition-colors"
-                    size="sm"
-                  >
-                    {t('cityTours.bookTour')} <ArrowRight className="ml-1 h-3 w-3" />
-                  </Button>
                 </div>
               </div>
             </Link>
           ))}
-        </div>
-        
-        <div className="text-center mt-12">
-          <Link to="/services" className="inline-flex items-center text-white hover:text-white/80 group">
-            {t('cityTours.viewAllTours')} <ArrowRight size={16} className="ml-2 transition-transform group-hover:translate-x-1 text-white" />
-          </Link>
         </div>
       </div>
     </section>
