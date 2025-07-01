@@ -29,8 +29,13 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
   const [isRouteLoaded, setIsRouteLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
 
-  // Using the updated token
-  const mapboxToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
+  // Using environment variable for Mapbox token
+  const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+
+  // Validação da chave do Mapbox
+  if (!mapboxToken) {
+    console.error('❌ VITE_MAPBOX_ACCESS_TOKEN não configurado no .env.local');
+  }
 
   // Usar props se fornecidas, caso contrário usar dados do contexto
   const effectivePickupLocation = pickupLocation || bookingData.pickupLocation;

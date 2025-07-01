@@ -62,7 +62,15 @@ const Contact = () => {
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
-    mapboxgl.accessToken = "pk.eyJ1IjoiZmF1c3RvbGFnYXJlcyIsImEiOiJjbWFnNnB6aTYwYWNxMm5vZmJyMnFicWFvIn0.89qV4FAa3hPg15kITsNwLA";
+    // Using environment variable for Mapbox token
+    const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
+    
+    if (!mapboxToken) {
+      console.error('❌ VITE_MAPBOX_ACCESS_TOKEN não configurado no .env.local');
+      return;
+    }
+
+    mapboxgl.accessToken = mapboxToken;
     
     mapRef.current = new mapboxgl.Map({
       container: mapContainerRef.current,
