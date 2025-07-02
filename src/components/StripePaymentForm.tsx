@@ -383,7 +383,6 @@ const CheckoutForm = () => {
             <h3 className="text-lg font-semibold">Número do Cartão</h3>
             
             <div className="p-4 border rounded-md bg-gray-50">
-              <Label className="block mb-2 font-medium">💳 Use 4242 4242 4242 4242 para testes</Label>
               <div className="p-3 bg-white border rounded-md">
                 <CardElement options={cardElementOptions} />
               </div>
