@@ -4,79 +4,177 @@ import Stripe from "https://esm.sh/stripe@14.21.0";
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
 };
 
 serve(async (req) => {
-  // CORS preflight
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response("ok", { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    console.log('🔄 Iniciando processamento de pagamento...');
+    
+    // Validate Stripe secret key
     const stripeSecretKey = Deno.env.get("STRIPE_SECRET_KEY");
     if (!stripeSecretKey) {
-      console.error("❌ STRIPE_SECRET_KEY não configurada");
-      return new Response(
-        JSON.stringify({ error: "Stripe não configurado no servidor" }),
-        { status: 500, headers: corsHeaders }
-      );
+      console.error('❌ STRIPE_SECRET_KEY não configurada');
+      throw new Error("Stripe não configurado no servidor");
     }
 
-    const stripe = new Stripe(stripeSecretKey, { apiVersion: "2023-10-16" });
+    // Initialize Stripe
+    const stripe = new Stripe(stripeSecretKey, {
+      apiVersion: "2023-10-16",
+    });
 
-    if (req.method !== "POST") {
-      return new Response(
-        JSON.stringify({ error: "Method not allowed" }),
-        { status: 405, headers: corsHeaders }
-      );
+    // Parse request body
+    const { paymentDetails, bookingData } = await req.json();
+    console.log('📋 Dados recebidos:', {
+      customer: `${paymentDetails?.firstName} ${paymentDetails?.lastName}`,
+      total: bookingData?.total,
+      pickup: bookingData?.pickupLocation?.address,
+      dropoff: bookingData?.dropoffLocation?.address
+    });
+
+    // Validate required data
+    if (!paymentDetails || !bookingData) {
+      throw new Error("Dados de pagamento ou reserva não fornecidos");
     }
 
-    // Body esperado: { amount: number, currency?: string, metadata?: Record<string, unknown> }
-    const { amount, currency = "usd", metadata = {} } = await req.json();
-    console.log("📋 Dados recebidos:", { amount, currency, metadata });
+    // Format amount for Stripe (convert to cents)
+    const total = bookingData.total || 0;
+    const amount = Math.round(total * 100);
 
     if (!amount || amount <= 0) {
-      return new Response(
-        JSON.stringify({ error: "Valor do pagamento inválido" }),
-        { status: 400, headers: corsHeaders }
-      );
-    }
-    if (amount < 50) {
-      return new Response(
-        JSON.stringify({ error: "Valor mínimo é $0.50 USD" }),
-        { status: 400, headers: corsHeaders }
-      );
+      throw new Error("Valor do pagamento inválido");
     }
 
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount,
-      currency,
-      automatic_payment_methods: { enabled: true },
-      metadata: {
-        ...metadata,
-        source: "transfer_website",
-        created_at: new Date().toISOString(),
+    console.log(`💰 Processando pagamento de $${total} (${amount} cents)`);
+
+    // Create payment method for card
+    const paymentMethod = await stripe.paymentMethods.create({
+      type: 'card',
+      card: {
+        number: paymentDetails.cardNumber?.replace(/\s/g, ''),
+        exp_month: parseInt(paymentDetails.expiryMonth),
+        exp_year: parseInt(paymentDetails.expiryYear),
+        cvc: paymentDetails.cvv,
+      },
+      billing_details: {
+        name: paymentDetails.cardHolder,
+        address: {
+          line1: paymentDetails.address,
+          city: paymentDetails.city,
+          postal_code: paymentDetails.postal,
+          country: paymentDetails.country,
+        },
       },
     });
 
-    console.log("✅ Payment Intent criado:", paymentIntent.id, "Status:", paymentIntent.status);
+    console.log('💳 Payment method criado:', paymentMethod.id);
 
-    return new Response(
-      JSON.stringify({
-        id: paymentIntent.id,
-        client_secret: paymentIntent.client_secret,
-        status: paymentIntent.status,
-        amount: paymentIntent.amount,
-        currency: paymentIntent.currency,
-      }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    // Create a Payment Intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amount,
+      currency: "usd",
+      payment_method: paymentMethod.id,
+      confirmation_method: 'manual',
+      confirm: true,
+      return_url: 'https://your-website.com/return',
+      description: `Transfer service from ${bookingData.pickupLocation?.address || 'Unknown'} to ${bookingData.dropoffLocation?.address || 'Unknown'}`,
+      metadata: {
+        customerName: `${paymentDetails.firstName} ${paymentDetails.lastName}`,
+        customerEmail: paymentDetails.email || '',
+        pickupLocation: bookingData.pickupLocation?.address || '',
+        dropoffLocation: bookingData.dropoffLocation?.address || '',
+        pickupDate: bookingData.pickupDate?.toString() || '',
+        pickupTime: bookingData.pickupTime || '',
+        passengers: bookingData.passengers?.toString() || '1',
+        vehicleName: bookingData.vehicle?.name || "Not selected",
+        bookingType: bookingData.bookingType || 'one-way',
+        company: paymentDetails.company || '',
+      },
+    });
+
+    console.log('✅ Payment Intent criado:', paymentIntent.id, 'Status:', paymentIntent.status);
+
+    // Check payment status
+    if (paymentIntent.status === 'succeeded') {
+      console.log('🎉 Pagamento realizado com sucesso!');
+      
+      return new Response(
+        JSON.stringify({
+          success: true,
+          paymentIntentId: paymentIntent.id,
+          status: paymentIntent.status,
+          amount: amount,
+          currency: paymentIntent.currency,
+          customer: `${paymentDetails.firstName} ${paymentDetails.lastName}`,
+          message: "Pagamento processado com sucesso"
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    } else if (paymentIntent.status === 'requires_action') {
+      console.log('🔐 Pagamento requer autenticação 3D Secure');
+      
+      return new Response(
+        JSON.stringify({
+          requiresAction: true,
+          paymentIntentId: paymentIntent.id,
+          clientSecret: paymentIntent.client_secret,
+          message: "Pagamento requer autenticação adicional"
+        }),
+        {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    } else {
+      console.error('❌ Pagamento falhou. Status:', paymentIntent.status);
+      
+      return new Response(
+        JSON.stringify({
+          error: `Pagamento não foi processado. Status: ${paymentIntent.status}`,
+          status: paymentIntent.status,
+          paymentIntentId: paymentIntent.id
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
   } catch (error) {
-    console.error("❌ Erro ao criar Payment Intent:", error);
+    console.error("❌ Erro no processamento do pagamento:", error);
+    
+    // Handle Stripe-specific errors
+    if (error instanceof Stripe.errors.StripeError) {
+      console.error("Stripe Error:", error.type, error.message);
+      
+      return new Response(
+        JSON.stringify({
+          error: error.message || "Erro no processamento do pagamento",
+          type: error.type,
+          code: error.code
+        }),
+        {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+    
+    // Handle general errors
     return new Response(
-      JSON.stringify({ error: error.message || "Erro interno do servidor" }),
-      { status: 400, headers: corsHeaders }
+      JSON.stringify({ 
+        error: error.message || "Erro interno no servidor" 
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
     );
   }
 });

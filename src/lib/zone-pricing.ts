@@ -523,29 +523,28 @@ export const getZonePrice = async (origin: string, destination: string, vehicle:
     // Importar supabase dinamicamente para evitar problemas de circular dependency
     const { supabase } = await import('@/integrations/supabase/client');
     
-    // Mapear códigos de zona para IDs da tabela (SEM PREFIXO - conforme banco real)
+    // Mapear códigos de zona para IDs da tabela
     const zoneMap: Record<string, string> = {
-      'EWR': 'EWR',
-      'JFK': 'JFK', 
-      'LGA': 'LGA',
-      'MAN': 'MAN',  // Corrigido: era Z_MHTN, agora é MAN
-      'BKN': 'BKN',  // Corrigido: era Z_BKLYN, agora é BKN
-      'QNS': 'QNS',  // Corrigido: era Z_QNS, agora é QNS
-      'BRX': 'BRX'   // Corrigido: era Z_BRONX, agora é BRX
+      'EWR': 'Z_EWR',
+      'JFK': 'Z_JFK', 
+      'LGA': 'Z_LGA',
+      'MAN': 'Z_MHTN',
+      'BKN': 'Z_BKLYN',
+      'QNS': 'Z_QNS',
+      'BRX': 'Z_BRONX'
     };
     
-    // Normalizar nomes de veículos para o banco (conforme banco real - MAIÚSCULO)
+    // Normalizar nomes de veículos para o banco
     const vehicleMap: Record<string, string> = {
-      'SEDAN': 'SEDAN',     // Corrigido: era sedan, agora é SEDAN
-      'SUV': 'SUV',         // Corrigido: era suv, agora é SUV
-      'VAN': 'VAN',         // Corrigido: era minivan, agora é VAN
-      'MINIVAN': 'VAN',     // Mapear minivan para VAN
-      'LUXURY': 'VAN'       // Mapear luxury para VAN
+      'SEDAN': 'sedan',
+      'SUV': 'suv', 
+      'VAN': 'minivan',
+      'LUXURY': 'minivan'
     };
     
     const originZoneId = zoneMap[origin] || origin;
     const destinationZoneId = zoneMap[destination] || destination;
-    const dbVehicleType = vehicleMap[vehicle.toUpperCase()] || vehicle.toUpperCase();
+    const dbVehicleType = vehicleMap[vehicle.toUpperCase()] || vehicle.toLowerCase();
     
     console.log(`🔄 Mapeado: ${origin}→${originZoneId}, ${destination}→${destinationZoneId}, ${vehicle}→${dbVehicleType}`);
     
@@ -559,7 +558,7 @@ export const getZonePrice = async (origin: string, destination: string, vehicle:
       .single();
     
     if (!directError && directPrice) {
-      const priceInDollars = directPrice.price;
+      const priceInDollars = directPrice.price / 100;
       console.log(`💰 Preço direto encontrado: $${priceInDollars}`);
       return priceInDollars;
     }
@@ -574,7 +573,7 @@ export const getZonePrice = async (origin: string, destination: string, vehicle:
       .single();
     
     if (!reverseError && reversePrice) {
-      const priceInDollars = reversePrice.price;
+      const priceInDollars = reversePrice.price / 100;
       console.log(`💰 Preço reverso encontrado: $${priceInDollars}`);
       return priceInDollars;
     }
