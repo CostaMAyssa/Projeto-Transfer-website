@@ -127,7 +127,7 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
         // Handle map load errors
         mapRef.current.on('error', (e: mapboxgl.ErrorEvent) => {
           console.error('❌ RideMap - Erro no mapa:', e);
-          setErrorMessage('Erro no mapa. Verifique sua conexão.');
+          setErrorMessage(t('map.mapErrorConnection'));
         });
 
         mapRef.current.on('load', () => {
@@ -170,7 +170,7 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
           const pickupMarker = new mapboxgl.Marker(pickupEl)
             .setLngLat(effectivePickupLocation.coordinates)
             .setPopup(new mapboxgl.Popup({ offset: 25 })
-              .setHTML(`<strong>Origem:</strong> ${effectivePickupLocation.address}`))
+              .setHTML(`<strong>${t('map.origin')}:</strong> ${effectivePickupLocation.address}`))
             .addTo(mapRef.current);
           
           markersRef.current.push(pickupMarker);
@@ -197,7 +197,7 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
           const dropoffMarker = new mapboxgl.Marker(dropoffEl)
             .setLngLat(effectiveDropoffLocation.coordinates)
             .setPopup(new mapboxgl.Popup({ offset: 25 })
-              .setHTML(`<strong>Destino:</strong> ${effectiveDropoffLocation.address}`))
+              .setHTML(`<strong>${t('map.destination')}:</strong> ${effectiveDropoffLocation.address}`))
             .addTo(mapRef.current);
           
           markersRef.current.push(dropoffMarker);
@@ -246,9 +246,9 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
       setErrorMessage(null);
     } catch (error) {
       console.error('Error initializing map:', error);
-      setErrorMessage('Erro ao inicializar o mapa. Verifique sua conexão.');
+      setErrorMessage(t('map.mapErrorConnection'));
     }
-  }, [effectivePickupLocation, effectiveDropoffLocation, cleanup, isInitialized]);
+  }, [effectivePickupLocation, effectiveDropoffLocation, cleanup, isInitialized, t]);
 
   const drawRoute = async () => {
     if (!mapRef.current || !effectivePickupLocation.coordinates || !effectiveDropoffLocation.coordinates) {
@@ -319,11 +319,11 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
         setIsRouteLoaded(true);
       } else {
         console.error('No routes found in response:', data);
-        setErrorMessage('Não foi possível calcular a rota. Tente novamente.');
+        setErrorMessage(t('map.routeCalculationError'));
       }
     } catch (error) {
       console.error('Error getting directions:', error);
-      setErrorMessage('Erro ao calcular a rota. Verifique sua conexão.');
+      setErrorMessage(t('map.routeCalculationConnectionError'));
     }
   };
 
@@ -400,7 +400,7 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
             <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
               <div className="text-center">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-2"></div>
-                <p className="text-sm text-gray-600">Carregando mapa...</p>
+                <p className="text-sm text-gray-600">{t('map.loadingMap')}</p>
               </div>
             </div>
           )}

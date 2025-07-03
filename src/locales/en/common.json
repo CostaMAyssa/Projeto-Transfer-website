@@ -113,7 +113,8 @@
     "contactWhatsappConfirmation": "Contact via WhatsApp for confirmation",
     "selectOriginDestinationForPrice": "Select origin and destination for exact price",
     "priceCalculationError": "Calculation error. Base price displayed.",
-    "contactViaWhatsappButton": "Contact via WhatsApp"
+    "contactViaWhatsappButton": "Contact via WhatsApp",
+    "whatsappQuoteMessage": "Hello! I would like to request a quote for a transfer outside the coverage area.\n\nVehicle: {vehicleName}\nOrigin: {originAddress}\nDestination: {destinationAddress}\n\nI await your return. Thank you!"
   },
   "benefits": {
     "safetyFirst": "Safety First",
@@ -292,5 +293,13 @@
       "brazil": "Brazil",
       "unitedKingdom": "United Kingdom"
     }
+  },
+  "map": {
+    "mapErrorConnection": "Map error. Check your connection.",
+    "origin": "Origin",
+    "destination": "Destination",
+    "routeCalculationError": "Could not calculate route. Try again.",
+    "routeCalculationConnectionError": "Error calculating route. Check your connection.",
+    "loadingMap": "Loading map..."
   }
 } 

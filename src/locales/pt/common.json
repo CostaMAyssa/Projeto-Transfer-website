@@ -108,7 +108,8 @@
     "contactWhatsappConfirmation": "Entre em contato via WhatsApp para confirmação",
     "selectOriginDestinationForPrice": "Selecione origem e destino para preço exato",
     "priceCalculationError": "Erro no cálculo. Preço base exibido.",
-    "contactViaWhatsappButton": "Contate via WhatsApp"
+    "contactViaWhatsappButton": "Contate via WhatsApp",
+    "whatsappQuoteMessage": "Olá! Gostaria de solicitar um orçamento para transfer fora da área de cobertura.\n\nVeículo: {vehicleName}\nOrigem: {originAddress}\nDestino: {destinationAddress}\n\nAguardo retorno. Obrigado!"
   },
   "benefits": {
     "safetyFirst": "Segurança em Primeiro Lugar",
@@ -293,5 +294,13 @@
       "brazil": "Brasil",
       "unitedKingdom": "Reino Unido"
     }
+  },
+  "map": {
+    "mapErrorConnection": "Erro no mapa. Verifique sua conexão.",
+    "origin": "Origem",
+    "destination": "Destino",
+    "routeCalculationError": "Não foi possível calcular a rota. Tente novamente.",
+    "routeCalculationConnectionError": "Erro ao calcular a rota. Verifique sua conexão.",
+    "loadingMap": "Carregando mapa..."
   }
 } 

@@ -108,7 +108,8 @@
     "contactWhatsappConfirmation": "Contactar por WhatsApp para confirmación",
     "selectOriginDestinationForPrice": "Selecciona origen y destino para precio exacto",
     "priceCalculationError": "Error de cálculo. Precio base mostrado.",
-    "contactViaWhatsappButton": "Contactar por WhatsApp"
+    "contactViaWhatsappButton": "Contactar por WhatsApp",
+    "whatsappQuoteMessage": "¡Hola! Me gustaría solicitar un presupuesto para un traslado fuera del área de cobertura.\n\nVehículo: {vehicleName}\nOrigen: {originAddress}\nDestino: {destinationAddress}\n\nEspero su respuesta. ¡Gracias!"
   },
   "benefits": {
     "safetyFirst": "Seguridad Primero",
@@ -287,5 +288,13 @@
   "vehicleFeatures": {
     "airConditioning": "Aire acondicionado",
     "wifi": "WiFi gratuito"
+  },
+  "map": {
+    "mapErrorConnection": "Error en el mapa. Revisa tu conexión.",
+    "origin": "Origen",
+    "destination": "Destino",
+    "routeCalculationError": "No se pudo calcular la ruta. Inténtalo de nuevo.",
+    "routeCalculationConnectionError": "Error al calcular la ruta. Revisa tu conexión.",
+    "loadingMap": "Cargando mapa..."
   }
 } 
