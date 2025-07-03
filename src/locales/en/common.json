@@ -108,7 +108,12 @@
     "flightLabel": "Flight",
     "hourlyRate": "Hourly Rate",
     "hour": "hour",
-    "hours": "hours"
+    "hours": "hours",
+    "outOfCoverageBadge": "Out of Coverage",
+    "contactWhatsappConfirmation": "Contact via WhatsApp for confirmation",
+    "selectOriginDestinationForPrice": "Select origin and destination for exact price",
+    "priceCalculationError": "Calculation error. Base price displayed.",
+    "contactViaWhatsappButton": "Contact via WhatsApp"
   },
   "benefits": {
     "safetyFirst": "Safety First",
@@ -181,6 +186,10 @@
       "freeWaiting": "Free Waiting time",
       "safeTravel": "Safe and secure travel"
     }
+  },
+  "vehicleFeatures": {
+    "airConditioning": "Air conditioning",
+    "wifi": "WiFi free"
   },
   "languages": {
     "en": "EN",

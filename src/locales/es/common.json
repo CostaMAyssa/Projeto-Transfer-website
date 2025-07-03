@@ -103,7 +103,12 @@
     "flightInfoTitle": "Información de Vuelo",
     "airlineLabel": "Aerolínea",
     "flightLabel": "Vuelo",
-    "hourlyRate": "Tarifa por Hora"
+    "hourlyRate": "Tarifa por Hora",
+    "outOfCoverageBadge": "Fuera de Cobertura",
+    "contactWhatsappConfirmation": "Contactar por WhatsApp para confirmación",
+    "selectOriginDestinationForPrice": "Selecciona origen y destino para precio exacto",
+    "priceCalculationError": "Error de cálculo. Precio base mostrado.",
+    "contactViaWhatsappButton": "Contactar por WhatsApp"
   },
   "benefits": {
     "safetyFirst": "Seguridad Primero",
@@ -278,5 +283,9 @@
       "brazil": "Brasil",
       "unitedKingdom": "Reino Unido"
     }
+  },
+  "vehicleFeatures": {
+    "airConditioning": "Aire acondicionado",
+    "wifi": "WiFi gratuito"
   }
 } 

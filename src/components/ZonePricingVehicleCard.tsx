@@ -141,12 +141,12 @@ const ZonePricingVehicleCard = ({
           {!pickupLocation?.coordinates || !dropoffLocation?.coordinates ? (
             <p className="text-xs text-amber-600 flex items-center mt-1">
               <MapPin size={12} className="mr-1" />
-              Selecione origem e destino para preço exato
+              {t('booking.selectOriginDestinationForPrice')}
             </p>
           ) : (
             <p className="text-xs text-red-600 flex items-center mt-1">
               <AlertTriangle size={12} className="mr-1" />
-              Erro no cálculo. Preço base exibido.
+              {message || t('booking.priceCalculationError')}
             </p>
           )}
         </div>
@@ -161,7 +161,7 @@ const ZonePricingVehicleCard = ({
           <span className="text-2xl font-normal">{formatPrice(vehicle.base_price)}</span>
           <p className="text-sm text-red-600 flex items-center mt-1">
             <AlertTriangle size={12} className="mr-1" />
-            {message || 'Erro no cálculo de preços'}
+            {message || t('booking.priceCalculationError')}
           </p>
         </div>
       );
@@ -173,7 +173,7 @@ const ZonePricingVehicleCard = ({
           <span className="text-2xl font-normal">{formatPrice(price || vehicle.base_price)}</span>
           {out_of_coverage && (
             <Badge variant="outline" className="text-xs border-amber-500 text-amber-700">
-              Fora de cobertura
+              {t('booking.outOfCoverageBadge')}
             </Badge>
           )}
         </div>
@@ -190,7 +190,7 @@ const ZonePricingVehicleCard = ({
         {whatsapp_contact && (
           <p className="text-xs text-amber-600 mt-1 flex items-center">
             <Clock size={12} className="mr-1" />
-            Entre em contato via WhatsApp para confirmação
+            {t('booking.contactWhatsappConfirmation')}
           </p>
         )}
         
@@ -245,7 +245,9 @@ const ZonePricingVehicleCard = ({
                 {vehicle.features.map((feature, index) => (
                   <div key={index} className="flex items-center text-xs bg-gray-100 px-2 py-1 rounded">
                     <Check size={12} className="mr-1 text-brand" />
-                    {feature}
+                    {feature === 'Ar condicionado' ? t('vehicleFeatures.airConditioning') : 
+                     feature === 'WiFi gratuito' ? t('vehicleFeatures.wifi') : 
+                     feature}
                   </div>
                 ))}
               </div>
@@ -262,7 +264,7 @@ const ZonePricingVehicleCard = ({
                 }
                 disabled={pricingData && !pricingData.success}
               >
-                {selected && pricingData?.whatsapp_contact ? 'Contate via WhatsApp' : (selected ? t('booking.selected') : t('booking.select'))}
+                {selected && pricingData?.whatsapp_contact ? t('booking.contactViaWhatsappButton') : (selected ? t('booking.selected') : t('booking.select'))}
                 <ChevronRight size={16} className="ml-1" />
               </Button>
             </div>

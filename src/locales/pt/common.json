@@ -103,7 +103,12 @@
     "flightInfoTitle": "Informações do Voo",
     "airlineLabel": "Companhia",
     "flightLabel": "Voo",
-    "hourlyRate": "Taxa por Hora"
+    "hourlyRate": "Taxa por Hora",
+    "outOfCoverageBadge": "Fora de Cobertura",
+    "contactWhatsappConfirmation": "Entre em contato via WhatsApp para confirmação",
+    "selectOriginDestinationForPrice": "Selecione origem e destino para preço exato",
+    "priceCalculationError": "Erro no cálculo. Preço base exibido.",
+    "contactViaWhatsappButton": "Contate via WhatsApp"
   },
   "benefits": {
     "safetyFirst": "Segurança em Primeiro Lugar",
@@ -111,7 +116,13 @@
     "pricesNoSurprises": "Preços Sem Surpresas",
     "pricesDescription": "Tanto você quanto suas bagagens viajarão com motoristas profissionais. Sempre com os mais altos padrões de qualidade.",
     "privateSolutions": "Soluções de Viagem Privadas",
-    "privateDescription": "Tanto você quanto suas bagagens viajarão com motoristas profissionais. Sempre com os mais altos padrões de qualidade."
+    "privateDescription": "Tanto você quanto suas bagagens viajarão com motoristas profissionais. Sempre com os mais altos padrões de qualidade.",
+    "features": {
+      "meetGreet": "Meet & Greet incluído",
+      "freeCancellation": "Cancelamento gratuito",
+      "freeWaiting": "Tempo de espera gratuito",
+      "safeTravel": "Viagem segura e protegida"
+    }
   },
   "fleet": {
     "title": "Nossa Frota",
@@ -176,6 +187,10 @@
       "freeWaiting": "Tempo de espera gratuito",
       "safeTravel": "Viagem segura e protegida"
     }
+  },
+  "vehicleFeatures": {
+    "airConditioning": "Ar condicionado",
+    "wifi": "WiFi gratuito"
   },
   "languages": {
     "en": "EN",
