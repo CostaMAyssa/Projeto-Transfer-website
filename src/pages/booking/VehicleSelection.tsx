@@ -4,10 +4,12 @@ import RideSummary from "@/components/RideSummary";
 import { useVehicleCategories } from "@/hooks/useZonePricing";
 import { VehicleCategory } from "@/lib/zone-pricing";
 import { VehicleType } from "@/types/booking";
+import { useTranslation } from "react-i18next";
 
 const VehicleSelection = () => {
   const { bookingData, selectVehicle } = useBooking();
   const { data: vehicleCategories, isLoading } = useVehicleCategories();
+  const { t } = useTranslation();
 
   // Convert VehicleCategory to VehicleType for compatibility
   const convertToVehicleType = (category: VehicleCategory): VehicleType => {
@@ -44,7 +46,7 @@ const VehicleSelection = () => {
   if (isLoading) {
     return (
       <div>
-        <h2 className="text-2xl font-normal mb-6">Select Your Car</h2>
+        <h2 className="text-2xl font-normal mb-6">{t('booking.selectVehicle')}</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2">
             <div className="animate-pulse space-y-6">
@@ -63,7 +65,7 @@ const VehicleSelection = () => {
 
   return (
     <div>
-      <h2 className="text-2xl font-normal mb-6">Select Your Car</h2>
+      <h2 className="text-2xl font-normal mb-6">{t('booking.selectVehicle')}</h2>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">

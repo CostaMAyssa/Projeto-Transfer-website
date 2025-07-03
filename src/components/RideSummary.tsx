@@ -207,7 +207,7 @@ const RideSummary = () => {
               <div>
                 <div className="flex items-center text-sm text-gray-500 mb-1">
                   <MapPin size={16} className="text-brand mr-1" />
-                  <span>Aeroporto de Destino</span>
+                  <span>{t('booking.departureAirport')}</span>
                 </div>
                 <div className="font-normal">
                   {displayData.dropoffLocation?.address || t('booking.notSpecifiedYet')}
@@ -257,19 +257,19 @@ const RideSummary = () => {
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <Calendar size={16} className="text-brand mr-1" />
-              <span>{bookingType === 'round-trip' ? 'Data de Ida' : t('booking.date')}</span>
+              <span>{bookingType === 'round-trip' ? t('booking.outboundDate') : t('booking.date')}</span>
             </div>
-            <div className="font-normal">{formattedDate}</div>
+            <div className="font-normal">{displayData.pickupDate ? formattedDate : t('booking.notSpecifiedYet')}</div>
           </div>
 
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <Clock size={16} className="text-brand mr-1" />
-              <span>{bookingType === 'round-trip' ? 'Hora de Ida' : t('booking.time')}</span>
+              <span>{bookingType === 'round-trip' ? t('booking.outboundTime') : t('booking.time')}</span>
             </div>
             <div className="font-normal">
-              {displayData.pickupTime ? 
-                new Date(`2000-01-01T${displayData.pickupTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+              {displayData.pickupTime ?
+                new Date(`2000-01-01T${displayData.pickupTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                 : t('booking.notSpecifiedYet')}
             </div>
           </div>
@@ -279,7 +279,7 @@ const RideSummary = () => {
               <div>
                 <div className="flex items-center text-sm text-gray-500 mb-1">
                   <Calendar size={16} className="text-green-600 mr-1" />
-                  <span>Data de Volta</span>
+                  <span>{t('booking.returnDate')}</span>
                 </div>
                 <div className="font-normal">{format(displayData.returnDate, "EEE, MMM d, yyyy")}</div>
               </div>
@@ -287,11 +287,11 @@ const RideSummary = () => {
               <div>
                 <div className="flex items-center text-sm text-gray-500 mb-1">
                   <Clock size={16} className="text-green-600 mr-1" />
-                  <span>Hora de Volta</span>
+                  <span>{t('booking.returnTime')}</span>
                 </div>
                 <div className="font-normal">
-                  {displayData.returnTime ? 
-                    new Date(`2000-01-01T${displayData.returnTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
+                  {displayData.returnTime ?
+                    new Date(`2000-01-01T${displayData.returnTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
                     : t('booking.notSpecifiedYet')}
                 </div>
               </div>
@@ -441,9 +441,9 @@ const RideSummary = () => {
         
         {/* Informação sobre o tipo de serviço */}
         <div className="mt-3 pt-3 border-t text-xs text-gray-500">
-          {bookingType === 'round-trip' && 'Preço para ida e volta'}
+          {bookingType === 'round-trip' && t('booking.roundTripPrice')}
           {bookingType === 'hourly' && displayData.durationHours && `Serviço por ${displayData.durationHours} hora${displayData.durationHours > 1 ? 's' : ''}`}
-          {bookingType === 'one-way' && 'Preço para viagem de ida'}
+          {bookingType === 'one-way' && t('booking.oneWayPrice')}
         </div>
       </div>
     </div>

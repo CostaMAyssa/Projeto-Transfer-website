@@ -88,11 +88,17 @@
     "vehiclePrice": "Precio del Vehículo",
     "extras": "Extras",
     "total": "Total",
+    "oneWayPrice": "Precio para viaje de ida",
+    "roundTripPrice": "Precio para ida y vuelta",
+    "outboundDate": "Fecha de Ida",
+    "outboundTime": "Hora de Ida",
+    "returnDate": "Fecha de Vuelta",
     "steps": {
       "vehicle": "Vehículo",
       "extras": "Extras",
       "payment": "Pago"
-    }
+    },
+    "selectVehicle": "Selecciona Tu Coche"
   },
   "benefits": {
     "safetyFirst": "Seguridad Primero",
@@ -241,8 +247,10 @@
   },
   "payment": {
     "billingAddress": "Dirección de Facturación",
+    "billingAddressSubtitle": "Complete su reserva con pago seguro",
     "firstName": "Nombre",
     "lastName": "Apellido",
+    "emailAddress": "Dirección de Email",
     "company": "Empresa (Opcional)",
     "address": "Dirección",
     "country": "País",
@@ -254,10 +262,16 @@
     "month": "Mes",
     "year": "Año",
     "cvv": "CVV",
-    "cardInfo": "La tarjeta de crédito debe estar emitida a nombre del conductor. Las tarjetas de débito son aceptadas en algunos lugares y para algunas categorías de autos.",
+    "cardInfo": "La tarjeta de crédito debe estar emitida a nombre del conductor. Las tarjetas de débito son aceptadas en algunos lugares y para algunas categorías de autos. Sus datos son procesados de forma segura por Stripe.",
     "termsConditions": "Acepto los Términos y Condiciones - Condiciones de Reserva y Política de Privacidad. *",
     "newsletter": "Quiero suscribirme al newsletter de Transfero (Consejos de viaje y ofertas especiales)",
     "processing": "Procesando...",
-    "bookNow": "Reservar Ahora"
+    "bookNow": "Reservar Ahora",
+    "countries": {
+      "unitedStates": "Estados Unidos",
+      "canada": "Canadá",
+      "brazil": "Brasil",
+      "unitedKingdom": "Reino Unido"
+    }
   }
 } 

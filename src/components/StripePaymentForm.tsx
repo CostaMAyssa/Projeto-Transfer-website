@@ -252,10 +252,6 @@ const CheckoutForm = () => {
 
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg">
-      <div className="mb-6">
-        <h2 className="text-2xl font-bold mb-2">{t('payment.billingAddress')}</h2>
-        <p className="text-gray-600">Complete your booking with secure payment</p>
-      </div>
 
       {!import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY && (
         <Alert className="mb-6" variant="destructive">
@@ -267,109 +263,108 @@ const CheckoutForm = () => {
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Nome do Portador do Cartão</h3>
-            
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+          <div className="grid gap-4">
+            <div>
+              <h2 className="text-2xl font-bold">{t('payment.billingAddress')}</h2>
+              <p className="text-muted-foreground">{t('payment.billingAddressSubtitle')}</p>
+            </div>
+
+            <p className="font-semibold text-lg">{t('payment.cardHolderName')}</p>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Nome</FormLabel>
+                    <FormLabel>{t("payment.firstName")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Mayssa" className="p-3 bg-gray-50" {...field} />
+                      <Input placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sobrenome</FormLabel>
+                    <FormLabel>{t("payment.lastName")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="Ferreira Costa" className="p-3 bg-gray-50" {...field} />
+                      <Input placeholder="" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-
             <FormField
               control={form.control}
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t("payment.emailAddress")}</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder="mayssa@example.com" className="p-3 bg-gray-50" {...field} />
+                    <Input placeholder="mayssa@example.com" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Endereço</FormLabel>
+                  <FormLabel>{t("payment.address")}</FormLabel>
                   <FormControl>
-                    <Input placeholder="123 Main Street" className="p-3 bg-gray-50" {...field} />
+                    <Input placeholder="" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <FormField
                 control={form.control}
                 name="city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cidade</FormLabel>
+                    <FormLabel>{t("payment.city")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="New York" className="p-3 bg-gray-50" {...field} />
+                      <Input placeholder="" {...field} className="p-3 bg-gray-50" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="postal"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CEP</FormLabel>
+                    <FormLabel>{t("payment.postalCode")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="10001" className="p-3 bg-gray-50" {...field} />
+                      <Input placeholder="" {...field} className="p-3 bg-gray-50" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="country"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>País</FormLabel>
+                    <FormLabel>{t("payment.country")}</FormLabel>
                     <FormControl>
                       <select className="w-full p-3 bg-gray-50 border rounded-md" {...field}>
-                        <option value="US">United States</option>
-                        <option value="CA">Canada</option>
-                        <option value="BR">Brazil</option>
-                        <option value="GB">United Kingdom</option>
+                        <option value="US">{t('payment.countries.unitedStates')}</option>
+                        <option value="CA">{t('payment.countries.canada')}</option>
+                        <option value="BR">{t('payment.countries.brazil')}</option>
+                        <option value="GB">{t('payment.countries.unitedKingdom')}</option>
                       </select>
                     </FormControl>
                     <FormMessage />
@@ -377,80 +372,63 @@ const CheckoutForm = () => {
                 )}
               />
             </div>
-          </div>
 
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Número do Cartão</h3>
-            
-            <div className="p-4 border rounded-md bg-gray-50">
-              <div className="p-3 bg-white border rounded-md">
-                <CardElement options={cardElementOptions} />
+            <div className="mt-8">
+              <h4 className="text-xl font-bold mb-4">{t('payment.creditCardPayment')}</h4>
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="cardNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t("payment.cardNumber")}</FormLabel>
+                      <FormControl>
+                        <CardElement options={cardElementOptions} className="p-2 border rounded-md" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                {cardError && (
+                  <Alert variant="destructive">
+                    <AlertTriangle className="h-4 w-4" />
+                    <AlertDescription>{cardError}</AlertDescription>
+                  </Alert>
+                )}
+                <p className="text-sm text-muted-foreground">{t('payment.cardInfo')}</p>
+
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="termsAccepted"
+                    checked={form.watch("termsAccepted")}
+                    onCheckedChange={(checked) => {
+                      form.setValue("termsAccepted", !!checked);
+                      form.trigger("termsAccepted");
+                    }}
+                  />
+                  <Label htmlFor="termsAccepted">{t('payment.termsConditions')}</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="newsletterSubscription"
+                    checked={form.watch("newsletterSubscription")}
+                    onCheckedChange={(checked) => form.setValue("newsletterSubscription", !!checked)}
+                  />
+                  <Label htmlFor="newsletterSubscription">{t('payment.newsletter')}</Label>
+                </div>
               </div>
-              {cardError && (
-                <p className="text-red-600 text-sm mt-2">{cardError}</p>
-              )}
-              <p className="text-xs text-gray-500 mt-2">
-                🔒 O cartão de crédito deve ser emitido em nome do motorista. Cartões de débito são aceitos em alguns locais e para algumas categorias de carros. Seus dados são processados de forma segura pelo Stripe.
-              </p>
             </div>
           </div>
 
-          <div className="space-y-3 pt-4">
-            <FormField
-              control={form.control}
-              name="termsAccepted"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Aceito os Termos e Condições - Condições de Reserva e Política de Privacidade. *
-                    </FormLabel>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
-            />
-            
-            <FormField
-              control={form.control}
-              name="newsletterSubscription"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                  <div className="space-y-1 leading-none">
-                    <FormLabel>
-                      Quero me inscrever na newsletter da Transfero (Dicas de viagem e ofertas especiais)
-                    </FormLabel>
-                  </div>
-                </FormItem>
-              )}
-            />
-          </div>
-
-          <Button 
-            type="submit" 
-            disabled={!stripe || isProcessing || !paymentIntent}
-            className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto mt-6"
-          >
+          <Button type="submit" disabled={isProcessing} className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto mt-6">
             {isProcessing ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                Reservar Agora
+                {t('payment.processing')}
               </>
             ) : (
               <>
-                Reservar Agora <ChevronRight size={18} className="ml-1" />
+                {t('payment.bookNow')} <ChevronRight size={18} className="ml-1" />
               </>
             )}
           </Button>

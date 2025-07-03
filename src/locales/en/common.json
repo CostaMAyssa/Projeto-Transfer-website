@@ -92,11 +92,16 @@
     "roundTripPlaceholder": "0 = round-trip",
     "cityTourComingSoon": "City tour booking form will be available soon.",
     "and": "and",
+    "oneWayPrice": "One way price",
+    "roundTripPrice": "Round trip price",
+    "outboundDate": "Outbound Date",
+    "outboundTime": "Outbound Time",
     "steps": {
       "vehicle": "Vehicle",
       "extras": "Extras", 
       "payment": "Payment"
-    }
+    },
+    "selectVehicle": "Select Your Car"
   },
   "benefits": {
     "safetyFirst": "Safety First",
@@ -245,8 +250,10 @@
   },
   "payment": {
     "billingAddress": "Billing Address",
+    "billingAddressSubtitle": "Complete your booking with secure payment",
     "firstName": "First Name",
     "lastName": "Last Name",
+    "emailAddress": "Email Address",
     "company": "Company (Optional)",
     "address": "Address",
     "country": "Country",
@@ -258,10 +265,16 @@
     "month": "Month",
     "year": "Year",
     "cvv": "CVV",
-    "cardInfo": "The credit card must be issued in the driver's name. Debit cards are accepted at some locations and for some car categories.",
+    "cardInfo": "The credit card must be issued in the driver's name. Debit cards are accepted at some locations and for some car categories. Your data is securely processed by Stripe.",
     "termsConditions": "I accept the Terms & Conditions - Booking Conditions and Privacy Policy. *",
     "newsletter": "I want to subscribe to Transfero's newsletter (Travel tips and special deals)",
     "processing": "Processing...",
-    "bookNow": "Book Now"
+    "bookNow": "Book Now",
+    "countries": {
+      "unitedStates": "United States",
+      "canada": "Canada",
+      "brazil": "Brazil",
+      "unitedKingdom": "United Kingdom"
+    }
   }
 } 
