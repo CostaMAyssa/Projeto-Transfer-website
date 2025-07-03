@@ -53,6 +53,14 @@ const RideSummary = () => {
           flightNumber: hourly?.flightNumber,
           orderType: hourly?.orderType
         };
+      case 'city-tour':
+        return {
+          pickupDate,
+          pickupTime,
+          pickupLocation,
+          dropoffLocation,
+          passengers
+        };
       default:
         return {
           pickupDate,
@@ -146,7 +154,7 @@ const RideSummary = () => {
             // Round Trip Layout
             <>
               <div className="border-b pb-3">
-                <div className="text-sm font-medium text-brand mb-2">Ida</div>
+                <div className="text-sm font-medium text-brand mb-2">{t('booking.oneWay')}</div>
                 <div>
                   <div className="flex items-center text-sm text-gray-500 mb-1">
                     <MapPin size={16} className="text-brand mr-1" />
@@ -169,7 +177,7 @@ const RideSummary = () => {
               
               {displayData.returnDate && (
                 <div>
-                  <div className="text-sm font-medium text-green-600 mb-2">Volta</div>
+                  <div className="text-sm font-medium text-green-600 mb-2">{t('booking.return')}</div>
                   <div>
                     <div className="flex items-center text-sm text-gray-500 mb-1">
                       <MapPin size={16} className="text-green-600 mr-1" />
@@ -216,12 +224,12 @@ const RideSummary = () => {
               
               {(displayData.airline || displayData.flightNumber) && (
                 <div className="bg-blue-50 p-3 rounded-lg">
-                  <div className="text-sm font-medium text-blue-800 mb-1">Informações do Voo</div>
+                  <div className="text-sm font-medium text-blue-800 mb-1">{t('booking.flightInfoTitle')}</div>
                   {displayData.airline && (
-                    <div className="text-sm text-blue-700">Companhia: {displayData.airline}</div>
+                    <div className="text-sm text-blue-700">{t('booking.airlineLabel')}: {displayData.airline}</div>
                   )}
                   {displayData.flightNumber && (
-                    <div className="text-sm text-blue-700">Voo: {displayData.flightNumber}</div>
+                    <div className="text-sm text-blue-700">{t('booking.flightLabel')}: {displayData.flightNumber}</div>
                   )}
                 </div>
               )}
@@ -302,9 +310,9 @@ const RideSummary = () => {
             <div>
               <div className="flex items-center text-sm text-gray-500 mb-1">
                 <Clock size={16} className="text-blue-600 mr-1" />
-                <span>Duração</span>
+                <span>{t('booking.duration')}</span>
               </div>
-              <div className="font-normal">{displayData.durationHours} hora(s)</div>
+              <div className="font-normal">{displayData.durationHours} {t('booking.hour')}{displayData.durationHours > 1 ? 's' : ''}</div>
             </div>
           )}
 
@@ -364,7 +372,7 @@ const RideSummary = () => {
         {bookingType === 'round-trip' && (
           <>
             <div className="flex justify-between mb-2">
-              <span>Ida ({t('booking.vehiclePrice')})</span>
+              <span>{t('booking.oneWay')} ({t('booking.vehiclePrice')})</span>
               <span>
                 {isCalculating ? (
                   <span className="text-gray-400">Calculando...</span>
@@ -374,7 +382,7 @@ const RideSummary = () => {
               </span>
             </div>
             <div className="flex justify-between mb-2">
-              <span>Volta ({t('booking.vehiclePrice')})</span>
+              <span>{t('booking.return')} ({t('booking.vehiclePrice')})</span>
               <span>
                 {isCalculating ? (
                   <span className="text-gray-400">Calculando...</span>
@@ -389,7 +397,7 @@ const RideSummary = () => {
         {bookingType === 'hourly' && displayData.durationHours && (
           <>
             <div className="flex justify-between mb-2">
-              <span>Taxa por Hora</span>
+              <span>{t('booking.hourlyRate')}</span>
               <span>
                 {isCalculating ? (
                   <span className="text-gray-400">Calculando...</span>
@@ -399,7 +407,7 @@ const RideSummary = () => {
               </span>
             </div>
             <div className="flex justify-between mb-2">
-              <span>Duração ({displayData.durationHours} hora{displayData.durationHours > 1 ? 's' : ''})</span>
+              <span>{t('booking.duration')} ({displayData.durationHours} {t('booking.hour')}{displayData.durationHours > 1 ? 's' : ''})</span>
               <span>
                 {isCalculating ? (
                   <span className="text-gray-400">Calculando...</span>

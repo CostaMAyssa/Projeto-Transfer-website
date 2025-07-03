@@ -51,7 +51,7 @@
     "passenger": "Pasajero",
     "passengers": "Pasajeros",
     "pickupOutbound": "Pick-Up (Outbound)",
-    "return": "Return",
+    "return": "Regreso",
     "dropLocation": "Lugar de Destino",
     "enterDropLocation": "Ingrese el lugar de destino",
     "durationDays": "Duración (días)",
@@ -98,7 +98,12 @@
       "extras": "Extras",
       "payment": "Pago"
     },
-    "selectVehicle": "Selecciona Tu Coche"
+    "selectVehicle": "Selecciona Tu Coche",
+    "enterLocationsForMap": "Introduce los lugares de recogida y destino para verlos en el mapa",
+    "flightInfoTitle": "Información de Vuelo",
+    "airlineLabel": "Aerolínea",
+    "flightLabel": "Vuelo",
+    "hourlyRate": "Tarifa por Hora"
   },
   "benefits": {
     "safetyFirst": "Seguridad Primero",

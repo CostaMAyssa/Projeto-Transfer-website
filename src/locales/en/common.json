@@ -101,7 +101,14 @@
       "extras": "Extras", 
       "payment": "Payment"
     },
-    "selectVehicle": "Select Your Car"
+    "selectVehicle": "Select Your Car",
+    "enterLocationsForMap": "Enter pickup and dropoff locations to see them on the map",
+    "flightInfoTitle": "Flight Information",
+    "airlineLabel": "Airline",
+    "flightLabel": "Flight",
+    "hourlyRate": "Hourly Rate",
+    "hour": "hour",
+    "hours": "hours"
   },
   "benefits": {
     "safetyFirst": "Safety First",

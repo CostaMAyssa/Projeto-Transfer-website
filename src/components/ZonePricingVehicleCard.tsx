@@ -253,13 +253,6 @@ const ZonePricingVehicleCard = ({
 
             <div className="flex items-center justify-between pt-4 border-t">
               <Button 
-                variant="link" 
-                className="text-brand hover:text-brand-700 p-0 font-medium"
-              >
-                {t('booking.showMoreInfo')}
-              </Button>
-              
-              <Button 
                 onClick={handleVehicleSelect} 
                 variant={selected ? "outline" : "default"}
                 className={

@@ -51,7 +51,7 @@
     "passenger": "Passageiro",
     "passengers": "Passageiros",
     "pickupOutbound": "Pick-Up (Outbound)",
-    "return": "Return",
+    "return": "Volta",
     "dropLocation": "Local de Destino",
     "enterDropLocation": "Digite o local de destino",
     "durationDays": "Duração (dias)",
@@ -98,7 +98,12 @@
       "extras": "Extras",
       "payment": "Pagamento"
     },
-    "selectVehicle": "Selecione Seu Veículo"
+    "selectVehicle": "Selecione Seu Veículo",
+    "enterLocationsForMap": "Digite os locais de embarque e destino para vê-los no mapa",
+    "flightInfoTitle": "Informações do Voo",
+    "airlineLabel": "Companhia",
+    "flightLabel": "Voo",
+    "hourlyRate": "Taxa por Hora"
   },
   "benefits": {
     "safetyFirst": "Segurança em Primeiro Lugar",

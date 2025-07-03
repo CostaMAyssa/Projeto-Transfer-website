@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useBooking } from "@/contexts/BookingContext";
 import { Skeleton } from '@/components/ui/skeleton';
-import { MapPin, AlertCircle } from 'lucide-react';
+import { MapPin, AlertCircle, Calendar, Clock, Users, Briefcase } from 'lucide-react';
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { useTranslation } from "react-i18next";
 
 interface RideMapProps {
   className?: string;
@@ -21,6 +22,7 @@ interface RideMapProps {
 
 const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) => {
   const { bookingData } = useBooking();
+  const { t } = useTranslation();
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const markersRef = useRef<mapboxgl.Marker[]>([]);
@@ -380,7 +382,7 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
       {!hasLocations ? (
         <div className="flex flex-col items-center justify-center bg-gray-100 h-64 text-gray-500">
           <MapPin size={32} />
-          <p className="mt-2 text-sm">Digite os locais de origem e destino para vê-los no mapa</p>
+          <p className="mt-2 text-sm">{t('booking.enterLocationsForMap')}</p>
         </div>
       ) : (
         <div 
