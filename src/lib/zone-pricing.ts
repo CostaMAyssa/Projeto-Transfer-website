@@ -339,11 +339,17 @@ function calculatePriceByBookingType(
       // Para ida e volta, cobrar ida + volta (2x o preço base)
       return basePrice * 2;
       
-    case 'hourly':
+    case 'hourly': {
       // Para serviço por hora, calcular baseado na duração
       const durationHours = request.duration_hours || 1;
-      const hourlyRate = Math.max(basePrice * 0.4, 50); // Mínimo $50/hora ou 40% do preço base
+      let hourlyRate: number;
+      if (durationHours >= 3) {
+        hourlyRate = 80; // $80/hora para 3 horas ou mais
+      } else {
+        hourlyRate = 100; // $100/hora avulsa
+      }
       return hourlyRate * durationHours;
+    }
       
     case 'one-way':
     default:
@@ -365,13 +371,19 @@ function buildPricingBreakdown(
       breakdown.return_price = basePrice;
       break;
       
-    case 'hourly':
+    case 'hourly': {
       const durationHours = request.duration_hours || 1;
-      const hourlyRate = Math.max(basePrice * 0.4, 50);
+      let hourlyRate: number;
+      if (durationHours >= 3) {
+        hourlyRate = 80; // $80/hora para 3 horas ou mais
+      } else {
+        hourlyRate = 100; // $100/hora avulsa
+      }
       breakdown.hourly_rate = hourlyRate;
       breakdown.duration_hours = durationHours;
       breakdown.total_hours_cost = hourlyRate * durationHours;
       break;
+    }
   }
   
   return breakdown;

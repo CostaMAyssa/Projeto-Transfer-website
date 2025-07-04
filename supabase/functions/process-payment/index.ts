@@ -113,6 +113,16 @@ serve(async (req) => {
           const customerEmail = paymentDetails.email;
           const customerName = `${paymentDetails.firstName} ${paymentDetails.lastName}`;
 
+          // Novos campos para breakdown
+          const isHourly = bookingData.bookingType === 'hourly';
+          const duration = bookingData.hourly?.durationHours || bookingData.durationHours || 1;
+          const hourlyRate = duration >= 3 ? 80 : 100;
+          const extras = bookingData.extras || [];
+          const extrasTotal = extras.reduce((sum, extra) => sum + (extra.price || 0) * (extra.quantity || 1), 0);
+          const total = isHourly ? (hourlyRate * duration + extrasTotal) : (bookingData.total || 0);
+          const luggageSmall = bookingData.luggage?.small || 0;
+          const luggageLarge = bookingData.luggage?.large || 0;
+
           const emailBodyHtml = `
             <h1>Confirmação da sua Reserva Transfero</h1>
             <p>Olá ${customerName},</p>
@@ -120,15 +130,30 @@ serve(async (req) => {
             
             <h2>Detalhes da Reserva:</h2>
             <ul>
-              <li><strong>Tipo de Reserva:</strong> ${bookingData.bookingType || 'Não especificado'}</li>
-              <li><strong>Origem:</strong> ${bookingData.pickupLocation?.address || 'Não especificado'}</li>
+              <li><strong>Embarque:</strong> ${bookingData.pickupLocation?.address || 'Não especificado'}</li>
               <li><strong>Destino:</strong> ${bookingData.dropoffLocation?.address || 'Não especificado'}</li>
-              <li><strong>Data:</strong> ${new Date(bookingData.pickupDate).toLocaleDateString('pt-BR') || 'Não especificada'}</li>
+              <li><strong>Data:</strong> ${bookingData.pickupDate ? new Date(bookingData.pickupDate).toLocaleDateString('pt-BR') : 'Não especificada'}</li>
               <li><strong>Hora:</strong> ${bookingData.pickupTime || 'Não especificada'}</li>
-              <li><strong>Veículo:</strong> ${bookingData.vehicle?.name || 'Não selecionado'}</li>
+              <li><strong>Duração:</strong> ${isHourly ? duration + ' horas' : '-'}</li>
               <li><strong>Passageiros:</strong> ${bookingData.passengers || '1'}</li>
-              <li><strong>Valor Total:</strong> USD ${bookingData.total?.toFixed(2) || '0.00'}</li>
+              <li><strong>Bagagem:</strong> ${luggageSmall} pequena, ${luggageLarge} grande</li>
+              <li><strong>Veículo Selecionado:</strong> ${bookingData.vehicle?.name || 'Não selecionado'}</li>
             </ul>
+
+            ${isHourly ? `
+            <h2>Resumo Financeiro</h2>
+            <ul>
+              <li><strong>Taxa por Hora:</strong> $${hourlyRate.toFixed(2)}/hora</li>
+              <li><strong>Duração (${duration} horas):</strong> $${(hourlyRate * duration).toFixed(2)}</li>
+              <li><strong>Extras:</strong> $${extrasTotal.toFixed(2)}</li>
+              <li><strong>Total:</strong> $${total.toFixed(2)}</li>
+            </ul>
+            ` : `
+            <h2>Valor Total</h2>
+            <ul>
+              <li><strong>Total:</strong> USD $${(bookingData.total || 0).toFixed(2)}</li>
+            </ul>
+            `}
 
             <h2>Detalhes do Pagamento:</h2>
             <ul>
