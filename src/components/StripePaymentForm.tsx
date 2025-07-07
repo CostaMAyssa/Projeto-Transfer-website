@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import { ChevronRight, AlertTriangle } from "lucide-react";
+import { ChevronRight, AlertTriangle, Loader2 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -92,49 +92,9 @@ const CheckoutForm = () => {
     defaultValues,
   });
 
-  useEffect(() => {
-    const createPaymentIntent = async () => {
-      try {
-        const { total } = await calculateTotal();
-        console.log('💰 Criando Payment Intent para:', total);
-
-        const { data, error } = await supabase.functions.invoke('process-payment', {
-          body: { 
-            amount: Math.round(total * 100),
-            currency: 'usd',
-            metadata: {
-              pickup: bookingData.pickupLocation?.address || '',
-              dropoff: bookingData.dropoffLocation?.address || '',
-              passengers: bookingData.passengers?.toString() || '1',
-              vehicle: bookingData.vehicle?.name || '',
-              bookingType: bookingData.bookingType || 'one-way'
-            }
-          }
-        });
-
-        if (error) {
-          console.error('❌ Erro ao criar Payment Intent:', error);
-          toast({
-            title: "Erro de Configuração",
-            description: "Não foi possível inicializar o pagamento. Verifique a configuração do Stripe.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        setPaymentIntent(data);
-        console.log('✅ Payment Intent criado:', data.id);
-      } catch (error) {
-        console.error('❌ Erro inesperado:', error);
-      }
-    };
-
-    createPaymentIntent();
-  }, []);
-
   const onSubmit = async (data: BillingFormData) => {
-    if (!stripe || !elements || !paymentIntent) {
-      console.error('❌ Stripe, elements, ou paymentIntent não disponível');
+    if (!stripe || !elements) {
+      console.error('❌ Stripe ou elements não disponível');
       toast({
         title: "Erro de Configuração",
         description: "Problema com a configuração do pagamento. Recarregue a página.",
@@ -146,53 +106,112 @@ const CheckoutForm = () => {
     setIsProcessing(true);
     setCardError('');
 
-    console.log('💳 Iniciando processo de pagamento SEGURO...');
-    console.log('🔍 PaymentIntent ID:', paymentIntent.client_secret);
-    console.log('📝 Dados do formulário:', data);
-
     try {
       const cardElement = elements.getElement(CardElement);
-      
+
       if (!cardElement) {
-        throw new Error('Elemento do cartão não encontrado');
+        throw new Error('Elemento do cartão não encontrado.');
       }
 
-      console.log('🔄 Confirmando Payment Intent com Stripe Elements...');
-
-      const { error, paymentIntent: confirmedPaymentIntent } = await stripe.confirmCardPayment(
-        paymentIntent.client_secret,
-        {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: `${data.firstName} ${data.lastName}`,
-              email: data.email,
-              address: {
-                line1: data.address,
-                city: data.city,
-                postal_code: data.postal,
-                country: data.country,
-              },
-            },
+      console.log('💳 Criando Payment Method no frontend...');
+      const { paymentMethod, error: createPaymentMethodError } = await stripe.createPaymentMethod({
+        type: 'card',
+        card: cardElement,
+        billing_details: {
+          name: `${data.firstName} ${data.lastName}`,
+          email: data.email,
+          address: {
+            line1: data.address,
+            city: data.city,
+            postal_code: data.postal,
+            country: data.country,
           },
-        }
-      );
+        },
+      });
 
-      if (error) {
-        console.error('❌ Erro no pagamento:', error);
-        setCardError(error.message || 'Erro desconhecido no pagamento');
-        
+      if (createPaymentMethodError) {
+        console.error('❌ Erro ao criar Payment Method:', createPaymentMethodError);
+        console.error('Detalhes do erro Stripe:', createPaymentMethodError.code, createPaymentMethodError.type, createPaymentMethodError.param, createPaymentMethodError.decline_code);
+        setCardError(createPaymentMethodError.message || 'Erro ao criar método de pagamento.');
         toast({
           title: "Erro no Pagamento",
-          description: error.message || "Erro ao processar o pagamento. Tente novamente.",
+          description: createPaymentMethodError.message || "Erro ao processar o pagamento. Tente novamente.",
           variant: "destructive",
         });
+        setIsProcessing(false);
         return;
       }
 
-      console.log('✅ Payment Intent confirmado:', confirmedPaymentIntent);
+      if (!paymentMethod || !paymentMethod.id) {
+        throw new Error('Payment Method não foi criado ou ID ausente.');
+      }
 
-      if (confirmedPaymentIntent.status === 'succeeded') {
+      console.log('✅ Payment Method criado no frontend:', paymentMethod.id);
+      console.log('💰 Iniciando criação do Payment Intent na Edge Function...');
+
+      // Agora, enviamos o ID do PaymentMethod para a Edge Function
+      const { data: intentData, error: intentError } = await supabase.functions.invoke('process-payment', {
+        body: {
+          paymentMethodId: paymentMethod.id, // Enviando apenas o ID seguro
+          paymentDetails: {
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            company: data.company,
+            address: data.address,
+            country: data.country,
+            city: data.city,
+            postal: data.postal,
+          },
+          bookingData: {
+            ...bookingData,
+            total: (await calculateTotal()).total,
+          },
+        },
+      });
+
+      if (intentError) {
+        console.error('❌ Erro ao criar Payment Intent na Edge Function:', intentError);
+        toast({
+          title: "Erro de Configuração",
+          description: intentError.message || "Não foi possível inicializar o pagamento. Verifique a configuração do Stripe no servidor.",
+          variant: "destructive",
+        });
+        setIsProcessing(false);
+        return;
+      }
+
+      setPaymentIntent(intentData);
+      console.log('✅ Payment Intent criado pela Edge Function:', intentData.id);
+
+      // Se o Payment Intent requer ação (ex: 3D Secure), confirmamos no frontend
+      if (intentData.requiresAction && intentData.clientSecret) {
+        console.log('🔐 Pagamento requer autenticação 3D Secure no frontend...');
+        const { error: confirmError, paymentIntent: confirmedPaymentIntent } = await stripe.confirmCardPayment(
+          intentData.clientSecret,
+          { payment_method: paymentMethod.id } // Usamos o ID do PaymentMethod já criado
+        );
+
+        if (confirmError) {
+          console.error('❌ Erro na confirmação 3D Secure:', confirmError);
+          setCardError(confirmError.message || 'Erro na autenticação 3D Secure.');
+          toast({
+            title: "Erro no Pagamento",
+            description: confirmError.message || "Erro na autenticação do cartão. Tente novamente.",
+            variant: "destructive",
+          });
+          setIsProcessing(false);
+          return;
+        }
+        console.log('✅ Payment Intent confirmado após 3D Secure:', confirmedPaymentIntent);
+        // Atualiza intentData com o resultado da confirmação
+        intentData.status = confirmedPaymentIntent.status;
+        intentData.id = confirmedPaymentIntent.id;
+      }
+
+
+      // Após a criação/confirmação do Payment Intent (pela EF ou 3D Secure), verificamos o status final
+      if (intentData.status === 'succeeded') {
         console.log('🎉 Pagamento realizado com sucesso!');
 
         const paymentDetails = {
@@ -206,8 +225,8 @@ const CheckoutForm = () => {
           postal: data.postal,
           termsAccepted: data.termsAccepted,
           newsletterSubscription: data.newsletterSubscription,
-          paymentIntentId: confirmedPaymentIntent.id,
-          paymentStatus: confirmedPaymentIntent.status,
+          paymentIntentId: intentData.id,
+          paymentStatus: intentData.status,
         };
 
         console.log('💾 Salvando detalhes do pagamento...');
@@ -228,7 +247,7 @@ const CheckoutForm = () => {
         await completeBooking();
         
       } else {
-        console.warn('⚠️ Status do pagamento:', confirmedPaymentIntent.status);
+        console.warn('⚠️ Status do pagamento final:', intentData.status);
         
         toast({
           title: "Pagamento Pendente",
@@ -257,57 +276,23 @@ const CheckoutForm = () => {
         <Alert className="mb-6" variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            ⚠️ Stripe não configurado. Configure VITE_STRIPE_PUBLISHABLE_KEY no arquivo .env.local
+            Chave pública do Stripe não configurada (VITE_STRIPE_PUBLISHABLE_KEY). O formulário de pagamento não funcionará.
           </AlertDescription>
         </Alert>
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <div className="grid gap-4">
-            <div>
-              <h2 className="text-2xl font-bold">{t('payment.billingAddress')}</h2>
-              <p className="text-muted-foreground">{t('payment.billingAddressSubtitle')}</p>
-            </div>
-
-            <p className="font-semibold text-lg">{t('payment.cardHolderName')}</p>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payment.firstName")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payment.lastName")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <h2 className="text-2xl font-bold mb-4">Detalhes de Cobrança</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <FormField
               control={form.control}
-              name="email"
+              name="firstName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("payment.emailAddress")}</FormLabel>
+                  <FormLabel>Primeiro Nome</FormLabel>
                   <FormControl>
-                    <Input placeholder="mayssa@example.com" {...field} />
+                    <Input placeholder="Seu primeiro nome" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -315,120 +300,156 @@ const CheckoutForm = () => {
             />
             <FormField
               control={form.control}
-              name="address"
+              name="lastName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>{t("payment.address")}</FormLabel>
+                  <FormLabel>Sobrenome</FormLabel>
                   <FormControl>
-                    <Input placeholder="" {...field} />
+                    <Input placeholder="Seu sobrenome" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <FormField
-                control={form.control}
-                name="city"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payment.city")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} className="p-3 bg-gray-50" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="postal"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payment.postalCode")}</FormLabel>
-                    <FormControl>
-                      <Input placeholder="" {...field} className="p-3 bg-gray-50" />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="country"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("payment.country")}</FormLabel>
-                    <FormControl>
-                      <select className="w-full p-3 bg-gray-50 border rounded-md" {...field}>
-                        <option value="US">{t('payment.countries.unitedStates')}</option>
-                        <option value="CA">{t('payment.countries.canada')}</option>
-                        <option value="BR">{t('payment.countries.brazil')}</option>
-                        <option value="GB">{t('payment.countries.unitedKingdom')}</option>
-                      </select>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <div className="mt-8">
-              <h4 className="text-xl font-bold mb-4">{t('payment.creditCardPayment')}</h4>
-              <div className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="cardNumber"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("payment.cardNumber")}</FormLabel>
-                      <FormControl>
-                        <CardElement options={cardElementOptions} className="p-2 border rounded-md" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                {cardError && (
-                  <Alert variant="destructive">
-                    <AlertTriangle className="h-4 w-4" />
-                    <AlertDescription>{cardError}</AlertDescription>
-                  </Alert>
-                )}
-                <p className="text-sm text-muted-foreground">{t('payment.cardInfo')}</p>
-
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="termsAccepted"
-                    checked={form.watch("termsAccepted")}
-                    onCheckedChange={(checked) => {
-                      form.setValue("termsAccepted", !!checked);
-                      form.trigger("termsAccepted");
-                    }}
-                  />
-                  <Label htmlFor="termsAccepted">{t('payment.termsConditions')}</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="newsletterSubscription"
-                    checked={form.watch("newsletterSubscription")}
-                    onCheckedChange={(checked) => form.setValue("newsletterSubscription", !!checked)}
-                  />
-                  <Label htmlFor="newsletterSubscription">{t('payment.newsletter')}</Label>
-                </div>
-              </div>
-            </div>
+          </div>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="seu@email.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="company"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Empresa (Opcional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Nome da sua empresa" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <h2 className="text-2xl font-bold mb-4 mt-8">Endereço de Cobrança</h2>
+          <FormField
+            control={form.control}
+            name="address"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Endereço</FormLabel>
+                <FormControl>
+                  <Input placeholder="Endereço da rua" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <FormField
+              control={form.control}
+              name="country"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>País</FormLabel>
+                  <FormControl>
+                    <Input placeholder="País" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Cidade</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Cidade" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="postal"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>CEP</FormLabel>
+                  <FormControl>
+                    <Input placeholder="CEP" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
 
-          <Button type="submit" disabled={isProcessing} className="bg-black hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto mt-6">
+          <h2 className="text-2xl font-bold mb-4 mt-8">Pagamento com Cartão de Crédito</h2>
+          <p className="text-sm text-gray-600 mb-4">
+            O cartão de crédito deve ser emitido em nome do motorista. Cartões de débito são aceitos em alguns locais e para algumas categorias de carros.
+            Seus dados são processados de forma segura pelo Stripe.
+          </p>
+          
+          <div className="border p-4 rounded-md">
+            <Label htmlFor="card-element" className="mb-2 block">Número do Cartão</Label>
+            <CardElement id="card-element" options={cardElementOptions} className="p-2 border rounded-md" />
+            {cardError && <div className="text-red-500 text-sm mt-2"><AlertTriangle className="inline h-4 w-4 mr-1" />{cardError}</div>}
+          </div>
+
+          <FormField
+            control={form.control}
+            name="termsAccepted"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Aceito os Termos e Condições e a Reserva e Política de Privacidade.</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="newsletterSubscription"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel>Quero me inscrever na newsletter da Transfero (Dicas de viagem e ofertas especiais)</FormLabel>
+                </div>
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit" className="w-full" disabled={isProcessing}>
             {isProcessing ? (
               <>
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                {t('payment.processing')}
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando...
               </>
             ) : (
               <>
-                {t('payment.bookNow')} <ChevronRight size={18} className="ml-1" />
+                Pagar com Cartão de Crédito <ChevronRight className="ml-2 h-4 w-4" />
               </>
             )}
           </Button>

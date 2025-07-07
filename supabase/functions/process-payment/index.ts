@@ -29,6 +29,8 @@ serve(async (req) => {
 
     // Parse request body
     const { paymentDetails, bookingData } = await req.json();
+    console.log('📋 Dados recebidos - paymentDetails:', paymentDetails);
+    console.log('📋 Dados recebidos - bookingData:', bookingData);
     console.log('📋 Dados recebidos:', {
       customer: `${paymentDetails?.firstName} ${paymentDetails?.lastName}`,
       total: bookingData?.total,
@@ -52,6 +54,12 @@ serve(async (req) => {
     console.log(`💰 Processando pagamento de $${total} (${amount} cents)`);
 
     // Create payment method for card
+    console.log('💳 Detalhes do cartão para criação do payment method:', {
+      number: paymentDetails.cardNumber?.replace(/\s/g, '').slice(-4), // Log apenas os últimos 4 dígitos por segurança
+      exp_month: parseInt(paymentDetails.expiryMonth),
+      exp_year: parseInt(paymentDetails.expiryYear),
+      cvc: paymentDetails.cvv ? '***' : 'N/A', // Não logar o CVC real por segurança
+    });
     const paymentMethod = await stripe.paymentMethods.create({
       type: 'card',
       card: {
@@ -174,7 +182,7 @@ serve(async (req) => {
                 subject: emailSubject,
               },
             ],
-            from: { email: "no-reply@yourdomain.com", name: "Transfero" }, // TODO: Configurar um e-mail remetente real
+            from: { email: "hello@nexlink.ai", name: "Transfero" },
             content: [
               {
                 type: "text/html",
@@ -248,30 +256,12 @@ serve(async (req) => {
     }
 
   } catch (error) {
-    console.error("❌ Erro no processamento do pagamento:", error);
-    
-    // Handle Stripe-specific errors
-    if (error instanceof Stripe.errors.StripeError) {
-      console.error("Stripe Error:", error.type, error.message);
-      
-      return new Response(
-        JSON.stringify({
-          error: error.message || "Erro no processamento do pagamento",
-          type: error.type,
-          code: error.code
-        }),
-        {
-          status: 400,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        }
-      );
+    console.error('❌ Erro na função process-payment:', error.message || error);
+    if (error.stack) {
+      console.error('StackTrace:', error.stack);
     }
-    
-    // Handle general errors
     return new Response(
-      JSON.stringify({ 
-        error: error.message || "Erro interno no servidor" 
-      }),
+      JSON.stringify({ error: error.message || "Erro interno do servidor" }),
       {
         status: 500,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
