@@ -121,6 +121,10 @@ export type Database = {
           description: string | null
           price: number
           created_at: string
+          name_en: string | null
+          name_es: string | null
+          description_en: string | null
+          description_es: string | null
         }
         Insert: {
           id?: string
@@ -128,6 +132,10 @@ export type Database = {
           description?: string | null
           price: number
           created_at?: string
+          name_en?: string | null
+          name_es?: string | null
+          description_en?: string | null
+          description_es?: string | null
         }
         Update: {
           id?: string
@@ -135,6 +143,10 @@ export type Database = {
           description?: string | null
           price?: number
           created_at?: string
+          name_en?: string | null
+          name_es?: string | null
+          description_en?: string | null
+          description_es?: string | null
         }
         Relationships: []
       }
