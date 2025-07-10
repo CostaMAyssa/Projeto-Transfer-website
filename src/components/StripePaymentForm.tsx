@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ChevronRight, AlertTriangle, Loader2 } from "lucide-react";
-import { toast } from "@/hooks/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "react-i18next";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import {
@@ -68,6 +68,7 @@ const CheckoutForm = () => {
   const { t } = useTranslation();
   const stripe = useStripe();
   const elements = useElements();
+  const { toast } = useToast();
   const { completeBooking, bookingData, setPaymentDetails, calculateTotal, setPassengerDetails } = useBooking();
   const [isProcessing, setIsProcessing] = useState(false);
   const [cardError, setCardError] = useState<string | null>(null);
@@ -276,23 +277,23 @@ const CheckoutForm = () => {
         <Alert className="mb-6" variant="destructive">
           <AlertTriangle className="h-4 w-4" />
           <AlertDescription>
-            Chave pública do Stripe não configurada (VITE_STRIPE_PUBLISHABLE_KEY). O formulário de pagamento não funcionará.
+            {t('payment.stripeKeyError')}
           </AlertDescription>
         </Alert>
       )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <h2 className="text-2xl font-bold mb-4">Detalhes de Cobrança</h2>
+          <h2 className="text-2xl font-bold mb-4">{t('payment.billingDetails')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
                   <FormItem>
-                  <FormLabel>Primeiro Nome</FormLabel>
+                  <FormLabel>{t('payment.firstName')}</FormLabel>
                     <FormControl>
-                    <Input placeholder="Seu primeiro nome" {...field} />
+                    <Input placeholder={t('payment.firstNamePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -303,9 +304,9 @@ const CheckoutForm = () => {
                 name="lastName"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Sobrenome</FormLabel>
+                    <FormLabel>{t('payment.lastName')}</FormLabel>
                     <FormControl>
-                    <Input placeholder="Seu sobrenome" {...field} />
+                    <Input placeholder={t('payment.lastNamePlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -317,9 +318,9 @@ const CheckoutForm = () => {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('payment.emailAddress')}</FormLabel>
                   <FormControl>
-                  <Input type="email" placeholder="seu@email.com" {...field} />
+                  <Input type="email" placeholder={t('payment.emailPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -330,23 +331,23 @@ const CheckoutForm = () => {
             name="company"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Empresa (Opcional)</FormLabel>
+                <FormLabel>{t('payment.company')}</FormLabel>
                 <FormControl>
-                  <Input placeholder="Nome da sua empresa" {...field} />
+                  <Input placeholder={t('payment.companyPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-          <h2 className="text-2xl font-bold mb-4 mt-8">Endereço de Cobrança</h2>
+          <h2 className="text-2xl font-bold mb-4 mt-8">{t('payment.billingAddress')}</h2>
             <FormField
               control={form.control}
               name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Endereço</FormLabel>
+                  <FormLabel>{t('payment.address')}</FormLabel>
                   <FormControl>
-                  <Input placeholder="Endereço da rua" {...field} />
+                  <Input placeholder={t('payment.addressPlaceholder')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -358,9 +359,9 @@ const CheckoutForm = () => {
               name="country"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>País</FormLabel>
+                  <FormLabel>{t('payment.country')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="País" {...field} />
+                    <Input placeholder={t('payment.countryPlaceholder')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -371,9 +372,9 @@ const CheckoutForm = () => {
                 name="city"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cidade</FormLabel>
+                    <FormLabel>{t('payment.city')}</FormLabel>
                     <FormControl>
-                    <Input placeholder="Cidade" {...field} />
+                    <Input placeholder={t('payment.cityPlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -384,9 +385,9 @@ const CheckoutForm = () => {
                 name="postal"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>CEP</FormLabel>
+                    <FormLabel>{t('payment.postalCode')}</FormLabel>
                     <FormControl>
-                    <Input placeholder="CEP" {...field} />
+                    <Input placeholder={t('payment.postalPlaceholder')} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -394,14 +395,13 @@ const CheckoutForm = () => {
               />
             </div>
 
-          <h2 className="text-2xl font-bold mb-4 mt-8">Pagamento com Cartão de Crédito</h2>
+          <h2 className="text-2xl font-bold mb-4 mt-8">{t('payment.creditCardPayment')}</h2>
           <p className="text-sm text-gray-600 mb-4">
-            O cartão de crédito deve ser emitido em nome do motorista. Cartões de débito são aceitos em alguns locais e para algumas categorias de carros.
-            Seus dados são processados de forma segura pelo Stripe.
+            {t('payment.cardInfo')}
           </p>
           
           <div className="border p-4 rounded-md">
-            <Label htmlFor="card-element" className="mb-2 block">Número do Cartão</Label>
+            <Label htmlFor="card-element" className="mb-2 block">{t('payment.cardNumber')}</Label>
             <CardElement id="card-element" options={cardElementOptions} className="p-2 border rounded-md" />
             {cardError && <div className="text-red-500 text-sm mt-2"><AlertTriangle className="inline h-4 w-4 mr-1" />{cardError}</div>}
           </div>
@@ -418,7 +418,7 @@ const CheckoutForm = () => {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                  <FormLabel>Aceito os Termos e Condições e a Reserva e Política de Privacidade.</FormLabel>
+                  <FormLabel>{t('payment.termsConditions')}</FormLabel>
                   </div>
                 </FormItem>
               )}
@@ -436,7 +436,7 @@ const CheckoutForm = () => {
                     />
                   </FormControl>
                   <div className="space-y-1 leading-none">
-                  <FormLabel>Quero me inscrever na newsletter da Transfero (Dicas de viagem e ofertas especiais)</FormLabel>
+                  <FormLabel>{t('payment.newsletter')}</FormLabel>
                   </div>
                 </FormItem>
               )}
@@ -445,11 +445,11 @@ const CheckoutForm = () => {
           <Button type="submit" className="w-full" disabled={isProcessing}>
             {isProcessing ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Processando...
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('payment.processing')}
               </>
             ) : (
               <>
-                Pagar com Cartão de Crédito <ChevronRight className="ml-2 h-4 w-4" />
+                {t('payment.payWithCreditCard')} <ChevronRight className="ml-2 h-4 w-4" />
               </>
             )}
           </Button>
