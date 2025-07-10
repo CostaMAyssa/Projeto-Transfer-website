@@ -37,16 +37,27 @@ const AddressAutocomplete = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedAddress, setSelectedAddress] = useState<string | null>(null);
+  const [justSelected, setJustSelected] = useState(false); // Flag para controlar quando acabou de selecionar
   const wrapperRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const debouncedValue = useDebounce(value, 400);
 
   useEffect(() => {
     const fetchSuggestions = async () => {
+      // Se acabou de selecionar um endereço, não buscar sugestões
+      if (justSelected) {
+        return;
+      }
+
       if (debouncedValue.length < 3) {
         setSuggestions([]);
         setIsOpen(false);
         setErrorMessage(null);
+        return;
+      }
+
+      // Se o valor atual é igual ao endereço selecionado, não buscar
+      if (selectedAddress && debouncedValue === selectedAddress) {
         return;
       }
 
@@ -72,7 +83,7 @@ const AddressAutocomplete = ({
         if (data?.status === 'OK' && data?.predictions) {
           console.log('✅ Sugestões da Google API recebidas:', data.predictions.length);
           setSuggestions(data.predictions);
-          setIsOpen(data.predictions.length > 0);
+          setIsOpen(data.predictions.length > 0 && isFocused);
         } else if (data?.status === 'REQUEST_DENIED') {
           console.error('❌ Google API: REQUEST_DENIED -', data.error_message);
           setErrorMessage("API Key do Google com restrições. Configure sem restrições no Google Cloud Console.");
@@ -103,13 +114,14 @@ const AddressAutocomplete = ({
       setIsOpen(false);
       setErrorMessage(null);
     }
-  }, [debouncedValue]);
+  }, [debouncedValue, justSelected, selectedAddress, isFocused]);
 
   useEffect(() => {
     // Close suggestions on outside click
     const handleClickOutside = (event: MouseEvent) => {
       if (wrapperRef.current && !wrapperRef.current.contains(event.target as Node)) {
         setIsOpen(false);
+        setIsFocused(false);
       }
     };
 
@@ -148,9 +160,15 @@ const AddressAutocomplete = ({
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+    
+    // Se o usuário está mudando o texto de um endereço já selecionado
+    if (selectedAddress && newValue !== selectedAddress) {
+      setSelectedAddress(null);
+      setJustSelected(false);
+    }
+    
     onChange(newValue);
     setErrorMessage(null);
-    setSelectedAddress(null);
     
     if (newValue.length >= 3) {
       setIsLoading(true);
@@ -163,8 +181,10 @@ const AddressAutocomplete = ({
     console.log("📍 Endereço selecionado:", suggestion);
     
     setSelectedAddress(suggestion.description);
+    setJustSelected(true); // Marca que acabou de selecionar
     onChange(suggestion.description);
     setIsOpen(false);
+    setIsFocused(false);
     setIsLoading(true);
     
     try {
@@ -194,21 +214,32 @@ const AddressAutocomplete = ({
     }
   };
 
+  const handleFocus = () => {
+    setIsFocused(true);
+    setJustSelected(false); // Reset flag when focusing again
+    if (suggestions.length > 0 && !selectedAddress) {
+      setIsOpen(true);
+    }
+  };
+
+  const handleBlur = () => {
+    // Delay blur to allow click on suggestions
+    setTimeout(() => {
+      setIsFocused(false);
+      setIsOpen(false);
+    }, 150);
+  };
+
   return (
     <div className="space-y-2">
       <div className="relative w-full" ref={wrapperRef}>
         <Input
           ref={inputRef}
           placeholder={placeholder}
-          value={selectedAddress || value}
+          value={value}
           onChange={handleInputChange}
-          onFocus={() => {
-            setIsFocused(true);
-            if (suggestions.length > 0) {
-              setIsOpen(true);
-            }
-          }}
-          onBlur={() => setIsFocused(false)}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
           required={required}
           className={className}
         />
@@ -219,7 +250,7 @@ const AddressAutocomplete = ({
           </div>
         )}
         
-        {isOpen && suggestions.length > 0 && (
+        {isOpen && suggestions.length > 0 && isFocused && (
           <div className="absolute z-50 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
             {suggestions.map((suggestion) => (
               <div
