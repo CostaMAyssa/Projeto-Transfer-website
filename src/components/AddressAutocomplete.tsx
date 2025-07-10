@@ -190,7 +190,7 @@ const AddressAutocomplete = ({
     }
     
     if (inputRef.current) {
-      inputRef.current.focus();
+      inputRef.current.blur();
     }
   };
 

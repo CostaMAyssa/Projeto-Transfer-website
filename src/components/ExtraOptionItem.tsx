@@ -3,7 +3,6 @@ import { ExtraType } from "@/types/booking";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus } from "lucide-react";
 import { useBooking } from "@/contexts/BookingContext";
-import { useTranslation } from "react-i18next";
 
 interface ExtraOptionItemProps {
   extra: ExtraType;
@@ -12,7 +11,6 @@ interface ExtraOptionItemProps {
 const ExtraOptionItem = ({
   extra
 }: ExtraOptionItemProps) => {
-  const { t } = useTranslation();
   const {
     updateExtraQuantity,
     bookingData
@@ -35,46 +33,19 @@ const ExtraOptionItem = ({
       updateExtraQuantity(extra.id, newQuantity);
     }
   };
-
-  // Map extra IDs to translation keys
-  const getExtraName = (extraId: string) => {
-    const translationMap: Record<string, string> = {
-      'child-seat': t('extras.childSeat'),
-      'booster-seat': t('extras.boosterSeat'),
-      'vodka-bottle': t('extras.vodkaBottle'),
-      'flowers': t('extras.flowers'),
-      'alcohol-package': t('extras.alcoholPackage'),
-      'airport-assistance': t('extras.airportAssistance'),
-      'bodyguard': t('extras.bodyguard')
-    };
-    return translationMap[extraId] || extra.name;
-  };
-
-  const getExtraDescription = (extraId: string) => {
-    const translationMap: Record<string, string> = {
-      'child-seat': t('extras.childSeatDesc'),
-      'booster-seat': t('extras.boosterSeatDesc'),
-      'vodka-bottle': t('extras.vodkaBottleDesc'),
-      'flowers': t('extras.flowersDesc'),
-      'alcohol-package': t('extras.alcoholPackageDesc'),
-      'airport-assistance': t('extras.airportAssistanceDesc'),
-      'bodyguard': t('extras.bodyguardDesc')
-    };
-    return translationMap[extraId] || extra.description;
-  };
   
   return (
     <div className="flex justify-between items-center py-5 border-b last:border-b-0">
       <div className="pl-4">
         <div className="flex items-center">
-          <h4 className="text-lg font-semibold">{getExtraName(extra.id)}</h4>
+          <h4 className="text-lg font-semibold">{extra.name}</h4>
           {extra.price > 0 && (
             <span className="ml-2 px-2 py-1 bg-brand text-white rounded-md text-sm">
               ${extra.price}
             </span>
           )}
         </div>
-        <p className="text-sm text-gray-600 mt-1">{getExtraDescription(extra.id)}</p>
+        <p className="text-sm text-gray-600 mt-1">{extra.description}</p>
       </div>
       
       <div className="flex items-center space-x-3">

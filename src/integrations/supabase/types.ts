@@ -114,6 +114,30 @@ export type Database = {
         }
         Relationships: []
       }
+      extras: {
+        Row: {
+          id: string
+          name: string
+          description: string | null
+          price: number
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          name: string
+          description?: string | null
+          price: number
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          name?: string
+          description?: string | null
+          price?: number
+          created_at?: string
+        }
+        Relationships: []
+      }
       founder_ai_waitlist: {
         Row: {
           created_at: string

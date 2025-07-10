@@ -3,16 +3,25 @@ import RideSummary from "@/components/RideSummary";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { extras } from "@/data/mockData";
+import { useExtras } from "@/hooks/useExtras";
 import ExtraOptionItem from "@/components/ExtraOptionItem";
 import { ChevronRight } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const ExtrasSelection = () => {
   const { t } = useTranslation();
-  const { nextStep, prevStep, updateExtraQuantity, bookingData, setPassengerDetails } = useBooking();
+  const { nextStep, prevStep, updateExtraQuantity, bookingData, setPassengerDetails, setAvailableExtras } = useBooking();
+  const { extras, loading, error } = useExtras();
   const [notes, setNotes] = useState(bookingData.passengerDetails.notes || '');
+
+  // Atualizar os extras disponíveis no contexto quando carregados
+  useEffect(() => {
+    if (extras.length > 0) {
+      console.log('🔄 Atualizando extras disponíveis no contexto:', extras.length);
+      setAvailableExtras(extras);
+    }
+  }, [extras, setAvailableExtras]);
 
   const handleSelectExtra = (extraId: string) => {
     // Verificar se o extra já está selecionado
@@ -35,32 +44,49 @@ const ExtrasSelection = () => {
     nextStep();
   };
 
-  // Map extra IDs to translation keys
-  const getExtraName = (extraId: string) => {
-    const translationMap: Record<string, string> = {
-      'child-seat': t('extras.childSeat'),
-      'booster-seat': t('extras.boosterSeat'),
-      'vodka-bottle': t('extras.vodkaBottle'),
-      'flowers': t('extras.flowers'),
-      'alcohol-package': t('extras.alcoholPackage'),
-      'airport-assistance': t('extras.airportAssistance'),
-      'bodyguard': t('extras.bodyguard')
-    };
-    return translationMap[extraId] || '';
-  };
+  // Mostrar loading enquanto carrega os extras
+  if (loading) {
+    return (
+      <div>
+        <h2 className="text-2xl font-normal mb-6">{t('booking.extraOptions')}</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <div className="bg-white border rounded-lg p-6">
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              </div>
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <RideSummary />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
-  const getExtraDescription = (extraId: string) => {
-    const translationMap: Record<string, string> = {
-      'child-seat': t('extras.childSeatDesc'),
-      'booster-seat': t('extras.boosterSeatDesc'),
-      'vodka-bottle': t('extras.vodkaBottleDesc'),
-      'flowers': t('extras.flowersDesc'),
-      'alcohol-package': t('extras.alcoholPackageDesc'),
-      'airport-assistance': t('extras.airportAssistanceDesc'),
-      'bodyguard': t('extras.bodyguardDesc')
-    };
-    return translationMap[extraId] || '';
-  };
+  // Mostrar erro se houver
+  if (error) {
+    return (
+      <div>
+        <h2 className="text-2xl font-normal mb-6">{t('booking.extraOptions')}</h2>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+              <p className="text-red-600">
+                {t('booking.errorLoadingExtras', 'Erro ao carregar extras. Tente novamente.')}
+              </p>
+            </div>
+          </div>
+          <div className="lg:col-span-1">
+            <RideSummary />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -79,64 +105,69 @@ const ExtrasSelection = () => {
             </div>
 
             {/* Extra Options */}
-            <div className="bg-white border rounded-lg overflow-hidden">
-              {extras.slice(0, 4).map((extra) => (
-                <ExtraOptionItem key={extra.id} extra={extra} />
-              ))}
-            </div>
+            {extras.length > 0 && (
+              <div className="bg-white border rounded-lg overflow-hidden">
+                {extras.slice(0, 4).map((extra) => (
+                  <ExtraOptionItem key={extra.id} extra={extra} />
+                ))}
+              </div>
+            )}
 
             {/* Services with Select Buttons */}
-            {extras.slice(4).map((extra) => {
-              const isSelected = bookingData.extras.some(e => e.id === extra.id);
-              return (
-                <div key={extra.id} className="bg-white border rounded-lg p-4 flex justify-between items-center">
-                  <div>
-                    <h4 className="font-normal flex items-center">
-                      {getExtraName(extra.id)}
-                      <span className="ml-2 px-2 py-1 bg-[#ED1B24] text-white rounded-md text-sm">
+            {extras.length > 4 && (
+              <div className="bg-white border rounded-lg overflow-hidden">
+                {extras.slice(4).map((extra) => (
+                  <div key={extra.id} className="p-4 border-b last:border-b-0 flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-medium text-gray-900">
+                        {extra.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {extra.description}
+                      </p>
+                      <p className="text-sm font-medium text-gray-900 mt-2">
                         ${extra.price}
-                      </span>
-                    </h4>
-                    <p className="text-sm text-gray-600 mt-1">{getExtraDescription(extra.id)}</p>
+                      </p>
+                    </div>
+                    <Button
+                      variant={bookingData.extras.find(e => e.id === extra.id) ? "default" : "outline"}
+                      onClick={() => handleSelectExtra(extra.id)}
+                      className="ml-4"
+                    >
+                      {bookingData.extras.find(e => e.id === extra.id) ? t('booking.selected') : t('booking.select')}
+                    </Button>
                   </div>
-                  <Button 
-                    variant={isSelected ? "default" : "outline"}
-                    className={isSelected 
-                      ? "bg-[#ED1B24] text-white hover:bg-red-600" 
-                      : "border-[#ED1B24] text-[#ED1B24] hover:bg-red-50"
-                    }
-                    onClick={() => handleSelectExtra(extra.id)}
-                  >
-                    {isSelected ? t('booking.selected') : t('booking.select')} <ChevronRight size={16} className="ml-1" />
-                  </Button>
-                </div>
-              );
-            })}
+                ))}
+              </div>
+            )}
 
-            {/* Notes for chauffeur */}
-            <div className="mt-8">
-              <h4 className="mb-2 font-normal">{t('booking.notesToDriver')}</h4>
+            {/* Observações */}
+            <div className="bg-white border rounded-lg p-6">
+              <h3 className="text-lg font-medium mb-4">{t('booking.specialRequests')}</h3>
               <Textarea
-                placeholder={t('booking.notesToDriverPlaceholder')}
-                className="w-full h-32 p-3"
+                placeholder={t('booking.specialRequestsPlaceholder')}
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
+                className="w-full min-h-[100px]"
               />
             </div>
 
-            {/* Continue Button */}
-            <div className="mt-6">
-              <Button 
-                onClick={handleContinue} 
-                className="bg-[#111111] hover:bg-gray-800 text-white px-8 py-6 text-lg w-full md:w-auto font-normal"
-              >
-                {t('booking.continue')} <ChevronRight size={18} className="ml-1" />
+            {/* Navigation Buttons */}
+            <div className="flex justify-between">
+              <Button variant="outline" onClick={prevStep}>
+                {t('booking.back')}
+              </Button>
+              
+              <Button onClick={handleContinue} className="flex items-center gap-2">
+                {t('booking.continue')}
+                <ChevronRight className="h-4 w-4" />
               </Button>
             </div>
           </div>
         </div>
-        
-        <div>
+
+        {/* Right Column - Ride Summary */}
+        <div className="lg:col-span-1">
           <RideSummary />
         </div>
       </div>

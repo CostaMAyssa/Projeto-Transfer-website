@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import { BookingFormData, ExtraType, VehicleType } from '@/types/booking';
 import { useToast } from "@/hooks/use-toast";
-import { vehicles, extras as mockExtras } from '@/data/mockData';
+import { vehicles } from '@/data/mockData';
 import { calculateZonePricing } from '@/lib/zone-pricing';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -39,6 +39,8 @@ const defaultBookingData: BookingFormData = {
 type BookingContextType = {
   bookingData: BookingFormData;
   currentStep: number;
+  availableExtras: ExtraType[];
+  setAvailableExtras: (extras: ExtraType[]) => void;
   setBookingType: (type: BookingFormData['bookingType']) => void;
   setPickupLocation: (location: { address: string; coordinates?: [number, number] }) => void;
   setDropoffLocation: (location: { address: string; coordinates?: [number, number] }) => void;
@@ -82,6 +84,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [bookingComplete, setBookingComplete] = useState(false);
   const [reservationId, setReservationId] = useState<string | null>(null);
+  const [availableExtras, setAvailableExtras] = useState<ExtraType[]>([]);
   const { toast } = useToast();
 
   // Update functions with safety checks
@@ -202,11 +205,11 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     
     setBookingData((prev) => {
       try {
-        // Encontrar o extra nos dados mock
-        const extraFromMock = mockExtras.find((e: ExtraType) => e.id === extraId);
+        // Encontrar o extra na lista de extras disponíveis
+        const extraFromAvailable = availableExtras.find((e: ExtraType) => e.id === extraId);
         
-        if (!extraFromMock) {
-          console.warn('⚠️ Extra not found in mock data:', extraId);
+        if (!extraFromAvailable) {
+          console.warn('⚠️ Extra not found in available extras:', extraId);
           return prev;
         }
         
@@ -214,7 +217,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         
         // Se quantity > 0, adicionar o extra com a nova quantidade
         if (quantity > 0) {
-          const newExtra = { ...extraFromMock, quantity };
+          const newExtra = { ...extraFromAvailable, quantity };
           updatedExtras.push(newExtra);
         }
         
@@ -224,7 +227,7 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
         return prev;
       }
     });
-  }, []);
+  }, [availableExtras]);
 
   const setPassengerDetails = useCallback((details: BookingFormData['passengerDetails']) => {
     console.log('👤 Setting passenger details');
@@ -547,6 +550,8 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
   const contextValue = {
     bookingData,
     currentStep,
+    availableExtras,
+    setAvailableExtras,
     setBookingType,
     setPickupLocation,
     setDropoffLocation,

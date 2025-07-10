@@ -108,7 +108,7 @@ const CheckoutForm = () => {
 
     try {
       const cardElement = elements.getElement(CardElement);
-
+      
       if (!cardElement) {
         throw new Error('Elemento do cartão não encontrado.');
       }
@@ -116,17 +116,17 @@ const CheckoutForm = () => {
       console.log('💳 Criando Payment Method no frontend...');
       const { paymentMethod, error: createPaymentMethodError } = await stripe.createPaymentMethod({
         type: 'card',
-        card: cardElement,
-        billing_details: {
-          name: `${data.firstName} ${data.lastName}`,
-          email: data.email,
-          address: {
-            line1: data.address,
-            city: data.city,
-            postal_code: data.postal,
-            country: data.country,
-          },
-        },
+            card: cardElement,
+            billing_details: {
+              name: `${data.firstName} ${data.lastName}`,
+              email: data.email,
+              address: {
+                line1: data.address,
+                city: data.city,
+                postal_code: data.postal,
+                country: data.country,
+              },
+            },
       });
 
       if (createPaymentMethodError) {
@@ -284,41 +284,41 @@ const CheckoutForm = () => {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
           <h2 className="text-2xl font-bold mb-4">Detalhes de Cobrança</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="firstName"
-              render={({ field }) => (
-                <FormItem>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }) => (
+                  <FormItem>
                   <FormLabel>Primeiro Nome</FormLabel>
-                  <FormControl>
+                    <FormControl>
                     <Input placeholder="Seu primeiro nome" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Sobrenome</FormLabel>
+                    <FormControl>
+                    <Input placeholder="Seu sobrenome" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             <FormField
               control={form.control}
-              name="lastName"
+              name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Sobrenome</FormLabel>
+                  <FormLabel>Email</FormLabel>
                   <FormControl>
-                    <Input placeholder="Seu sobrenome" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
                   <Input type="email" placeholder="seu@email.com" {...field} />
                 </FormControl>
                 <FormMessage />
@@ -333,19 +333,19 @@ const CheckoutForm = () => {
                 <FormLabel>Empresa (Opcional)</FormLabel>
                 <FormControl>
                   <Input placeholder="Nome da sua empresa" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           <h2 className="text-2xl font-bold mb-4 mt-8">Endereço de Cobrança</h2>
-          <FormField
-            control={form.control}
-            name="address"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Endereço</FormLabel>
-                <FormControl>
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Endereço</FormLabel>
+                  <FormControl>
                   <Input placeholder="Endereço da rua" {...field} />
                 </FormControl>
                 <FormMessage />
@@ -366,33 +366,33 @@ const CheckoutForm = () => {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Cidade</FormLabel>
-                  <FormControl>
+              <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cidade</FormLabel>
+                    <FormControl>
                     <Input placeholder="Cidade" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="postal"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>CEP</FormLabel>
-                  <FormControl>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="postal"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>CEP</FormLabel>
+                    <FormControl>
                     <Input placeholder="CEP" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
           <h2 className="text-2xl font-bold mb-4 mt-8">Pagamento com Cartão de Crédito</h2>
           <p className="text-sm text-gray-600 mb-4">
@@ -406,41 +406,41 @@ const CheckoutForm = () => {
             {cardError && <div className="text-red-500 text-sm mt-2"><AlertTriangle className="inline h-4 w-4 mr-1" />{cardError}</div>}
           </div>
 
-          <FormField
-            control={form.control}
-            name="termsAccepted"
-            render={({ field }) => (
+            <FormField
+              control={form.control}
+              name="termsAccepted"
+              render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
                   <FormLabel>Aceito os Termos e Condições e a Reserva e Política de Privacidade.</FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
-
-          <FormField
-            control={form.control}
-            name="newsletterSubscription"
-            render={({ field }) => (
+                  </div>
+                </FormItem>
+              )}
+            />
+            
+            <FormField
+              control={form.control}
+              name="newsletterSubscription"
+              render={({ field }) => (
               <FormItem className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 shadow">
-                <FormControl>
-                  <Checkbox
-                    checked={field.value}
-                    onCheckedChange={field.onChange}
-                  />
-                </FormControl>
-                <div className="space-y-1 leading-none">
+                  <FormControl>
+                    <Checkbox
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
+                  <div className="space-y-1 leading-none">
                   <FormLabel>Quero me inscrever na newsletter da Transfero (Dicas de viagem e ofertas especiais)</FormLabel>
-                </div>
-              </FormItem>
-            )}
-          />
+                  </div>
+                </FormItem>
+              )}
+            />
 
           <Button type="submit" className="w-full" disabled={isProcessing}>
             {isProcessing ? (

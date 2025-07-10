@@ -276,8 +276,8 @@ const RideSummary = () => {
               <span>{bookingType === 'round-trip' ? t('booking.outboundTime') : t('booking.time')}</span>
             </div>
             <div className="font-normal">
-              {displayData.pickupTime ?
-                new Date(`2000-01-01T${displayData.pickupTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              {displayData.pickupTime ? 
+                new Date(`2000-01-01T${displayData.pickupTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
                 : t('booking.notSpecifiedYet')}
             </div>
           </div>
@@ -298,8 +298,8 @@ const RideSummary = () => {
                   <span>{t('booking.returnTime')}</span>
                 </div>
                 <div className="font-normal">
-                  {displayData.returnTime ?
-                    new Date(`2000-01-01T${displayData.returnTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                  {displayData.returnTime ? 
+                    new Date(`2000-01-01T${displayData.returnTime}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) 
                     : t('booking.notSpecifiedYet')}
                 </div>
               </div>
