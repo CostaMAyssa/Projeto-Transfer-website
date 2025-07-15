@@ -77,32 +77,67 @@ const RideSummary = () => {
   
   // Preparar dados de localização para o mapa baseado no tipo de booking
   const getMapLocations = () => {
+    console.log('🎯 RideSummary - getMapLocations chamada', {
+      bookingType,
+      pickupLocation,
+      dropoffLocation,
+      roundTrip,
+      hourly
+    });
+
     switch (bookingType) {
-      case 'round-trip':
-        return {
+      case 'round-trip': {
+        const roundTripResult = {
           pickup: roundTrip?.outboundPickupLocation || pickupLocation,
           dropoff: roundTrip?.outboundDropoffLocation || dropoffLocation
         };
-      case 'hourly':
-        return {
+        console.log('🔄 RideSummary - Round-trip locations:', {
+          outboundPickup: roundTrip?.outboundPickupLocation,
+          outboundDropoff: roundTrip?.outboundDropoffLocation,
+          fallbackPickup: pickupLocation,
+          fallbackDropoff: dropoffLocation,
+          result: roundTripResult
+        });
+        return roundTripResult;
+      }
+      case 'hourly': {
+        const hourlyResult = {
           pickup: hourly?.pickupLocation || pickupLocation,
           dropoff: hourly?.dropoffLocation || dropoffLocation
         };
-      default:
-        return {
+        console.log('⏰ RideSummary - Hourly locations:', {
+          hourlyPickup: hourly?.pickupLocation,
+          hourlyDropoff: hourly?.dropoffLocation,
+          fallbackPickup: pickupLocation,
+          fallbackDropoff: dropoffLocation,
+          result: hourlyResult
+        });
+        return hourlyResult;
+      }
+      default: {
+        const defaultResult = {
           pickup: pickupLocation,
           dropoff: dropoffLocation
         };
+        console.log('📍 RideSummary - Default locations:', {
+          pickup: pickupLocation,
+          dropoff: dropoffLocation,
+          result: defaultResult
+        });
+        return defaultResult;
+      }
     }
   };
   
   const mapLocations = getMapLocations();
   
-  console.log('🗺️ RideSummary - Localizações para o mapa:', {
+  console.log('🗺️ RideSummary - Localizações finais para o mapa:', {
     bookingType,
     mapLocations,
     hasPickupCoords: !!mapLocations.pickup?.coordinates,
-    hasDropoffCoords: !!mapLocations.dropoff?.coordinates
+    hasDropoffCoords: !!mapLocations.dropoff?.coordinates,
+    pickupCoords: mapLocations.pickup?.coordinates,
+    dropoffCoords: mapLocations.dropoff?.coordinates
   });
   
   // Calcular preços quando dados relevantes mudarem

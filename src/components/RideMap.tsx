@@ -30,6 +30,7 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [isRouteLoaded, setIsRouteLoaded] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [lastRouteCoords, setLastRouteCoords] = useState<string | null>(null);
 
   // Using environment variable for Mapbox token
   const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN;
@@ -83,6 +84,10 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
           console.warn('Error removing route:', error);
         }
       }
+      // Reset route state
+      setIsRouteLoaded(false);
+      setLastRouteCoords(null);
+      
     } catch (error) {
       console.error('Error during cleanup:', error);
     }
@@ -217,13 +222,22 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
       }
 
       // Draw route if both pickup and dropoff coordinates are available
-      if (hasPickup && hasDropoff && mapRef.current.isStyleLoaded()) {
-        drawRoute();
-      } else if (hasPickup && hasDropoff) {
-        // Wait for style to be loaded
-        mapRef.current.once('style.load', () => {
+      if (hasPickup && hasDropoff) {
+        console.log('🎯 initializeMap - Ambas localizações disponíveis, preparando para desenhar rota');
+        
+        // Aguardar o evento 'load' do mapa para desenhar a rota
+        if (isMapLoaded) {
+          console.log('✅ initializeMap - Mapa já carregado, desenhando rota');
           drawRoute();
-        });
+        } else {
+          console.log('⏳ initializeMap - Aguardando mapa carregar para desenhar rota');
+          mapRef.current.once('load', () => {
+            console.log('🎉 initializeMap - Mapa carregado, desenhando rota');
+            drawRoute();
+          });
+        }
+      } else {
+        console.log('⚠️ initializeMap - Localização(ões) faltando', { hasPickup, hasDropoff });
       }
       
       // Fit map to include both markers if available
@@ -248,10 +262,66 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
       console.error('Error initializing map:', error);
       setErrorMessage(t('map.mapErrorConnection'));
     }
-  }, [effectivePickupLocation, effectiveDropoffLocation, cleanup, isInitialized, t]);
+  }, [effectivePickupLocation, effectiveDropoffLocation, cleanup, isInitialized, t, isMapLoaded]);
 
   const drawRoute = async () => {
+    console.log('🛤️ drawRoute chamada', {
+      hasMap: !!mapRef.current,
+      hasPickupCoords: !!effectivePickupLocation.coordinates,
+      hasDropoffCoords: !!effectiveDropoffLocation.coordinates,
+      pickupCoords: effectivePickupLocation.coordinates,
+      dropoffCoords: effectiveDropoffLocation.coordinates,
+      isStyleLoaded: mapRef.current?.isStyleLoaded(),
+      mapLoaded: mapRef.current?.loaded()
+    });
+
     if (!mapRef.current || !effectivePickupLocation.coordinates || !effectiveDropoffLocation.coordinates) {
+      console.log('❌ drawRoute - Condições não atendidas');
+      return;
+    }
+
+    // Verificar se as coordenadas são válidas
+    const pickup = effectivePickupLocation.coordinates;
+    const dropoff = effectiveDropoffLocation.coordinates;
+    
+    if (!Array.isArray(pickup) || pickup.length !== 2 || !Array.isArray(dropoff) || dropoff.length !== 2) {
+      console.error('❌ drawRoute - Coordenadas inválidas', { pickup, dropoff });
+      return;
+    }
+
+    // Verificar se as coordenadas mudaram para evitar redesenhar a mesma rota
+    const currentCoords = `${pickup[0]},${pickup[1]}-${dropoff[0]},${dropoff[1]}`;
+    if (lastRouteCoords === currentCoords && isRouteLoaded) {
+      console.log('⏭️ drawRoute - Mesmas coordenadas, pulando redesenho', { currentCoords, lastRouteCoords });
+      return;
+    }
+
+    // Aguardar o style ser carregado com timeout
+    if (!mapRef.current.isStyleLoaded()) {
+      console.log('⏳ drawRoute - Style não carregado, aguardando evento styledata...');
+      
+      // Adicionar timeout para evitar loops infinitos
+      const timeoutId = setTimeout(() => {
+        console.log('⏰ drawRoute - Timeout atingido, forçando desenho da rota');
+        drawRouteDirectly();
+      }, 3000); // 3 segundos timeout
+      
+      mapRef.current.once('styledata', () => {
+        console.log('✅ drawRoute - Style carregado via evento, desenhando rota');
+        clearTimeout(timeoutId);
+        drawRouteDirectly();
+      });
+      
+      return;
+    }
+    
+    console.log('✅ drawRoute - Style já carregado, desenhando rota diretamente');
+    drawRouteDirectly();
+  };
+
+  const drawRouteDirectly = async () => {
+    if (!mapRef.current || !effectivePickupLocation.coordinates || !effectiveDropoffLocation.coordinates) {
+      console.log('❌ drawRouteDirectly - Condições não atendidas');
       return;
     }
     
@@ -260,28 +330,50 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
       const start = effectivePickupLocation.coordinates;
       const end = effectiveDropoffLocation.coordinates;
       
+      console.log('🚀 drawRouteDirectly - Fazendo requisição para API do Mapbox', { start, end });
+      
       // Get the route from Mapbox Directions API
       const query = `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxToken}`;
       
       const response = await fetch(query);
+      
+      if (!response.ok) {
+        throw new Error(`Mapbox API error: ${response.status} ${response.statusText}`);
+      }
+      
       const data = await response.json();
+      
+      console.log('📊 drawRouteDirectly - Resposta da API:', { 
+        hasRoutes: !!data.routes, 
+        routesLength: data.routes?.length,
+        error: data.error
+      });
+      
+      if (data.error) {
+        console.error('❌ drawRouteDirectly - Erro da API Mapbox:', data.error);
+        setErrorMessage(data.error);
+        return;
+      }
       
       if (data.routes && data.routes.length > 0) {
         const route = data.routes[0].geometry.coordinates;
+        console.log('🗺️ drawRouteDirectly - Rota obtida, coordenadas:', route.length);
 
-        // Check if map is loaded and source exists
+        // Remover source e layer existentes se houver
         if (mapRef.current.getSource('route')) {
-          // Update existing source
-          (mapRef.current.getSource('route') as mapboxgl.GeoJSONSource).setData({
-            type: 'Feature',
-            properties: {},
-            geometry: {
-              type: 'LineString',
-              coordinates: route
+          try {
+            if (mapRef.current.getLayer('route')) {
+              mapRef.current.removeLayer('route');
             }
-          });
-        } else if (mapRef.current.isStyleLoaded()) {
-          // Add new source and layer
+            mapRef.current.removeSource('route');
+            console.log('🧹 drawRouteDirectly - Removeu source/layer existentes');
+          } catch (error) {
+            console.warn('⚠️ drawRouteDirectly - Erro ao remover source/layer:', error);
+          }
+        }
+
+        // Adicionar nova source e layer
+        try {
           mapRef.current.addSource('route', {
             type: 'geojson',
             data: {
@@ -308,21 +400,39 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
               'line-opacity': 0.8
             }
           });
-        } else {
-          // Wait for style to be loaded
-          mapRef.current.once('style.load', () => {
-            drawRoute();
+          
+          console.log('✅ drawRouteDirectly - Rota adicionada com sucesso!');
+          
+          // Ajustar zoom para mostrar a rota completa
+          const coordinates = route;
+          const bounds = coordinates.reduce((bounds, coord) => {
+            return bounds.extend(coord);
+          }, new mapboxgl.LngLatBounds());
+          
+          mapRef.current.fitBounds(bounds, {
+            padding: 50,
+            maxZoom: 15
           });
-          return;
+          
+          console.log('🎯 drawRouteDirectly - Zoom ajustado para mostrar rota');
+          
+          // Marcar coordenadas como desenhadas
+          const currentCoords = `${start[0]},${start[1]}-${end[0]},${end[1]}`;
+          setLastRouteCoords(currentCoords);
+          console.log('📍 drawRouteDirectly - Coordenadas marcadas como desenhadas:', currentCoords);
+          
+        } catch (error) {
+          console.error('❌ drawRouteDirectly - Erro ao adicionar source/layer:', error);
+          setErrorMessage(t('map.routeRenderError'));
         }
         
         setIsRouteLoaded(true);
       } else {
-        console.error('No routes found in response:', data);
+        console.error('❌ drawRouteDirectly - Nenhuma rota encontrada na resposta');
         setErrorMessage(t('map.routeCalculationError'));
       }
     } catch (error) {
-      console.error('Error getting directions:', error);
+      console.error('❌ drawRouteDirectly - Erro geral:', error);
       setErrorMessage(t('map.routeCalculationConnectionError'));
     }
   };
@@ -358,6 +468,14 @@ const RideMap = ({ className, pickupLocation, dropoffLocation }: RideMapProps) =
       cleanup();
     };
   }, [effectivePickupLocation, effectiveDropoffLocation, initializeMap]);
+
+  // Desenhar rota quando o mapa carregar e houver ambas as localizações
+  useEffect(() => {
+    if (isMapLoaded && effectivePickupLocation?.coordinates && effectiveDropoffLocation?.coordinates) {
+      console.log('🗺️ RideMap - Mapa carregado com ambas localizações, desenhando rota');
+      drawRoute();
+    }
+  }, [isMapLoaded, effectivePickupLocation?.coordinates, effectiveDropoffLocation?.coordinates]);
 
   // Cleanup on component unmount
   useEffect(() => {
