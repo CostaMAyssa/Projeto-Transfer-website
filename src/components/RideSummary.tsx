@@ -22,6 +22,10 @@ const RideSummary = () => {
     hourly
   } = bookingData;
   
+  console.log('🎯 RideSummary - bookingType recebido:', bookingType);
+  console.log('🎯 RideSummary - roundTrip data:', roundTrip);
+  console.log('🎯 RideSummary - hourly data:', hourly);
+  
   const [pricing, setPricing] = useState({ vehiclePrice: 0, extrasPrice: 0, total: 0 });
   const [isCalculating, setIsCalculating] = useState(false);
   

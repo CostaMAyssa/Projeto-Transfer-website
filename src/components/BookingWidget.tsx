@@ -96,8 +96,20 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
       hourlyCoords: { pickup: hourlyPickupCoordinates, dropoff: hourlyDropCoordinates }
     });
     
+    console.log('📋 BookingWidget - Antes de setBookingType:', bookingType);
     // Update booking data in context based on booking type
-    setBookingType(bookingType);
+    // Só atualiza o bookingType se os dados estiverem preenchidos
+    if (bookingType === "one-way" && pickupAddress && dropoffAddress) {
+      setBookingType(bookingType);
+    } else if (bookingType === "round-trip" && outboundPickupAddress && outboundDropAddress && returnPickupAddress && returnDropAddress) {
+      setBookingType(bookingType);
+    } else if (bookingType === "hourly" && hourlyPickupAddress && departureAirport) {
+      setBookingType(bookingType);
+    } else {
+      console.log('⚠️ BookingWidget - Dados incompletos, não atualizando bookingType');
+      return; // Não navega se dados estiverem incompletos
+    }
+    console.log('✅ BookingWidget - Depois de setBookingType:', bookingType);
     
     if (bookingType === "one-way") {
       setPickupLocation({ address: pickupAddress, coordinates: pickupCoordinates });
@@ -177,8 +189,8 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
     <div className={cn(
       "bg-white rounded-xl border border-gray-200",
       vertical 
-        ? "p-4 w-full max-h-[500px] flex flex-col"
-        : "max-w-5xl mx-auto p-6 -mt-36 relative z-10"
+        ? "p-4 w-full max-h-[900px] flex flex-col"
+        : "w-full max-w-5xl mx-auto p-6 relative z-10"
     )}>
       <Tabs defaultValue="one-way" className={cn("mb-4", vertical && "flex flex-col h-full min-h-0")}>
         <TabsList className={cn(
@@ -207,7 +219,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
               <>
                 {/* Scrollable content area */}
                 <div className="flex-1 overflow-auto pr-2 -mr-2 pb-2">
-                  <div className="flex flex-col space-y-3">
+                  <div className="flex flex-col space-y-2">
                     {/* Pick-up Location */}
                     <div className="space-y-2">
                       <div className="flex items-center mb-1">
@@ -365,7 +377,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
               </>
             ) : (
               <>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {/* Pick-up Location */}
                   <div className="space-y-2">
                     <div className="flex items-center mb-1">
@@ -455,7 +467,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                 </div>
                 
                 {/* Second Row - Passengers and Luggage */}
-                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
                   {/* Passengers */}
                   <div className="space-y-2">
                     <div className="flex items-center mb-1">
@@ -520,7 +532,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                 {/* Submit Button */}
                 <Button 
                   type="submit"
-                  className="bg-brand hover:bg-brand-600 text-white mt-6 w-full py-3 rounded-lg font-medium"
+                  className="bg-brand hover:bg-brand-600 text-white mt-8 w-full py-3 rounded-lg font-medium"
                 >
                   <Search className="mr-2 h-4 w-4" />
                   {t('booking.findMyTransfer')}
@@ -537,9 +549,9 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
               <>
                 {/* Scrollable content area */}
                 <div className="flex-1 overflow-auto pr-2 -mr-2 pb-2">
-                  <div className="flex flex-col space-y-2">
+                  <div className="flex flex-col space-y-1">
                     {/* Pick-Up (Outbound) Section */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <div className="text-xs font-medium text-brand mb-1">{t('booking.pickupOutbound')}</div>
                       
                       {/* Outbound Date & Time */}
@@ -646,8 +658,8 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     </div>
 
                     {/* Return Section */}
-                    <div className="space-y-2">
-                      <div className="text-xs font-medium text-green-600 mb-1">{t('booking.return')}</div>
+                    <div className="space-y-1">
+                      <div className="text-xs font-medium text-green-600 mb-1 mt-2">{t('booking.return')}</div>
                       
                       {/* Return Date & Time */}
                       <div className="space-y-1">
@@ -829,7 +841,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <MapPin size={18} className="text-brand mr-2" />
                     {t('booking.pickupOutbound')}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Outbound Date & Time */}
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
@@ -939,7 +951,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     <MapPin size={18} className="text-green-600 mr-2" />
                     {t('booking.return')}
                   </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {/* Return Date & Time */}
                     <div className="space-y-1">
                       <div className="flex items-center mb-1">
@@ -1119,9 +1131,9 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
               <>
                 {/* Scrollable content area */}
                 <div className="flex-1 overflow-auto pr-2 -mr-2 pb-2">
-                  <div className="flex flex-col space-y-2">
+                  <div className="flex flex-col space-y-1">
                     {/* Duration */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <Clock size={16} className="text-brand mr-1" />
                         <span className="text-sm font-medium">{t('booking.duration')} *</span>
@@ -1141,7 +1153,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     </div>
 
                     {/* Order Type */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <MapPin size={16} className="text-brand mr-1" />
                         <span className="text-sm font-medium">{t('booking.orderType')} *</span>
@@ -1158,7 +1170,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     </div>
 
                     {/* Pick-up Date & Time */}
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <div className="flex items-center mb-1">
                         <CalendarIcon size={16} className="text-brand mr-1" />
                         <span className="text-sm font-medium">{t('booking.dateTime')} *</span>
@@ -1291,7 +1303,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     {/* Luggage Row */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {/* 10kg Luggage */}
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <Briefcase size={16} className="text-red-600 mr-1" />
                           <span className="text-sm font-medium text-red-600">{t('booking.luggage10kg')}</span>
@@ -1311,7 +1323,7 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                       </div>
                       
                       {/* 23kg Luggage */}
-                      <div className="space-y-2">
+                      <div className="space-y-1">
                         <div className="flex items-center mb-1">
                           <Briefcase size={16} className="text-red-600 mr-1" />
                           <span className="text-sm font-medium text-red-600">{t('booking.luggage23kg')}</span>

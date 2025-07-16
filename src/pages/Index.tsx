@@ -131,7 +131,7 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section with Background - Increased height to fit booking widget without scrolling */}
-      <div className="relative h-[850px] md:h-[800px]">
+      <div className="relative h-[1400px] md:h-[1300px]">
         {/* Background Image */}
         <div className="absolute inset-0 bg-cover bg-center" style={{
         backgroundImage: "url('/lovable-uploads/8dbef764-77f5-4717-bfe4-19f5775b0869.png')",
@@ -143,9 +143,9 @@ const Index = () => {
         </div>
         
         {/* Hero Content */}
-        <div className="container mx-auto px-4 h-full flex relative z-10">
+        <div className="container mx-auto px-4 h-full flex flex-col md:flex-row relative z-10">
           {/* Left side content - reduced width to give more space to the booking widget */}
-          <div className="w-full md:w-3/5 flex flex-col justify-center h-full pt-16">
+          <div className="w-full md:w-1/2 flex flex-col justify-center h-full -mt-40">
             <div className="text-white max-w-xl">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-normal mb-6">
                 {t('hero.title')}
@@ -156,9 +156,9 @@ const Index = () => {
             </div>
           </div>
           
-          {/* Right side booking widget - moved slightly to the left with right margin */}
-          <div className="hidden md:block md:w-2/5 h-full pt-16 pl-8 pr-12">
-            <div className="h-full flex items-center">
+          {/* Right side booking widget - expanded width */}
+          <div className="hidden md:block md:w-1/2 h-full pl-8 pr-12">
+            <div className="h-full flex items-start mt-40">
               <ComponentErrorBoundary 
                 fallback={<div className="text-white">Widget temporariamente indisponível</div>}
               >
