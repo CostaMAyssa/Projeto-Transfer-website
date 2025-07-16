@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { Map } from "lucide-react";
 import { cityTours, createCityTours } from "@/data/cityTours";
 import { useEffect, useState } from "react";
@@ -35,7 +34,7 @@ const CityTourSection = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {tours.map((tour) => (
-            <Link key={tour.id} to={`/city-tours/${tour.id}`} className="group">
+            <div key={tour.id} className="group">
               <div className="bg-transparent overflow-hidden relative">
                 <div className="overflow-hidden rounded-lg">
                   <AspectRatio ratio={3/4} className="bg-black/20">
@@ -124,7 +123,7 @@ const CityTourSection = () => {
                   </div>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
       </div>
