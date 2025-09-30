@@ -59,6 +59,32 @@ export interface ExtraType {
   quantity: number;
 }
 
+// Flight validation types
+export interface FlightInfo {
+  flight_number: string;
+  airline: string;
+  departure_time: string;
+  arrival_time: string;
+  departure_airport: string;
+  arrival_airport: string;
+  terminal?: string;
+  gate?: string;
+  status: string;
+}
+
+export interface FlightValidationData {
+  airline: string;
+  flightNumber: string;
+  noFlightInfo: boolean;
+  validationResult?: {
+    is_valid: boolean;
+    suggested_time?: string;
+    suggested_date?: string;
+    reason?: string;
+    flight_info?: FlightInfo;
+  };
+}
+
 export interface BookingFormData {
   bookingType: BookingType;
   pickupLocation: LocationData;
@@ -74,6 +100,9 @@ export interface BookingFormData {
   passengerDetails: PassengerDetails;
   paymentDetails: PaymentDetails;
   
+  // Flight validation data (available for all booking types)
+  flightData?: FlightValidationData;
+  
   // Round Trip specific fields
   roundTrip?: {
     outboundPickupLocation: LocationData;
@@ -87,6 +116,9 @@ export interface BookingFormData {
     returnTime: string;
     returnPassengers: number;
     durationDays: number;
+    // Flight data for outbound and return flights
+    outboundFlightData?: FlightValidationData;
+    returnFlightData?: FlightValidationData;
   };
   
   // Hourly specific fields

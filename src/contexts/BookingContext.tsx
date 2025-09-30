@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
-import { BookingFormData, ExtraType, VehicleType } from '@/types/booking';
+import { BookingFormData, ExtraType, VehicleType, FlightValidationData } from '@/types/booking';
 import { useToast } from "@/hooks/use-toast";
 import { vehicles } from '@/data/mockData';
 import { calculateZonePricing } from '@/lib/zone-pricing';
@@ -70,6 +70,12 @@ type BookingContextType = {
   
   // Hourly functions
   setHourlyData: (data: BookingFormData['hourly']) => void;
+  
+  // Flight validation functions
+  setFlightData: (data: FlightValidationData) => void;
+  setOutboundFlightData: (data: FlightValidationData) => void;
+  setReturnFlightData: (data: FlightValidationData) => void;
+  clearFlightData: () => void;
 };
 
 const BookingContext = createContext<BookingContextType | undefined>(undefined);
@@ -547,6 +553,41 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     setBookingData((prev) => ({ ...prev, hourly: data }));
   }, []);
 
+  // Flight validation functions
+  const setFlightData = useCallback((data: FlightValidationData) => {
+    console.log('✈️ Setting flight data:', data);
+    setBookingData((prev) => ({ ...prev, flightData: data }));
+  }, []);
+
+  const setOutboundFlightData = useCallback((data: FlightValidationData) => {
+    console.log('✈️ Setting outbound flight data:', data);
+    setBookingData((prev) => ({
+      ...prev,
+      roundTrip: prev.roundTrip ? { ...prev.roundTrip, outboundFlightData: data } : undefined
+    }));
+  }, []);
+
+  const setReturnFlightData = useCallback((data: FlightValidationData) => {
+    console.log('✈️ Setting return flight data:', data);
+    setBookingData((prev) => ({
+      ...prev,
+      roundTrip: prev.roundTrip ? { ...prev.roundTrip, returnFlightData: data } : undefined
+    }));
+  }, []);
+
+  const clearFlightData = useCallback(() => {
+    console.log('🧹 Clearing flight data');
+    setBookingData((prev) => ({
+      ...prev,
+      flightData: undefined,
+      roundTrip: prev.roundTrip ? {
+        ...prev.roundTrip,
+        outboundFlightData: undefined,
+        returnFlightData: undefined
+      } : undefined
+    }));
+  }, []);
+
   const contextValue = {
     bookingData,
     currentStep,
@@ -581,6 +622,12 @@ export function BookingProvider({ children }: { children: React.ReactNode }) {
     
     // Hourly functions
     setHourlyData,
+    
+    // Flight validation functions
+    setFlightData,
+    setOutboundFlightData,
+    setReturnFlightData,
+    clearFlightData,
   };
 
   return (

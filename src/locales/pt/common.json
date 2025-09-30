@@ -48,6 +48,9 @@
     "date": "Data",
     "hour": "hora",
     "hours": "horas",
+    "flightInfoTitle": "Informações do Voo",
+    "airlineLabel": "Companhia",
+    "flightLabel": "Voo",
     "passenger": "Passageiro",
     "passengers": "Passageiros",
     "pickupOutbound": "Pick-Up (Outbound)",
@@ -306,5 +309,20 @@
     "routeCalculationError": "Não foi possível calcular a rota. Tente novamente.",
     "routeCalculationConnectionError": "Erro ao calcular a rota. Verifique sua conexão.",
     "loadingMap": "Carregando mapa..."
+  },
+  "flightValidation": {
+    "checkingFlight": "Verificando informações do voo...",
+    "validSchedule": "Horário válido!",
+    "scheduleIssue": "Problema no agendamento",
+    "suggestedTime": "Horário sugerido",
+    "flightInfo": "Informações do voo",
+    "departure": "Partida",
+    "arrival": "Chegada",
+    "terminal": "Terminal",
+    "time": "Hora",
+    "flightNotFound": "Voo não encontrado. Verifique o número do voo e a data.",
+    "invalidTime": "Horário inválido para este voo",
+    "tooEarly": "Muito cedo para este voo",
+    "tooLate": "Muito tarde para este voo"
   }
 } 
