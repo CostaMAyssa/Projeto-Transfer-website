@@ -1,11 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useBooking } from "@/contexts/BookingContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Calendar as CalendarIcon, Clock, MapPin, Search, Users, Briefcase } from "lucide-react";
-import { BookingType } from "@/types/booking";
+import { BookingType, FlightValidationData } from "@/types/booking";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar";
@@ -13,6 +13,10 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddressAutocomplete from "./AddressAutocomplete";
+import FlightValidationMessage from "./FlightValidationMessage";
+import FlightFields from "./FlightFields";
+import FlightFieldsInline from "./FlightFieldsInline";
+import { useFlightValidationWithDebounce } from "@/hooks/useFlightValidation";
 
 interface BookingWidgetProps {
   vertical?: boolean;
@@ -30,7 +34,10 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
     setPassengers,
     setLuggage,
     setRoundTripData,
-    setHourlyData
+    setHourlyData,
+    setFlightData,
+    setOutboundFlightData,
+    setReturnFlightData
   } = useBooking();
   
   const [bookingType, setWidgetBookingType] = useState<BookingType>("one-way");
@@ -45,6 +52,12 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [passengers, setPassengerCount] = useState(1);
   const [smallLuggage, setSmallLuggage] = useState(0);
   const [largeLuggage, setLargeLuggage] = useState(0);
+  
+  // Flight validation for one-way
+  const [oneWayAirline, setOneWayAirline] = useState("");
+  const [oneWayFlightNumber, setOneWayFlightNumber] = useState("");
+  const [oneWayNoFlightInfo, setOneWayNoFlightInfo] = useState(false);
+  const [oneWayFlightData, setOneWayFlightData] = useState<FlightValidationData | undefined>();
 
   // Round-trip state
   const [outboundDate, setOutboundDate] = useState<Date>(new Date());
@@ -55,6 +68,12 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [outboundDropCoordinates, setOutboundDropCoordinates] = useState<[number, number] | undefined>();
   const [outboundPassengers, setOutboundPassengers] = useState(1);
   
+  // Flight validation for outbound
+  const [outboundAirline, setOutboundAirline] = useState("");
+  const [outboundFlightNumber, setOutboundFlightNumber] = useState("");
+  const [outboundNoFlightInfo, setOutboundNoFlightInfo] = useState(false);
+  const [outboundFlightData, setOutboundFlightDataState] = useState<FlightValidationData | undefined>();
+  
   const [returnDate, setReturnDate] = useState<Date>(new Date());
   const [returnTime, setReturnTime] = useState("12:00");
   const [returnPickupAddress, setReturnPickupAddress] = useState("");
@@ -63,6 +82,12 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [returnDropCoordinates, setReturnDropCoordinates] = useState<[number, number] | undefined>();
   const [returnPassengers, setReturnPassengers] = useState(1);
   const [durationDays, setDurationDays] = useState(0);
+  
+  // Flight validation for return
+  const [returnAirline, setReturnAirline] = useState("");
+  const [returnFlightNumber, setReturnFlightNumber] = useState("");
+  const [returnNoFlightInfo, setReturnNoFlightInfo] = useState(false);
+  const [returnFlightData, setReturnFlightDataState] = useState<FlightValidationData | undefined>();
 
   // Hourly state
   const [durationHours, setDurationHours] = useState(1);
@@ -80,6 +105,129 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
   const [airline, setAirline] = useState("");
   const [flightNumber, setFlightNumber] = useState("");
   const [noFlightInfo, setNoFlightInfo] = useState(false);
+
+  // Flight validation hooks
+  const { validateFlight: validateOneWayFlight, isLoading: oneWayValidating, lastValidation: oneWayValidation } = useFlightValidationWithDebounce(1000);
+  const { validateFlight: validateOutboundFlight, isLoading: outboundValidating, lastValidation: outboundValidation } = useFlightValidationWithDebounce(1000);
+  const { validateFlight: validateReturnFlight, isLoading: returnValidating, lastValidation: returnValidation } = useFlightValidationWithDebounce(1000);
+  const { validateFlight: validateHourlyFlight, isLoading: hourlyValidating, lastValidation: hourlyValidation } = useFlightValidationWithDebounce(1000);
+
+  // Helper function to determine booking type based on addresses
+  const isAirportBooking = (pickup: string, dropoff: string) => {
+    const airportKeywords = ['aeroporto', 'airport', 'terminal', 'galeão', 'guarulhos', 'confins', 'santos dumont'];
+    return airportKeywords.some(keyword => 
+      pickup.toLowerCase().includes(keyword) || dropoff.toLowerCase().includes(keyword)
+    );
+  };
+
+  // Flight validation effects
+  useEffect(() => {
+    if (bookingType === 'one-way' && !oneWayNoFlightInfo && oneWayFlightNumber && isAirportBooking(pickupAddress, dropoffAddress)) {
+      const bookingType = isAirportBooking(pickupAddress, dropoffAddress) ? 'dropoff' : 'pickup';
+      validateOneWayFlight({
+        flight_number: oneWayFlightNumber,
+        airline: oneWayAirline,
+        date: format(date, 'yyyy-MM-dd'),
+        time: time,
+        booking_type: bookingType as 'pickup' | 'dropoff'
+      }).then(result => {
+        if (result) {
+          const flightData: FlightValidationData = {
+            airline: oneWayAirline,
+            flightNumber: oneWayFlightNumber,
+            noFlightInfo: oneWayNoFlightInfo,
+            validationResult: result.validation_result
+          };
+          setOneWayFlightData(flightData);
+          setFlightData(flightData);
+        }
+      });
+    }
+  }, [oneWayFlightNumber, oneWayAirline, date, time, pickupAddress, dropoffAddress, oneWayNoFlightInfo]);
+
+  useEffect(() => {
+    if (bookingType === 'round-trip' && !outboundNoFlightInfo && outboundFlightNumber && isAirportBooking(outboundPickupAddress, outboundDropAddress)) {
+      const bookingType = isAirportBooking(outboundPickupAddress, outboundDropAddress) ? 'dropoff' : 'pickup';
+      validateOutboundFlight({
+        flight_number: outboundFlightNumber,
+        airline: outboundAirline,
+        date: format(outboundDate, 'yyyy-MM-dd'),
+        time: outboundTime,
+        booking_type: bookingType as 'pickup' | 'dropoff'
+      }).then(result => {
+        if (result) {
+          const flightData: FlightValidationData = {
+            airline: outboundAirline,
+            flightNumber: outboundFlightNumber,
+            noFlightInfo: outboundNoFlightInfo,
+            validationResult: result.validation_result
+          };
+          setOutboundFlightDataState(flightData);
+          setOutboundFlightData(flightData);
+        }
+      });
+    }
+  }, [outboundFlightNumber, outboundAirline, outboundDate, outboundTime, outboundPickupAddress, outboundDropAddress, outboundNoFlightInfo]);
+
+  useEffect(() => {
+    if (bookingType === 'round-trip' && !returnNoFlightInfo && returnFlightNumber && isAirportBooking(returnPickupAddress, returnDropAddress)) {
+      const bookingType = isAirportBooking(returnPickupAddress, returnDropAddress) ? 'dropoff' : 'pickup';
+      validateReturnFlight({
+        flight_number: returnFlightNumber,
+        airline: returnAirline,
+        date: format(returnDate, 'yyyy-MM-dd'),
+        time: returnTime,
+        booking_type: bookingType as 'pickup' | 'dropoff'
+      }).then(result => {
+        if (result) {
+          const flightData: FlightValidationData = {
+            airline: returnAirline,
+            flightNumber: returnFlightNumber,
+            noFlightInfo: returnNoFlightInfo,
+            validationResult: result.validation_result
+          };
+          setReturnFlightDataState(flightData);
+          setReturnFlightData(flightData);
+        }
+      });
+    }
+  }, [returnFlightNumber, returnAirline, returnDate, returnTime, returnPickupAddress, returnDropAddress, returnNoFlightInfo]);
+
+  useEffect(() => {
+    if (bookingType === 'hourly' && !noFlightInfo && flightNumber) {
+      const bookingType = orderType === 'airport-dropoff' ? 'dropoff' : 'pickup';
+      validateHourlyFlight({
+        flight_number: flightNumber,
+        airline: airline,
+        date: format(hourlyDate, 'yyyy-MM-dd'),
+        time: hourlyTime,
+        booking_type: bookingType
+      }).then(result => {
+        if (result) {
+          const flightData: FlightValidationData = {
+            airline: airline,
+            flightNumber: flightNumber,
+            noFlightInfo: noFlightInfo,
+            validationResult: result.validation_result
+          };
+          // Update hourly data with flight validation
+          setHourlyData({
+            pickupLocation: { address: hourlyPickupAddress, coordinates: hourlyPickupCoordinates },
+            dropoffLocation: { address: departureAirport, coordinates: hourlyDropCoordinates },
+            date: hourlyDate,
+            time: hourlyTime,
+            passengers: hourlyPassengers,
+            durationHours,
+            orderType,
+            departureAirport,
+            airline,
+            flightNumber,
+            noFlightInfo
+          });
+        }
+      });
+    }
+  }, [flightNumber, airline, hourlyDate, hourlyTime, orderType, noFlightInfo]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -364,6 +512,23 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                   </div>
                 </div>
                 
+                {/* Flight Information for One-Way */}
+                <FlightFieldsInline
+                  airline={oneWayAirline}
+                  setAirline={setOneWayAirline}
+                  flightNumber={oneWayFlightNumber}
+                  setFlightNumber={setOneWayFlightNumber}
+                  noFlightInfo={oneWayNoFlightInfo}
+                  setNoFlightInfo={setOneWayNoFlightInfo}
+                  validationData={oneWayValidation ? {
+                    airline: oneWayAirline,
+                    flightNumber: oneWayFlightNumber,
+                    noFlightInfo: oneWayNoFlightInfo,
+                    validationResult: oneWayValidation.validation_result
+                  } : undefined}
+                  isLoading={oneWayValidating}
+                />
+                
                 {/* Fixed Submit Button */}
                 <div className="flex-shrink-0 pt-3 border-t border-gray-100">
                   <Button 
@@ -528,6 +693,23 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     </Select>
                   </div>
                 </div>
+
+                {/* Flight Information for One-Way Horizontal */}
+                <FlightFieldsInline
+                  airline={oneWayAirline}
+                  setAirline={setOneWayAirline}
+                  flightNumber={oneWayFlightNumber}
+                  setFlightNumber={setOneWayFlightNumber}
+                  noFlightInfo={oneWayNoFlightInfo}
+                  setNoFlightInfo={setOneWayNoFlightInfo}
+                  validationData={oneWayValidation ? {
+                    airline: oneWayAirline,
+                    flightNumber: oneWayFlightNumber,
+                    noFlightInfo: oneWayNoFlightInfo,
+                    validationResult: oneWayValidation.validation_result
+                  } : undefined}
+                  isLoading={oneWayValidating}
+                />
 
                 {/* Submit Button */}
                 <Button 
@@ -1596,6 +1778,23 @@ const BookingWidget = ({ vertical = false }: BookingWidgetProps) => {
                     </Select>
                   </div>
                 </div>
+
+                {/* Flight Information for Hourly */}
+                <FlightFieldsInline
+                  airline={airline}
+                  setAirline={setAirline}
+                  flightNumber={flightNumber}
+                  setFlightNumber={setFlightNumber}
+                  noFlightInfo={noFlightInfo}
+                  setNoFlightInfo={setNoFlightInfo}
+                  validationData={hourlyValidation ? {
+                    airline: airline,
+                    flightNumber: flightNumber,
+                    noFlightInfo: noFlightInfo,
+                    validationResult: hourlyValidation.validation_result
+                  } : undefined}
+                  isLoading={hourlyValidating}
+                />
 
                 {/* Submit Button */}
                 <Button 
