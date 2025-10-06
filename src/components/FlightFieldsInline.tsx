@@ -30,21 +30,12 @@ const FlightFieldsInline: React.FC<FlightFieldsInlineProps> = ({
   className = ""
 }) => {
   const { t } = useTranslation();
-  
-  // Debug logs
-  console.log('🔍 FlightFieldsInline props:', {
-    airline,
-    flightNumber,
-    noFlightInfo,
-    validationData,
-    isLoading
-  });
 
   return (
-    <div className={`space-y-4 p-4 bg-blue-50 rounded-lg border border-blue-200 ${className}`}>
+    <div className={`space-y-4 p-4 bg-white rounded-lg border border-gray-200 ${className}`}>
       <div className="flex items-center space-x-2">
-        <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-        <span className="text-sm font-medium text-blue-800">{t('booking.flightInfoTitle')}</span>
+        <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+        <span className="text-sm font-medium text-gray-800">{t('booking.flightInfoTitle')}</span>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
